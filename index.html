@@ -3,65 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>黑盒抄錶室：五大透明膠囊櫃桶 × 360°遠山 × 肥山微搖滾</title>
+  <title>黑盒抄錶室：六大透明膠囊 × 親手駕駛萊特兄弟雙翼機</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body { background: #000000; color: #fff; height: 100dvh; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #canvas-3d { position: fixed; inset: 0; width: 100%; height: 100%; }
-    #top-caps {
-      position: fixed; top: 8px; left: 10px; z-index: 30;
-      display: flex; align-items: center; gap: 14px; pointer-events: auto;
-    }
-    .tri-cap {
-      background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(30, 144, 255, 0.45);
-      border-radius: 7px; padding: 4px 8px; color: #1e90ff; font-size: 13px;
-      font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 3px;
-    }
-    .tri-cap.active { background: rgba(15, 35, 70, 0.85); border-color: #38bdf8; color: #38bdf8; }
-    .cap-drawer {
-      position: fixed; top: 42px; left: 8px; right: 8px; z-index: 25;
-      background: rgba(0, 0, 0, 0.78); border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 10px; padding: 8px 10px; max-height: 68dvh; overflow-y: auto;
-      display: none; flex-direction: column; gap: 6px;
-    }
+    #top-caps { position: fixed; top: 8px; left: 10px; z-index: 30; display: flex; align-items: center; gap: 12px; pointer-events: auto; }
+    .tri-cap { background: rgba(0,0,0,0.55); border: 1px solid rgba(30,144,255,0.45); border-radius: 7px; padding: 4px 8px; color: #1e90ff; font-size: 13px; font-weight: bold; cursor: pointer; }
+    .tri-cap.active { background: rgba(15,35,70,0.85); border-color: #38bdf8; color: #38bdf8; }
+    .cap-drawer { position: fixed; top: 42px; left: 8px; right: 8px; z-index: 25; background: rgba(0,0,0,0.78); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 8px 10px; max-height: 68dvh; overflow-y: auto; display: none; flex-direction: column; gap: 6px; }
     .cap-drawer.open { display: flex; }
     .cap-head { font-size: 11px; font-weight: bold; color: #ffd700; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 4px; }
     .chord-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; }
-    .c-btn {
-      background: rgba(20, 20, 20, 0.75); color: #ccc; border: 1px solid #333; border-radius: 4px;
-      padding: 4px 0; font-size: 10px; font-weight: bold; text-align: center;
-    }
+    .c-btn { background: rgba(20,20,20,0.75); color: #ccc; border: 1px solid #333; border-radius: 4px; padding: 4px 0; font-size: 10px; font-weight: bold; text-align: center; }
     .c-btn small { display: block; font-size: 7px; color: #888; font-weight: normal; }
     .c-btn.active { background: #14284b; color: #fff; border-color: #1e90ff; }
     .c-btn.special { border-color: #581c87; }
     .c-btn.special.active { background: #3b0764; border-color: #d946ef; }
     .dual-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-    .mode-btn {
-      background: rgba(20, 51, 38, 0.8); color: #4ade80; border: 1px solid #22c55e;
-      border-radius: 6px; padding: 6px 4px; font-size: 10.5px; font-weight: bold; text-align: center;
-    }
-    .mode-btn.sea { background: rgba(12, 36, 56, 0.8); color: #38bdf8; border-color: #0284c7; }
-    .mode-btn.art { background: rgba(45, 27, 14, 0.85); color: #fbbf24; border-color: #f59e0b; grid-column: span 2; }
+    .mode-btn { background: rgba(20,51,38,0.8); color: #4ade80; border: 1px solid #22c55e; border-radius: 6px; padding: 6px 4px; font-size: 10.5px; font-weight: bold; text-align: center; }
+    .mode-btn.sea { background: rgba(12,36,56,0.8); color: #38bdf8; border-color: #0284c7; }
+    .mode-btn.art { background: rgba(45,27,14,0.85); color: #fbbf24; border-color: #f59e0b; grid-column: span 2; }
     .tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-    .p-toggle {
-      background: rgba(17, 17, 17, 0.8); color: #888; border: 1px solid #333; border-radius: 5px;
-      padding: 5px 2px; font-size: 10.5px; font-weight: bold; text-align: center;
-    }
-    .p-toggle.on-chaos  { background: rgba(19, 42, 28, 0.85); color: #4ade80; border-color: #22c55e; }
-    .p-toggle.on-heis   { background: rgba(37, 23, 56, 0.85); color: #c084fc; border-color: #a855f7; }
-    .p-toggle.on-breath { background: rgba(16, 37, 63, 0.85); color: #38bdf8; border-color: #0ea5e9; }
+    .p-toggle { background: rgba(17,17,17,0.8); color: #888; border: 1px solid #333; border-radius: 5px; padding: 5px 2px; font-size: 10.5px; font-weight: bold; text-align: center; }
+    .p-toggle.on-chaos  { background: rgba(19,42,28,0.85); color: #4ade80; border-color: #22c55e; }
+    .p-toggle.on-heis   { background: rgba(37,23,56,0.85); color: #c084fc; border-color: #a855f7; }
+    .p-toggle.on-breath { background: rgba(16,37,63,0.85); color: #38bdf8; border-color: #0ea5e9; }
     .row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; }
     .row label { min-width: 138px; color: #eee; text-shadow: 0 1px 2px #000; }
     .row input[type=range] { flex: 1; accent-color: #ffd700; }
     .row span { min-width: 44px; text-align: right; color: #ffd700; font-family: monospace; }
+    #fly-dpad { position: fixed; left: 12px; bottom: 14px; z-index: 35; display: none; flex-direction: column; gap: 4px; }
+    #fly-dpad.show { display: flex; }
+    .dp-grid { display: grid; grid-template-columns: repeat(3, 38px); grid-template-rows: repeat(3, 38px); gap: 3px; }
+    .dp-btn { width: 38px; height: 38px; border-radius: 9px; background: rgba(0,0,0,0.58); border: 1px solid rgba(56,189,248,0.6); color: #fff; font-size: 15px; font-weight: bold; display: flex; align-items: center; justify-content: center; touch-action: none; }
+    .dp-btn:active { background: rgba(56,189,248,0.45); }
   </style>
 </head>
-
-
-
-  <body>
+<body>
   <div id="canvas-3d"></div>
   <div id="top-caps">
     <button class="tri-cap" data-cap="cap-sky">▼</button>
@@ -69,9 +50,16 @@
     <button class="tri-cap" data-cap="cap-sand">▼</button>
     <button class="tri-cap" data-cap="cap-isl">▼</button>
     <button class="tri-cap" data-cap="cap-mtn">▼</button>
+    <button class="tri-cap" data-cap="cap-fly">▼</button>
   </div>
-
-  <!-- 櫃桶 1：🌌 天空（黃金 Preset） -->
+  <div id="fly-dpad">
+    <div style="font-size:10px;color:#ffd700;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:5px;" id="fly-hud">速度 0 | 高度 0m</div>
+    <div class="dp-grid">
+      <div></div><button class="dp-btn" id="dp-u">▲</button><div></div>
+      <button class="dp-btn" id="dp-l">◀</button><button class="dp-btn" id="dp-exit" style="font-size:11px;color:#fca5a5;">🚪</button><button class="dp-btn" id="dp-r">▶</button>
+      <div></div><button class="dp-btn" id="dp-d">▼</button><div></div>
+    </div>
+  </div>
   <div class="cap-drawer" id="cap-sky">
     <div class="cap-head"><span>🌌 櫃桶 1：大氣光學散射（黃金 Preset）</span><b id="sky-readout">1級 I大三 [0,4,7]</b></div>
     <div class="chord-grid" id="sky-grid">
@@ -80,8 +68,6 @@
     <div class="row"><label>🌫️ 大氣光學厚度</label><input type="range" id="optDepth" min="0.2" max="1.8" step="0.05" value="0.85" /><span id="optDepth-v">0.85</span></div>
     <div class="row"><label>☀️ 太陽米氏光暈</label><input type="range" id="mieGlow" min="0.0" max="1.8" step="0.05" value="0.95" /><span id="mieGlow-v">0.95</span></div>
   </div>
-
-  <!-- 櫃桶 2：🌊 大海（黃金 Preset） -->
   <div class="cap-drawer" id="cap-sea">
     <div class="cap-head"><span>🌊 櫃桶 2：大海波動（黃金 Preset）</span><span>1號平靜海</span></div>
     <div class="dual-bar">
@@ -90,8 +76,6 @@
       <button class="p-toggle on-breath" id="btn-breath">🫁 海浪呼吸: 開</button>
     </div>
   </div>
-
-  <!-- 櫃桶 3：🏜️ 沙與風（截圖 131534 黃金 Preset，一個掣都無少） -->
   <div class="cap-drawer" id="cap-sand">
     <div class="cap-head"><span>🏜️ 櫃桶 3：沙與風（黃金 Preset +5%沙）</span><b id="sand-readout">1級 I大三 [0,4,7]</b></div>
     <div class="chord-grid" id="sand-grid">
@@ -109,8 +93,6 @@
     <div class="row"><label>🔪 底部縮切深度 (露尖峰)</label><input type="range" id="cutLevel" min="0.0" max="0.85" step="0.02" value="0.00" /><span id="cutLevel-v">0.00</span></div>
     <div class="row"><label>☢️ 質能手痕 (刀鋒沙脊銳度)</label><input type="range" id="massLev" min="0.5" max="4.0" step="0.1" value="0.50" /><span id="massLev-v">0.50x</span></div>
   </div>
-
-  <!-- 櫃桶 4：🏝️ 海島（同源雙生引擎・肥島極少搖滾 Preset） -->
   <div class="cap-drawer" id="cap-isl">
     <div class="cap-head"><span>🏝️ 櫃桶 4：海島調音（肥潤草坡＋極少搖滾）</span><span>無方格</span></div>
     <div class="row"><label>🏝️ 主峰高度 (肥島飽滿度)</label><input type="range" id="islHeight" min="2" max="18" step="0.5" value="6.5" /><span id="islHeight-v">6.5</span></div>
@@ -118,8 +100,6 @@
     <div class="row"><label>🎸 山頂減和弦搖滾 (少少搖滾)</label><input type="range" id="islPeak" min="0.0" max="1.2" step="0.05" value="0.05" /><span id="islPeak-v">0.05</span></div>
     <div class="row"><label>🌫️ 大氣遠霧融合度</label><input type="range" id="islHaze" min="0.0" max="0.8" step="0.05" value="0.28" /><span id="islHaze-v">0.28</span></div>
   </div>
-
-  <!-- 櫃桶 5：🏔️ 360°遠山 & 後山（同源雙生引擎・肥山加少少搖滾 Preset） -->
   <div class="cap-drawer" id="cap-mtn">
     <div class="cap-head"><span>🏔️ 櫃桶 5：360°遠山緩衝 ＋ 後山主峰</span><span>無方格</span></div>
     <div class="row"><label>🏔️ 主山峰高度 (後山主峰)</label><input type="range" id="mtnHeight" min="15" max="65" step="1" value="34" /><span id="mtnHeight-v">34</span></div>
@@ -127,10 +107,24 @@
     <div class="row"><label>🎸 山頂減和弦搖滾 (少少搖滾)</label><input type="range" id="mtnPeak" min="0.0" max="1.2" step="0.05" value="0.15" /><span id="mtnPeak-v">0.15</span></div>
     <div class="row"><label>⭕ 360° 遠山緩衝高度</label><input type="range" id="ring360H" min="0.4" max="2.0" step="0.05" value="1.00" /><span id="ring360H-v">1.00x</span></div>
   </div>
+  <div class="cap-drawer" id="cap-fly">
+    <div class="cap-head"><span>✈️ 櫃桶 6：萊特兄弟雙翼機（手控十字掣起降）</span><span id="fly-stat">停機坪待命</span></div>
+    <div class="tri-grid" style="grid-template-columns:repeat(4,1fr);">
+      <button class="p-toggle on-breath" id="pax-ming">🧑 明仔</button>
+      <button class="p-toggle on-chaos" id="pax-p">🤖 P仔</button>
+      <button class="p-toggle" id="pax-wife">👩 芝女</button>
+      <button class="p-toggle" id="pax-cats">🐱 三隻貓</button>
+    </div>
+    <div class="dual-bar">
+      <button class="mode-btn art" id="btn-plane-type">🛩️ 機型：萊特兄弟雙翼機 (撳轉折紙飛機)</button>
+      <button class="mode-btn" id="btn-pilot-mode" style="grid-column:span 2;">🕹️ 登機親手駕駛 (左下角十字掣 ▲滑跑起飛/▼下降滑行)</button>
+    </div>
+  </div>
 
 
 
-      <script>
+
+    <script>
   (function () {
     'use strict';
     const scene = new THREE.Scene();
@@ -149,15 +143,11 @@
     controls.target.set(0, 1.8, -4.0);
 
     const TRIADS = {
-      '1':   { label: '1級 I大三 [0,4,7]',     semi: [0, 4, 7] },
-      '2':   { label: '2級 ii小三 [2,5,9]',    semi: [2, 5, 9] },
-      '3':   { label: '3級 iii小三 [4,7,11]',  semi: [4, 7, 11] },
-      '4':   { label: '4級 IV大三 [5,9,12]',   semi: [5, 9, 12] },
-      '5':   { label: '5級 V大三 [7,11,14]',   semi: [7, 11, 14] },
-      '6':   { label: '6級 vi小三 [9,12,16]',  semi: [9, 12, 16] },
-      '7':   { label: '7級 vii°減三 [11,14,17]',semi: [11, 14, 17] },
-      'aug': { label: 'Aug 增三和弦 [0,4,8]',  semi: [0, 4, 8] },
-      'dim': { label: 'Dim 減三和弦 [0,3,6]',  semi: [0, 3, 6] }
+      '1': { label: '1級 I大三 [0,4,7]', semi: [0,4,7] }, '2': { label: '2級 ii小三 [2,5,9]', semi: [2,5,9] },
+      '3': { label: '3級 iii小三 [4,7,11]', semi: [4,7,11] }, '4': { label: '4級 IV大三 [5,9,12]', semi: [5,9,12] },
+      '5': { label: '5級 V大三 [7,11,14]', semi: [7,11,14] }, '6': { label: '6級 vi小三 [9,12,16]', semi: [9,12,16] },
+      '7': { label: '7級 vii°減三 [11,14,17]', semi: [11,14,17] }, 'aug': { label: 'Aug 增三和弦 [0,4,8]', semi: [0,4,8] },
+      'dim': { label: 'Dim 減三和弦 [0,3,6]', semi: [0,3,6] }
     };
     const toRatios = (semi) => semi.map(s => Math.pow(2, s / 12));
 
@@ -210,19 +200,14 @@
     cafeGroup.position.set(0, 0, -2.0);
     const woodMat = new THREE.MeshStandardMaterial({ color: 0x8c5832, roughness: 0.55 });
     const darkMat = new THREE.MeshStandardMaterial({ color: 0x3b2313, roughness: 0.45 });
-    const basePad = new THREE.Mesh(new THREE.BoxGeometry(12.2, 0.25, 6.2), darkMat);
-    basePad.position.y = 0.125; cafeGroup.add(basePad);
+    const basePad = new THREE.Mesh(new THREE.BoxGeometry(12.2, 0.25, 6.2), darkMat); basePad.position.y = 0.125; cafeGroup.add(basePad);
     [[-5.0, -2.0], [5.0, -2.0], [-5.0, 2.0], [5.0, 2.0]].forEach(([px, pz]) => {
-      const post = new THREE.Mesh(new THREE.BoxGeometry(0.28, 3.289, 0.28), darkMat);
-      post.position.set(px, 0.25 + 1.64, pz); cafeGroup.add(post);
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.28, 3.289, 0.28), darkMat); post.position.set(px, 0.25 + 1.64, pz); cafeGroup.add(post);
     });
-    const cabin = new THREE.Mesh(new THREE.BoxGeometry(10.7, 2.55, 4.1), woodMat);
-    cabin.position.y = 0.25 + 3.289 + 1.275; cafeGroup.add(cabin);
-    const roof = new THREE.Mesh(new THREE.BoxGeometry(11.4, 0.22, 4.8), darkMat);
-    roof.position.y = 0.25 + 3.289 + 2.65; cafeGroup.add(roof);
+    const cabin = new THREE.Mesh(new THREE.BoxGeometry(10.7, 2.55, 4.1), woodMat); cabin.position.y = 0.25 + 3.289 + 1.275; cafeGroup.add(cabin);
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(11.4, 0.22, 4.8), darkMat); roof.position.y = 0.25 + 3.289 + 2.65; cafeGroup.add(roof);
     scene.add(cafeGroup);
 
-    // ⭕ 龍尾灘 360° 全景扁扁哋遙望小山仔緩衝環（半徑 435m，無縫閉合圓圈）
     (function build360Ring() {
       const segs = 280, rad = 435.0, pos = [], uvs = [], idx = [];
       const h1 = (n) => Math.abs(Math.sin(n * 127.1 + 311.7) * 43758.5453) % 1;
@@ -234,8 +219,7 @@
         const bayOpen = 0.45 + 0.55 * Math.min(1.0, Math.abs(Math.sin(th * 0.5 - 0.06)) * 2.5);
         const h = Math.max(3.8, (7.5 + back * 12.0 + w) * bayOpen);
         const x = Math.sin(th) * rad, z = -Math.cos(th) * rad;
-        pos.push(x, -4.0, z, x, h, z);
-        uvs.push(t, 0.0, t, 1.0);
+        pos.push(x, -4.0, z, x, h, z); uvs.push(t, 0.0, t, 1.0);
       }
       for (let i = 0; i < segs; i++) { const a = i * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
       const g = new THREE.BufferGeometry();
@@ -247,27 +231,15 @@
         vertexShader: `uniform float uRing360H; varying vec2 vUv; void main(){ vUv = uv; vec3 p = position; if(p.y > 0.0) p.y *= uRing360H; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`,
         fragmentShader: `varying vec2 vUv; void main(){ vec3 col = mix(vec3(0.32, 0.48, 0.56), vec3(0.56, 0.72, 0.84), smoothstep(0.08, 0.95, vUv.y)); col = mix(col, vec3(0.84, 0.90, 0.95), smoothstep(0.35, 0.02, vUv.y) * 0.72); gl_FragColor = vec4(col, 1.0); }`
       });
-      const mesh = new THREE.Mesh(g, m);
-      mesh.frustumCulled = false;
-      scene.add(mesh);
+      const mesh = new THREE.Mesh(g, m); mesh.frustumCulled = false; scene.add(mesh);
     })();
 
-
-
-        // 🏔️🏝️ 同源雙生山島引擎（融合大刀屻2多重奏摺肥山 ＋ 大刀4山頂加密分段減和弦，零方格解析法線！）
     function createUnifiedTerrainMesh(opts) {
-      const geo = new THREE.PlaneGeometry(2, 2, opts.segX, opts.segZ);
-      geo.rotateX(-Math.PI / 2);
+      const geo = new THREE.PlaneGeometry(2, 2, opts.segX, opts.segZ); geo.rotateX(-Math.PI / 2);
       const u = {
-        uHeight: { value: opts.height },
-        uFold: { value: opts.fold },
-        uPeak: { value: opts.peak },
-        uHaze: { value: opts.haze },
-        uSeed: { value: opts.seed },
-        uSpanX: { value: opts.spanX },
-        uSpanZ: { value: opts.spanZ },
-        uSunDir: sharedUniforms.uSunDir,
-        uGhibliOn: sharedUniforms.uGhibliOn
+        uHeight: { value: opts.height }, uFold: { value: opts.fold }, uPeak: { value: opts.peak },
+        uHaze: { value: opts.haze }, uSeed: { value: opts.seed }, uSpanX: { value: opts.spanX },
+        uSpanZ: { value: opts.spanZ }, uSunDir: sharedUniforms.uSunDir, uGhibliOn: sharedUniforms.uGhibliOn
       };
       const commonGLSL = `
         uniform float uHeight, uFold, uPeak, uSeed, uSpanX, uSpanZ;
@@ -277,7 +249,6 @@
           float envX = exp(-pow(p.x / (uSpanX * 0.56), 2.0));
           float envZ = exp(-pow((p.y + sin(p.x * 0.028 + s) * (uSpanZ * 0.14)) / (uSpanZ * 0.46), 2.0));
           float mainSpine = envX * envZ;
-
           vec2 p1 = rot(0.22) * (p * (3.6 / uSpanX)) + vec2(s, s * 0.7);
           float f1 = 1.0 - abs(sin(p1.x) * cos(p1.y));
           vec2 p2 = rot(0.65) * (p * (9.5 / uSpanX)) + vec2(s * 1.9);
@@ -286,12 +257,9 @@
           float f3 = 1.0 - abs(cos(p3.x) * sin(p3.y + cos(p3.x) * 0.5));
           vec2 p4 = rot(2.10) * (p * (46.0 / uSpanX)) + vec2(s * 5.1);
           float f4 = 1.0 - abs(sin(p4.x + p4.y));
-
           float baseRound = (sin(p1.x * 0.85) * cos(p1.y * 0.85) * 0.5 + 0.5);
           float folds = pow(f1, 1.25) * 0.56 + pow(f2, 1.45) * 0.27 * uFold + pow(f3, 1.6) * 0.12 * uFold + pow(f4, 1.8) * 0.05 * uFold;
           float baseH = mainSpine * mix(baseRound, folds, 0.35 + 0.55 * clamp(uFold, 0.0, 1.0)) * 1.22;
-
-          // 過咗半山腰先啟動「減和弦不協調音程（少少搖滾）」
           float summitMask = smoothstep(0.42, 0.86, baseH);
           vec2 q = rot(0.48) * (p * (7.2 / uSpanX)) + vec2(s * 1.618, s * 2.718);
           vec2 warp = vec2(sin(q.y * 1.618 + cos(q.x * 2.718 + s)), cos(q.x * 1.414 - sin(q.y * 2.236 - s))) * 0.78;
@@ -300,97 +268,51 @@
           wp = rot(1.12) * wp * 2.18 + vec2(3.1, 1.7);
           float r2 = 1.0 - abs(sin(wp.x + cos(wp.y * 1.3) * 0.6));
           float peakDetail = (pow(r1, 1.65) * 0.65 + pow(r2, 1.85) * 0.35) * summitMask * uPeak * 0.42;
-
           return (baseH + peakDetail) * uHeight - 0.85;
         }
       `;
       const mat = new THREE.ShaderMaterial({
         uniforms: u,
         vertexShader: commonGLSL + `
-          varying vec2 vLocalXZ;
-          varying float vElev;
+          varying vec2 vLocalXZ; varying float vElev;
           void main() {
-            // 山頂自適應網格加密（pow 曲線令主峰網格極度細密）
             vec2 u = position.xz;
             vec2 localXZ = vec2(sign(u.x) * pow(abs(u.x), 1.38) * uSpanX, sign(u.y) * pow(abs(u.y), 1.45) * uSpanZ);
-            float h = evalMountainField(localXZ);
-            vLocalXZ = localXZ; vElev = h;
-            vec4 wp = modelMatrix * vec4(localXZ.x, h, localXZ.y, 1.0);
-            gl_Position = projectionMatrix * viewMatrix * wp;
+            float h = evalMountainField(localXZ); vLocalXZ = localXZ; vElev = h;
+            gl_Position = projectionMatrix * viewMatrix * (modelMatrix * vec4(localXZ.x, h, localXZ.y, 1.0));
           }
         `,
         fragmentShader: commonGLSL + `
-          uniform vec3 uSunDir; uniform float uHaze, uGhibliOn;
-          varying vec2 vLocalXZ; varying float vElev;
+          uniform vec3 uSunDir; uniform float uHaze, uGhibliOn; varying vec2 vLocalXZ; varying float vElev;
           float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
-          float noise2(vec2 p) {
-            vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
-            return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x), mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), u.x), u.y);
-          }
+          float noise2(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f); return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x), mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), u.x), u.y); }
           void main() {
-            // 連續解析梯度法線（徹底消滅三角形一格格馬賽克！）
-            float eps = max(0.04, uSpanX * 0.0012);
-            float hC = evalMountainField(vLocalXZ);
-            float hX = evalMountainField(vLocalXZ + vec2(eps, 0.0));
-            float hZ = evalMountainField(vLocalXZ + vec2(0.0, eps));
-            vec3 N = normalize(vec3(hC - hX, eps, hC - hZ));
-
+            float eps = max(0.04, uSpanX * 0.0012); float hC = evalMountainField(vLocalXZ);
+            vec3 N = normalize(vec3(hC - evalMountainField(vLocalXZ + vec2(eps, 0.0)), eps, hC - evalMountainField(vLocalXZ + vec2(0.0, eps))));
             float micro = (noise2(vLocalXZ * (28.0 / uSpanX)) * 0.6 + noise2(rot(0.9) * vLocalXZ * (85.0 / uSpanX)) * 0.4) - 0.5;
-            float hRatio = clamp((vElev + 0.85) / max(uHeight, 1.0), 0.0, 1.0);
-            float slope = clamp(N.y + micro * 0.14, 0.0, 1.0);
-
-            vec3 footCol  = vec3(0.22, 0.40, 0.22);
-            vec3 grassCol = vec3(0.36, 0.58, 0.28);
-            vec3 rockCol  = vec3(0.34, 0.32, 0.34);
-            vec3 ridgeCol = vec3(0.58, 0.60, 0.38);
-
-            vec3 baseCol = mix(footCol, grassCol, smoothstep(0.05, 0.48, hRatio + micro * 0.12));
-            baseCol = mix(baseCol, ridgeCol, smoothstep(0.65, 0.95, hRatio));
-            baseCol = mix(rockCol, baseCol, smoothstep(0.46, 0.76, slope));
-            baseCol *= (1.0 + micro * 0.24);
-
-            float sunDot = dot(N, normalize(uSunDir));
-            float diff = pow(clamp(sunDot * 0.65 + 0.35, 0.0, 1.0), 1.15);
+            float hRatio = clamp((vElev + 0.85) / max(uHeight, 1.0), 0.0, 1.0), slope = clamp(N.y + micro * 0.14, 0.0, 1.0);
+            vec3 baseCol = mix(vec3(0.22, 0.40, 0.22), vec3(0.36, 0.58, 0.28), smoothstep(0.05, 0.48, hRatio + micro * 0.12));
+            baseCol = mix(baseCol, vec3(0.58, 0.60, 0.38), smoothstep(0.65, 0.95, hRatio));
+            baseCol = mix(vec3(0.34, 0.32, 0.34), baseCol, smoothstep(0.46, 0.76, slope)) * (1.0 + micro * 0.24);
+            float diff = pow(clamp(dot(N, normalize(uSunDir)) * 0.65 + 0.35, 0.0, 1.0), 1.15);
             vec3 litCol = baseCol * mix(vec3(0.36, 0.42, 0.56), vec3(1.24, 1.12, 0.96), diff);
-            vec3 hazeCol = mix(vec3(0.76, 0.85, 0.94), vec3(0.86, 0.90, 0.94), uGhibliOn * 0.5);
-            gl_FragColor = vec4(mix(litCol, hazeCol, uHaze), 1.0);
+            gl_FragColor = vec4(mix(litCol, mix(vec3(0.76, 0.85, 0.94), vec3(0.86, 0.90, 0.94), uGhibliOn * 0.5), uHaze), 1.0);
           }
         `
       });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(opts.posX, 0, opts.posZ);
-      scene.add(mesh);
-      return u;
+      const mesh = new THREE.Mesh(geo, mat); mesh.position.set(opts.posX, 0, opts.posZ); scene.add(mesh); return u;
     }
 
-    // 🏝️ 實例 1：左後方海島（肥島極少搖滾 Preset：height 6.5, fold 0.15, peak 0.05）
-    const islUniforms = createUnifiedTerrainMesh({
-      segX: 140, segZ: 110, spanX: 36, spanZ: 24, posX: -52, posZ: -128,
-      height: 6.5, fold: 0.15, peak: 0.05, haze: 0.28, seed: 1.73
-    });
-    // 海島岸邊呼吸白浪泡沫環
-    const foamRing = new THREE.Mesh(
-      new THREE.RingGeometry(19.0, 21.8, 64),
-      new THREE.MeshBasicMaterial({ color: 0xf4f9fc, transparent: true, opacity: 0.52, side: THREE.DoubleSide })
-    );
-    foamRing.rotation.x = -Math.PI / 2;
-    foamRing.scale.set(1.25, 0.78, 1.0);
-    foamRing.position.set(-52, 0.03, -128);
-    scene.add(foamRing);
-
-    // 🏔️ 實例 2：右後方主山脈（肥山加少少搖滾 Preset：height 34, fold 0.25, peak 0.15）
-    const mtnUniforms = createUnifiedTerrainMesh({
-      segX: 200, segZ: 150, spanX: 115, spanZ: 72, posX: 62, posZ: -215,
-      height: 34.0, fold: 0.25, peak: 0.15, haze: 0.42, seed: 2.14
-    });
+    const islUniforms = createUnifiedTerrainMesh({ segX: 140, segZ: 110, spanX: 36, spanZ: 24, posX: -52, posZ: -128, height: 6.5, fold: 0.15, peak: 0.05, haze: 0.28, seed: 1.73 });
+    const foamRing = new THREE.Mesh(new THREE.RingGeometry(19.0, 21.8, 64), new THREE.MeshBasicMaterial({ color: 0xf4f9fc, transparent: true, opacity: 0.52, side: THREE.DoubleSide }));
+    foamRing.rotation.x = -Math.PI / 2; foamRing.scale.set(1.25, 0.78, 1.0); foamRing.position.set(-52, 0.03, -128); scene.add(foamRing);
+    const mtnUniforms = createUnifiedTerrainMesh({ segX: 200, segZ: 150, spanX: 115, spanZ: 72, posX: 62, posZ: -215, height: 34.0, fold: 0.25, peak: 0.15, haze: 0.42, seed: 2.14 });
 
 
 
-        // 3. 沙js膠囊（黃金定型 Preset：風起沙移 +5% 沙量）
-    const sandGeo = new THREE.PlaneGeometry(84, 52, 180, 120);
-    sandGeo.rotateX(-Math.PI / 2);
+        const sandGeo = new THREE.PlaneGeometry(84, 52, 180, 120); sandGeo.rotateX(-Math.PI / 2);
     const sandMat = new THREE.ShaderMaterial({
-      uniforms: sharedUniforms, transparent: true, extensions: { derivatives: true },
+      uniforms: sharedUniforms, transparent: true,
       vertexShader: `
         uniform vec3 uSandRatios; uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp;
         varying vec3 vWorldPos;
@@ -454,12 +376,9 @@
         }
       `
     });
-    const sandMesh = new THREE.Mesh(sandGeo, sandMat);
-    sandMesh.position.y = -0.025;
-    scene.add(sandMesh);
+    const sandMesh = new THREE.Mesh(sandGeo, sandMat); sandMesh.position.y = -0.025; scene.add(sandMesh);
 
-    const seaGeo = new THREE.PlaneGeometry(880, 880, 96, 96);
-    seaGeo.rotateX(-Math.PI / 2);
+    const seaGeo = new THREE.PlaneGeometry(880, 880, 96, 96); seaGeo.rotateX(-Math.PI / 2);
     const seaMat = new THREE.ShaderMaterial({
       side: THREE.DoubleSide, uniforms: sharedUniforms,
       vertexShader: `
@@ -493,50 +412,93 @@
         }
       `
     });
-    const seaMesh = new THREE.Mesh(seaGeo, seaMat);
-    seaMesh.position.y = -0.02;
-    scene.add(seaMesh);
+    const seaMesh = new THREE.Mesh(seaGeo, seaMat); seaMesh.position.y = -0.02; scene.add(seaMesh);
 
-    // 五大透明膠囊開合控制
+    const planeGroup = new THREE.Group();
+    const wrightGroup = new THREE.Group();
+    const wingMat = new THREE.MeshStandardMaterial({ color: 0xe6d3a7, roughness: 0.65, side: THREE.DoubleSide });
+    const strutMat = new THREE.MeshStandardMaterial({ color: 0x5c3818, roughness: 0.5 });
+    const topWing = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.08, 1.65), wingMat); topWing.position.y = 1.45;
+    const botWing = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.08, 1.65), wingMat); botWing.position.y = 0.25;
+    wrightGroup.add(topWing, botWing);
+    [-3.8,-1.6,1.6,3.8].forEach(sx => [-0.55,0.55].forEach(sz => { const st = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,1.2,6), strutMat); st.position.set(sx,0.85,sz); wrightGroup.add(st); }));
+    const frontElev = new THREE.Mesh(new THREE.BoxGeometry(2.8,0.06,0.65), wingMat); frontElev.position.set(0,0.55,-2.3);
+    const tailRud = new THREE.Mesh(new THREE.BoxGeometry(0.08,1.1,0.95), wingMat); tailRud.position.set(0,0.85,2.4);
+    const skidL = new THREE.Mesh(new THREE.BoxGeometry(0.08,0.08,3.6), strutMat); skidL.position.set(-1.1,-0.35,-0.3);
+    const skidR = skidL.clone(); skidR.position.x = 1.1;
+    const propL = new THREE.Mesh(new THREE.BoxGeometry(1.45,0.12,0.04), strutMat); propL.position.set(-1.5,0.85,0.9);
+    const propR = propL.clone(); propR.position.x = 1.5;
+    wrightGroup.add(frontElev, tailRud, skidL, skidR, propL, propR);
+    planeGroup.add(wrightGroup);
+
+    const paperGroup = new THREE.Group();
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.Float32BufferAttribute([0,0.3,-3.2,-2.6,0.4,2.2,0,0.3,1.8, 0,0.3,-3.2,0,0.3,1.8,2.6,0.4,2.2, 0,0.3,-3.2,0,-0.45,1.8,0,0.3,1.8], 3));
+    pGeo.computeVertexNormals();
+    paperGroup.add(new THREE.Mesh(pGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: 0.4 })));
+    paperGroup.visible = false; planeGroup.add(paperGroup);
+
+    const makeEmoji = (em, off) => {
+      const c = document.createElement('canvas'); c.width = 128; c.height = 128; const ctx = c.getContext('2d');
+      ctx.font = '88px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(em, 64, 68);
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true }));
+      sp.scale.set(1.15,1.15,1); sp.position.copy(off); planeGroup.add(sp); return sp;
+    };
+    const paxSprites = {
+      ming: makeEmoji('🧑', new THREE.Vector3(-0.45,0.95,-0.35)), p: makeEmoji('🤖', new THREE.Vector3(0.45,0.95,-0.35)),
+      wife: makeEmoji('👩', new THREE.Vector3(-0.45,0.95,0.35)), cats: makeEmoji('🐱', new THREE.Vector3(0.45,0.95,0.35))
+    };
+    paxSprites.wife.visible = false; paxSprites.cats.visible = false;
+
+    const jetState = { x: -16.0, y: 0.42, z: 11.5, yaw: -Math.PI / 2, speed: 0.0 };
+    planeGroup.position.set(jetState.x, jetState.y, jetState.z); planeGroup.rotation.y = jetState.yaw; scene.add(planeGroup);
+
     let activeCap = null;
     document.querySelectorAll('.tri-cap').forEach(btn => {
       btn.onclick = () => {
-        const id = btn.dataset.cap;
-        activeCap = (activeCap === id) ? null : id;
+        const id = btn.dataset.cap; activeCap = (activeCap === id) ? null : id;
         document.querySelectorAll('.tri-cap').forEach(b => { b.classList.toggle('active', b.dataset.cap === activeCap); b.textContent = (b.dataset.cap === activeCap) ? '▲' : '▼'; });
         document.querySelectorAll('.cap-drawer').forEach(d => d.classList.toggle('open', d.id === activeCap));
       };
     });
-
-    const bindSlider = (id, vid, fn, suf = '') => {
-      document.getElementById(id).oninput = (e) => { const v = parseFloat(e.target.value); fn(v); document.getElementById(vid).textContent = v.toFixed(suf === 'x' || suf === '' ? 2 : 1) + suf; };
-    };
-    bindSlider('optDepth', 'optDepth-v', v => sharedUniforms.uOptDepth.value = v);
-    bindSlider('mieGlow', 'mieGlow-v', v => sharedUniforms.uMieGlow.value = v);
-    bindSlider('windSpeed', 'windSpeed-v', v => sharedUniforms.uWindSpeed.value = v, 'x');
-    bindSlider('sineAmp', 'sineAmp-v', v => sharedUniforms.uSineAmp.value = v, 'x');
-    bindSlider('shadowDepth', 'shadowDepth-v', v => sharedUniforms.uShadowDepth.value = v);
-    bindSlider('saltAmt', 'saltAmt-v', v => sharedUniforms.uSaltAmt.value = v);
-    bindSlider('cutLevel', 'cutLevel-v', v => sharedUniforms.uCutLevel.value = v);
-    bindSlider('massLev', 'massLev-v', v => sharedUniforms.uMassLev.value = v, 'x');
-    bindSlider('islHeight', 'islHeight-v', v => islUniforms.uHeight.value = v, ' ');
-    bindSlider('islFold', 'islFold-v', v => islUniforms.uFold.value = v);
-    bindSlider('islPeak', 'islPeak-v', v => islUniforms.uPeak.value = v);
-    bindSlider('islHaze', 'islHaze-v', v => islUniforms.uHaze.value = v);
-    bindSlider('mtnHeight', 'mtnHeight-v', v => mtnUniforms.uHeight.value = v, ' ');
-    bindSlider('mtnFold', 'mtnFold-v', v => mtnUniforms.uFold.value = v);
-    bindSlider('mtnPeak', 'mtnPeak-v', v => mtnUniforms.uPeak.value = v);
-    bindSlider('ring360H', 'ring360H-v', v => sharedUniforms.uRing360H.value = v, 'x');
+    const bindSlider = (id, vid, fn, suf = '') => { document.getElementById(id).oninput = (e) => { const v = parseFloat(e.target.value); fn(v); document.getElementById(vid).textContent = v.toFixed(suf === 'x' || suf === '' ? 2 : 1) + suf; }; };
+    bindSlider('optDepth','optDepth-v',v=>sharedUniforms.uOptDepth.value=v); bindSlider('mieGlow','mieGlow-v',v=>sharedUniforms.uMieGlow.value=v);
+    bindSlider('windSpeed','windSpeed-v',v=>sharedUniforms.uWindSpeed.value=v,'x'); bindSlider('sineAmp','sineAmp-v',v=>sharedUniforms.uSineAmp.value=v,'x');
+    bindSlider('shadowDepth','shadowDepth-v',v=>sharedUniforms.uShadowDepth.value=v); bindSlider('saltAmt','saltAmt-v',v=>sharedUniforms.uSaltAmt.value=v);
+    bindSlider('cutLevel','cutLevel-v',v=>sharedUniforms.uCutLevel.value=v); bindSlider('massLev','massLev-v',v=>sharedUniforms.uMassLev.value=v,'x');
+    bindSlider('islHeight','islHeight-v',v=>islUniforms.uHeight.value=v,' '); bindSlider('islFold','islFold-v',v=>islUniforms.uFold.value=v);
+    bindSlider('islPeak','islPeak-v',v=>islUniforms.uPeak.value=v); bindSlider('islHaze','islHaze-v',v=>islUniforms.uHaze.value=v);
+    bindSlider('mtnHeight','mtnHeight-v',v=>mtnUniforms.uHeight.value=v,' '); bindSlider('mtnFold','mtnFold-v',v=>mtnUniforms.uFold.value=v);
+    bindSlider('mtnPeak','mtnPeak-v',v=>mtnUniforms.uPeak.value=v); bindSlider('ring360H','ring360H-v',v=>sharedUniforms.uRing360H.value=v,'x');
 
     let state = { chaosOn: true, heisOn: false, breathOn: true };
-    document.querySelectorAll('#sky-grid .c-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('#sky-grid .c-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const item = TRIADS[btn.dataset.key]; sharedUniforms.uSkySemi.value.set(...item.semi); document.getElementById('sky-readout').textContent = item.label; }; });
-    document.querySelectorAll('#sand-grid .c-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('#sand-grid .c-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const item = TRIADS[btn.dataset.key]; sharedUniforms.uSandSemi.value.set(...item.semi); sharedUniforms.uSandRatios.value.set(...toRatios(item.semi)); document.getElementById('sand-readout').textContent = item.label; }; });
+    document.querySelectorAll('#sky-grid .c-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('#sky-grid .c-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); const item=TRIADS[btn.dataset.key]; sharedUniforms.uSkySemi.value.set(...item.semi); document.getElementById('sky-readout').textContent=item.label; }; });
+    document.querySelectorAll('#sand-grid .c-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('#sand-grid .c-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); const item=TRIADS[btn.dataset.key]; sharedUniforms.uSandSemi.value.set(...item.semi); sharedUniforms.uSandRatios.value.set(...toRatios(item.semi)); document.getElementById('sand-readout').textContent=item.label; }; });
     document.getElementById('btn-ghibli-mode').onclick = (e) => { const n = sharedUniforms.uGhibliOn.value > 0.5 ? 0.0 : 1.0; sharedUniforms.uGhibliOn.value = n; e.target.textContent = n > 0.5 ? '🎨 光影：吉卜力暖沙 (撳轉無吉卜力深影)' : '📷 光影：無吉卜力真物理深影 (撳轉吉卜力)'; };
     document.getElementById('btn-cut-mode').onclick = (e) => { const n = sharedUniforms.uCutMode.value < 0.5 ? 1.0 : 0.0; sharedUniforms.uCutMode.value = n; e.target.textContent = n < 0.5 ? '🔪 切刀：底部縮切 (保尖峰)' : '🔪 切刀：頂部削平 (平頂台地)'; };
     document.getElementById('btn-sea-mode').onclick = (e) => { const n = sharedUniforms.uQuantumSwing.value < 0.5 ? 1.0 : 0.0; sharedUniforms.uQuantumSwing.value = n; e.target.textContent = n > 0.5 ? '🌊 海款：2號大浪海 (撳轉1號)' : '🌊 海款：1號平靜海 (撳轉2號)'; };
     document.getElementById('btn-chaos').onclick = (e) => { state.chaosOn = !state.chaosOn; sharedUniforms.uChaosOn.value = state.chaosOn ? 1.0 : 0.0; e.target.classList.toggle('on-chaos', state.chaosOn); e.target.textContent = state.chaosOn ? '🌀 混沌海鹽: 開' : '🌀 混沌海鹽: 停'; };
     document.getElementById('btn-heis').onclick = (e) => { state.heisOn = !state.heisOn; e.target.classList.toggle('on-heis', state.heisOn); e.target.textContent = state.heisOn ? '⚛️ 海浪測不準: 開' : '⚛️ 海浪測不準: 關'; };
     document.getElementById('btn-breath').onclick = (e) => { state.breathOn = !state.breathOn; e.target.classList.toggle('on-breath', state.breathOn); e.target.textContent = state.breathOn ? '🫁 海浪呼吸: 開' : '🫁 海浪呼吸: 關'; };
+
+    let pilotActive = false, isPaper = false;
+    const hold = { u: false, d: false, l: false, r: false };
+    ['ming','p','wife','cats'].forEach(k => { document.getElementById('pax-'+k).onclick = (e) => { paxSprites[k].visible = !paxSprites[k].visible; e.target.classList.toggle('on-breath', paxSprites[k].visible); }; });
+    document.getElementById('btn-plane-type').onclick = (e) => { isPaper = !isPaper; wrightGroup.visible = !isPaper; paperGroup.visible = isPaper; e.target.textContent = isPaper ? '📄 機型：型格折紙飛機 (撳轉萊特雙翼機)' : '🛩️ 機型：萊特兄弟雙翼機 (撳轉折紙飛機)'; };
+
+    const setPilotMode = (on) => {
+      pilotActive = on;
+      document.getElementById('fly-dpad').classList.toggle('show', on);
+      document.getElementById('btn-pilot-mode').textContent = on ? '🕹️ 駕駛中 (按住 ▲ 滑跑起飛 / ◀▶ 轉向 / ▼ 下降)' : '🕹️ 登機親手駕駛 (左下角十字掣 ▲滑跑起飛/▼下降滑行)';
+      document.getElementById('fly-stat').textContent = on ? '機師手控模式' : '停機坪待命';
+    };
+    document.getElementById('btn-pilot-mode').onclick = () => setPilotMode(!pilotActive);
+    document.getElementById('dp-exit').onclick = () => setPilotMode(false);
+    [['dp-u','u'],['dp-d','d'],['dp-l','l'],['dp-r','r']].forEach(([id, k]) => {
+      const el = document.getElementById(id);
+      el.onpointerdown = e => { e.preventDefault(); hold[k] = true; };
+      el.onpointerup = el.onpointerleave = el.onpointercancel = () => { hold[k] = false; };
+    });
 
     window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
     const clock = new THREE.Clock();
@@ -549,256 +511,42 @@
       if (state.heisOn) sharedUniforms.uBreathT.value += dt * (0.08 + wavePulse * 1.25);
       sharedUniforms.uWindPhase.value += dt * (sharedUniforms.uWindSpeed.value * 0.55);
       foamRing.material.opacity = 0.35 + 0.25 * Math.sin(t * 1.4);
+
+      if (pilotActive) {
+        const floorY = 0.42;
+        const isGrounded = (jetState.y <= floorY + 0.05);
+        if (hold.l) jetState.yaw += 0.025;
+        if (hold.r) jetState.yaw -= 0.025;
+        if (hold.u) {
+          // 跑道滑跑加速，速度達 0.32 後機頭抬起離地爬升！
+          jetState.speed = Math.min(1.05, jetState.speed + 0.024);
+          if (jetState.speed > 0.32) jetState.y = Math.min(140.0, jetState.y + 0.36);
+        } else if (isGrounded) {
+          // 觸地後強制長距離滑行減速（Rollout），絕不急停！
+          jetState.speed *= 0.968;
+          if (jetState.speed < 0.004) jetState.speed = 0.0;
+        } else {
+          jetState.speed += (0.68 - jetState.speed) * 0.03;
+        }
+        if (hold.d) jetState.y = Math.max(floorY, jetState.y - 0.38);
+
+        jetState.x -= Math.sin(jetState.yaw) * jetState.speed;
+        jetState.z -= Math.cos(jetState.yaw) * jetState.speed;
+        planeGroup.position.set(jetState.x, jetState.y, jetState.z);
+        planeGroup.rotation.set(isGrounded ? (jetState.speed > 0.25 ? 0.06 : 0) : (hold.u ? 0.16 : (hold.d ? -0.15 : 0)), jetState.yaw, isGrounded ? 0 : (hold.l ? 0.38 : (hold.r ? -0.38 : 0)));
+        if (jetState.speed > 0.01) { propL.rotation.z += dt * (10 + jetState.speed * 28); propR.rotation.z -= dt * (10 + jetState.speed * 28); }
+        document.getElementById('fly-hud').textContent = `${isGrounded ? (jetState.speed > 0.02 ? '跑道滑行' : '已煞停') : '飛行中'} | 速 ${Math.round(jetState.speed * 100)}kt | 高 ${Math.round(jetState.y - 0.42)}m`;
+
+        camera.position.lerp(new THREE.Vector3(jetState.x + Math.sin(jetState.yaw) * 16.5, jetState.y + 4.4, jetState.z + Math.cos(jetState.yaw) * 16.5), 0.14);
+        controls.target.set(jetState.x - Math.sin(jetState.yaw) * 8, Math.max(1.2, jetState.y - 0.8), jetState.z - Math.cos(jetState.yaw) * 8);
+      }
       controls.update();
       renderer.render(scene, camera);
     }
     animate();
   })();
-
-  // === ✈️ 補丁：第 6 透明膠囊（萊特兄弟雙翼機 × 滑行起降物理 × 跟機高空巡視） ===
-  (function () {
-    const waitReady = setInterval(() => {
-      const topCaps = document.getElementById('top-caps');
-      const cv = document.querySelector('#canvas-3d canvas');
-      if (!topCaps || !cv) return;
-      clearInterval(waitReady);
-
-      // 1. 注入第 6 粒深藍色三角膠囊掣與透明面板
-      const btn6 = document.createElement('button');
-      btn6.className = 'tri-cap';
-      btn6.dataset.cap = 'cap-fly';
-      btn6.textContent = '▼';
-      topCaps.appendChild(btn6);
-
-      const drawer6 = document.createElement('div');
-      drawer6.className = 'cap-drawer';
-      drawer6.id = 'cap-fly';
-      drawer6.innerHTML = `
-        <div class="cap-head"><span>✈️ 櫃桶 6：萊特兄弟雙翼機（滑行起降＋空中巡視）</span><span id="fly-stat">停機坪待命</span></div>
-        <div class="tri-grid" style="grid-template-columns:repeat(4,1fr);">
-          <button class="p-toggle on-breath" id="pax-ming">🧑 明仔</button>
-          <button class="p-toggle on-chaos" id="pax-p">🤖 P仔</button>
-          <button class="p-toggle" id="pax-wife">👩 芝女</button>
-          <button class="p-toggle" id="pax-cats">🐱 三隻貓</button>
-        </div>
-        <div class="dual-bar">
-          <button class="mode-btn art" id="btn-plane-type">🛩️ 機型：萊特兄弟雙翼機 (撳轉折紙飛機)</button>
-          <button class="mode-btn" id="btn-takeoff">🚀 跑道滑行起飛</button>
-          <button class="mode-btn sea" id="btn-hover">⏸️ 空中定格睇山: 關</button>
-          <button class="p-toggle on-breath" id="btn-cam-follow">🎥 跟機視角: 開</button>
-          <button class="p-toggle" id="btn-land">🛬 進場滑行降落</button>
-        </div>
-      `;
-      document.body.appendChild(drawer6);
-
-      // 重新綁定全部 6 粒膠囊開合
-      let activeCap = null;
-      document.querySelectorAll('.tri-cap').forEach(b => {
-        b.onclick = () => {
-          const id = b.dataset.cap;
-          activeCap = (activeCap === id) ? null : id;
-          document.querySelectorAll('.tri-cap').forEach(x => {
-            x.classList.toggle('active', x.dataset.cap === activeCap);
-            x.textContent = (x.dataset.cap === activeCap) ? '▲' : '▼';
-          });
-          document.querySelectorAll('.cap-drawer').forEach(d => d.classList.toggle('open', d.id === activeCap));
-        };
-      });
-
-      // 2. 借用現有 Scene 構建零貼圖萊特兄弟雙翼機 ＋ 折紙飛機 ＋ 3D Emoji 乘客銘牌
-      const flyScene = new THREE.Scene();
-      const flyCam = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.2, 1200);
-      const planeGroup = new THREE.Group();
-
-      // 萊特兄弟雙翼機結構
-      const wrightGroup = new THREE.Group();
-      const wingMat = new THREE.MeshStandardMaterial({ color: 0xe6d3a7, roughness: 0.65, side: THREE.DoubleSide });
-      const strutMat = new THREE.MeshStandardMaterial({ color: 0x5c3818, roughness: 0.5 });
-      const topWing = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.08, 1.65), wingMat);
-      topWing.position.y = 1.45;
-      const botWing = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.08, 1.65), wingMat);
-      botWing.position.y = 0.25;
-      wrightGroup.add(topWing, botWing);
-      [-3.8, -1.6, 1.6, 3.8].forEach(sx => {
-        [-0.55, 0.55].forEach(sz => {
-          const st = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.2, 6), strutMat);
-          st.position.set(sx, 0.85, sz);
-          wrightGroup.add(st);
-        });
-      });
-      // 前置升降舵與後置方向舵 + 滑橇起落架
-      const frontElev = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.06, 0.65), wingMat);
-      frontElev.position.set(0, 0.55, -2.3);
-      const tailRud = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.1, 0.95), wingMat);
-      tailRud.position.set(0, 0.85, 2.4);
-      const skidL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 3.6), strutMat);
-      skidL.position.set(-1.1, -0.35, -0.3);
-      const skidR = skidL.clone(); skidR.position.x = 1.1;
-      wrightGroup.add(frontElev, tailRud, skidL, skidR);
-
-      // 雙螺旋槳
-      const propL = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.12, 0.04), strutMat);
-      propL.position.set(-1.5, 0.85, 0.9);
-      const propR = propL.clone(); propR.position.x = 1.5;
-      wrightGroup.add(propL, propR);
-      planeGroup.add(wrightGroup);
-
-      // 折紙飛機模型（預設隱藏，一撳切換）
-      const paperGroup = new THREE.Group();
-      const pGeo = new THREE.BufferGeometry();
-      pGeo.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0.3, -3.2,  -2.6, 0.4, 2.2,  0, 0.3, 1.8,
-        0, 0.3, -3.2,   0, 0.3, 1.8,    2.6, 0.4, 2.2,
-        0, 0.3, -3.2,   0, -0.45, 1.8,  0, 0.3, 1.8
-      ], 3));
-      pGeo.computeVertexNormals();
-      paperGroup.add(new THREE.Mesh(pGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: 0.4 })));
-      paperGroup.visible = false;
-      planeGroup.add(paperGroup);
-
-      // Emoji 乘員徽章生成器
-      function makeEmojiSprite(emoji, offset) {
-        const c = document.createElement('canvas'); c.width = 128; c.height = 128;
-        const ctx = c.getContext('2d');
-        ctx.font = '88px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(emoji, 64, 68);
-        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true }));
-        sp.scale.set(1.15, 1.15, 1);
-        sp.position.copy(offset);
-        planeGroup.add(sp);
-        return sp;
-      }
-      const paxSprites = {
-        ming: makeEmojiSprite('🧑', new THREE.Vector3(-0.45, 0.95, -0.35)),
-        p:    makeEmojiSprite('🤖', new THREE.Vector3( 0.45, 0.95, -0.35)),
-        wife: makeEmojiSprite('👩', new THREE.Vector3(-0.45, 0.95,  0.35)),
-        cats: makeEmojiSprite('🐱', new THREE.Vector3( 0.45, 0.95,  0.35))
-      };
-      paxSprites.wife.visible = false;
-      paxSprites.cats.visible = false;
-
-      // 疊加透明飛行層渲染器（零入侵原本畫面）
-      const overlayRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      overlayRenderer.setSize(window.innerWidth, window.innerHeight);
-      overlayRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-      overlayRenderer.domElement.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:12;';
-      document.body.appendChild(overlayRenderer.domElement);
-      flyScene.add(new THREE.HemisphereLight(0xffffff, 0x554433, 1.2));
-      const dLight = new THREE.DirectionalLight(0xffe8a3, 1.4); dLight.position.set(30, 40, -50); flyScene.add(dLight);
-      planeGroup.position.set(-22, 0.42, 11.5);
-      planeGroup.rotation.y = -Math.PI / 2;
-      flyScene.add(planeGroup);
-
-      // 3. 狀態機：停機坪 -> 跑道加速滑行 -> 升空巡視海島/後山 -> 進場觸地 -> 強制長距離滑行減速
-      let mode = 'PARKED', speed = 0, orbitAngle = 0, hoverHold = false, followCam = true, isPaper = false;
-      const statEl = document.getElementById('fly-stat');
-
-      ['ming', 'p', 'wife', 'cats'].forEach(k => {
-        document.getElementById('pax-' + k).onclick = (e) => {
-          paxSprites[k].visible = !paxSprites[k].visible;
-          e.target.classList.toggle('on-breath', paxSprites[k].visible);
-        };
-      });
-      document.getElementById('btn-plane-type').onclick = (e) => {
-        isPaper = !isPaper;
-        wrightGroup.visible = !isPaper; paperGroup.visible = isPaper;
-        e.target.textContent = isPaper ? '📄 機型：型格折紙飛機 (撳轉萊特雙翼機)' : '🛩️ 機型：萊特兄弟雙翼機 (撳轉折紙飛機)';
-      };
-      document.getElementById('btn-takeoff').onclick = () => {
-        if (mode === 'PARKED' || mode === 'ROLLOUT') { mode = 'TAKEOFF_RUN'; speed = 2.0; statEl.textContent = '跑道加速滑跑中...'; }
-      };
-      document.getElementById('btn-hover').onclick = (e) => {
-        hoverHold = !hoverHold;
-        e.target.textContent = hoverHold ? '⏸️ 空中定格睇山: 開' : '⏸️ 空中定格睇山: 關';
-      };
-      document.getElementById('btn-cam-follow').onclick = (e) => {
-        followCam = !followCam;
-        e.target.classList.toggle('on-breath', followCam);
-        e.target.textContent = followCam ? '🎥 跟機視角: 開' : '🎥 跟機視角: 關';
-      };
-      document.getElementById('btn-land').onclick = () => {
-        if (mode === 'CRUISE' || mode === 'CLIMB') { mode = 'APPROACH'; hoverHold = false; statEl.textContent = '進場對準沙灘跑道...'; }
-      };
-
-      window.addEventListener('resize', () => {
-        flyCam.aspect = window.innerWidth / window.innerHeight;
-        flyCam.updateProjectionMatrix();
-        overlayRenderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      const clk = new THREE.Clock();
-      function flyLoop() {
-        requestAnimationFrame(flyLoop);
-        const dt = Math.min(clk.getDelta(), 0.05);
-        if (mode !== 'PARKED') { propL.rotation.z += dt * (8 + speed * 2.2); propR.rotation.z -= dt * (8 + speed * 2.2); }
-
-        if (mode === 'TAKEOFF_RUN') {
-          speed = Math.min(26, speed + dt * 11);
-          planeGroup.position.x += speed * dt;
-          planeGroup.rotation.x = speed > 14 ? (speed - 14) * 0.015 : 0;
-          if (planeGroup.position.x > 16) { mode = 'CLIMB'; statEl.textContent = '離地爬升飛向海島！'; }
-        } else if (mode === 'CLIMB') {
-          planeGroup.position.y += dt * 7.5;
-          planeGroup.position.z -= dt * 18.0;
-          planeGroup.rotation.y += dt * 0.55;
-          if (planeGroup.position.y >= 16.5) { mode = 'CRUISE'; statEl.textContent = '空中巡視：海島 ↔ 後山'; }
-        } else if (mode === 'CRUISE') {
-          if (!hoverHold) orbitAngle += dt * 0.24;
-          // 橢圓航線同時掠過左後方海島(-52,-128)與右後方後山(62,-215)上空
-          const tx = Math.cos(orbitAngle) * 72;
-          const tz = -115 + Math.sin(orbitAngle) * 75;
-          const ty = 17.5 + Math.sin(orbitAngle * 2) * 2.5;
-          const dx = tx - planeGroup.position.x, dz = tz - planeGroup.position.z;
-          if (!hoverHold) {
-            planeGroup.position.lerp(new THREE.Vector3(tx, ty, tz), dt * 1.4);
-            planeGroup.rotation.y = Math.atan2(-dx, -dz);
-            planeGroup.rotation.z = 0.16;
-            planeGroup.rotation.x = 0.03;
-          } else {
-            planeGroup.rotation.z *= 0.92;
-            planeGroup.position.y += Math.sin(clk.elapsedTime * 2) * 0.005;
-          }
-        } else if (mode === 'APPROACH') {
-          // 斜向進場降落到沙灘跑道左側 (-36, 0.42, 11.5)
-          const targetRunway = new THREE.Vector3(-36, 0.42, 11.5);
-          planeGroup.position.lerp(targetRunway, dt * 1.1);
-          planeGroup.rotation.y = -Math.PI / 2;
-          planeGroup.rotation.z *= 0.9;
-          planeGroup.rotation.x = -0.06;
-          if (planeGroup.position.distanceTo(targetRunway) < 1.2) {
-            planeGroup.position.y = 0.42;
-            planeGroup.rotation.x = 0;
-            mode = 'ROLLOUT';
-            speed = 24.0;
-            statEl.textContent = '觸地！強制跑道滑行減速中...';
-          }
-        } else if (mode === 'ROLLOUT') {
-          // 強制長距離滑行減速，絕不似直升機垂直急停！
-          planeGroup.position.x += speed * dt;
-          speed = Math.max(0, speed - dt * 4.2);
-          if (speed <= 0.1) {
-            mode = 'PARKED'; speed = 0;
-            statEl.textContent = '已平穩滑行煞停於沙灘跑道';
-          }
-        }
-
-        // 跟機鏡頭同步：起飛巡視時自動帶你近距離睇海島同後山
-        if (followCam && (mode === 'CLIMB' || mode === 'CRUISE' || mode === 'APPROACH')) {
-          const backVec = new THREE.Vector3(0, 3.2, 11.5).applyAxisAngle(new THREE.Vector3(0, 1, 0), planeGroup.rotation.y);
-          flyCam.position.lerp(planeGroup.position.clone().add(backVec), 0.08);
-          flyCam.lookAt(planeGroup.position.clone().add(new THREE.Vector3(0, -1.2, -12).applyAxisAngle(new THREE.Vector3(0, 1, 0), planeGroup.rotation.y)));
-        } else {
-          flyCam.position.set(-10.5, 4.5, 16.5);
-          flyCam.lookAt(0, 1.8, -4.0);
-        }
-
-        overlayRenderer.render(flyScene, flyCam);
-      }
-      flyLoop();
-    }, 300);
-  })();
-
-        
   </script>
 </body>
 </html>
+
+
