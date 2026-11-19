@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>黑盒抄錶室：真物理光學大氣散射 × 混沌海鹽刀鋒圖騰 × 純三和弦</title>
+  <title>黑盒抄錶室：正弦波主骨幹 × 海風沙堤 × 吉卜力/真物理深影</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
@@ -13,7 +13,7 @@
     #drawer {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
       background: rgba(0, 0, 0, 0.94); border-top: 1px solid #222;
-      padding: 8px 10px 14px; max-height: 64dvh; overflow-y: auto;
+      padding: 8px 10px 14px; max-height: 68dvh; overflow-y: auto;
     }
     #drawer-head {
       display: flex; justify-content: space-between; align-items: center;
@@ -41,6 +41,7 @@
       border-radius: 6px; padding: 6px 4px; font-size: 10.5px; font-weight: bold; text-align: center;
     }
     .mode-btn.sea { background: #0c2438; color: #38bdf8; border-color: #0284c7; }
+    .mode-btn.art { background: #2d1b0e; color: #fbbf24; border-color: #f59e0b; grid-column: span 2; }
     .tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
     .p-toggle {
       background: #111; color: #777; border: 1px solid #333; border-radius: 5px;
@@ -50,7 +51,7 @@
     .p-toggle.on-heis   { background: #251738; color: #c084fc; border-color: #a855f7; }
     .p-toggle.on-breath { background: #10253f; color: #38bdf8; border-color: #0ea5e9; }
     .row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; }
-    .row label { min-width: 126px; color: #ccc; }
+    .row label { min-width: 132px; color: #ccc; }
     .row input[type=range] { flex: 1; accent-color: #ffd700; }
     .row span { min-width: 44px; text-align: right; color: #ffd700; font-family: monospace; }
   </style>
@@ -58,11 +59,13 @@
 
 
 
+
+
   <body>
   <div id="canvas-3d"></div>
   <div id="drawer">
     <div id="drawer-head">
-      <span>🔭 真物理大氣散射 × 啞面3D立體沙丘 × 純三和弦</span>
+      <span>🔭 正弦波主骨幹 × 海風沙堤 × 吉卜力/真物理深影</span>
       <button id="tri-btn">▼</button>
     </div>
     <div class="panel" id="panel">
@@ -85,7 +88,7 @@
       </div>
       <div class="track-box">
         <div class="track-title">
-          <span>🏜️ 軌道 B：真3D啞面沙丘（三和弦＋混沌海鹽）</span>
+          <span>🏜️ 軌道 B：正弦波沙丘骨幹（三和弦＋海風吹拂）</span>
           <b id="sand-readout">Dim 減三和弦 [0,3,6]</b>
         </div>
         <div class="chord-grid" id="sand-grid">
@@ -101,6 +104,7 @@
         </div>
       </div>
       <div class="dual-bar">
+        <button class="mode-btn art" id="btn-ghibli-mode">🎨 光影：吉卜力暖沙 (撳轉無吉卜力深影)</button>
         <button class="mode-btn" id="btn-cut-mode">🔪 切刀：底部縮切 (保尖峰)</button>
         <button class="mode-btn sea" id="btn-sea-mode">🌊 海款：1號平靜海 (撳轉2號)</button>
       </div>
@@ -110,12 +114,17 @@
         <button class="p-toggle on-breath" id="btn-breath">🫁 呼吸閘門: 開</button>
       </div>
       <div class="row">
-        <label>🔭 大氣光學厚度 (遠白近深)</label>
-        <input type="range" id="optDepth" min="0.1" max="2.5" step="0.05" value="0.85" />
-        <span id="optDepth-v">0.85</span>
+        <label>〰️ 正弦波主骨幹 (大細張力)</label>
+        <input type="range" id="sineAmp" min="0.2" max="1.6" step="0.05" value="1.00" />
+        <span id="sineAmp-v">1.00x</span>
       </div>
       <div class="row">
-        <label>🧂 混沌海鹽調味 (打散格仔)</label>
+        <label>🌑 陰影深度 (芝女光暗對比)</label>
+        <input type="range" id="shadowDepth" min="0.2" max="2.2" step="0.05" value="1.25" />
+        <span id="shadowDepth-v">1.25</span>
+      </div>
+      <div class="row">
+        <label>🧂 混沌海鹽調味 (揉皺波形)</label>
         <input type="range" id="saltAmt" min="0.0" max="1.0" step="0.02" value="0.48" />
         <span id="saltAmt-v">0.48</span>
       </div>
@@ -131,6 +140,7 @@
       </div>
     </div>
   </div>
+
 
 
 
@@ -173,21 +183,23 @@
       uFbm: { value: 0.78 },
       uPause: { value: 0.65 },
       uTide: { value: 0.62 },
-      uSunDir: { value: new THREE.Vector3(0.22, 0.22, -0.95).normalize() },
+      uSunDir: { value: new THREE.Vector3(0.45, 0.28, -0.85).normalize() },
       uSkySemi: { value: new THREE.Vector3(0, 4, 7) },
       uOptDepth: { value: 0.85 },
       uMieGlow: { value: 0.95 },
       uSandSemi: { value: new THREE.Vector3(0, 3, 6) },
       uSandRatios: { value: new THREE.Vector3(...toRatios([0, 3, 6])) },
+      uGhibliOn: { value: 1.0 },
+      uShadowDepth: { value: 1.25 },
       uCutMode: { value: 0.0 },
       uCutLevel: { value: 0.28 },
       uChaosOn: { value: 1.0 },
       uSaltAmt: { value: 0.48 },
       uHeisPhase: { value: 0.0 },
-      uMassLev: { value: 2.20 }
+      uMassLev: { value: 2.20 },
+      uSineAmp: { value: 1.00 }
     };
 
-    // 1. 軌道 A：真物理光學大氣散射天空
     const skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false, uniforms: sharedUniforms,
       vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
@@ -226,12 +238,11 @@
     });
     scene.add(new THREE.Mesh(new THREE.SphereGeometry(520, 32, 20), skyMat));
 
-    scene.add(new THREE.HemisphereLight(0xfff5e4, 0x4a3b2c, 0.85));
-    const sunLight = new THREE.DirectionalLight(0xffe8a3, 1.35);
-    sunLight.position.set(22, 22, -95);
+    scene.add(new THREE.HemisphereLight(0xfff5e4, 0x3b2a1a, 0.75));
+    const sunLight = new THREE.DirectionalLight(0xffe8a3, 1.45);
+    sunLight.position.set(45, 28, -85);
     scene.add(sunLight);
 
-    // 2. 高腳咖啡木屋
     const cafeGroup = new THREE.Group();
     cafeGroup.position.set(0, 0, -2.0);
     const woodMat = new THREE.MeshStandardMaterial({ color: 0x8c5832, roughness: 0.55 });
@@ -250,7 +261,7 @@
 
 
 
-        // 3. 軌道 B：真 3D 幾何高低起伏 ＋ 吉卜力啞面暖沙美術質感（徹底告別紙皮與塑膠反光！）
+        // 3. 軌道 B：正弦波主骨幹 (uSineAmp 可調大細) ＋ 海風沙堤 ＋ 吉卜力/真物理深影
     const sandGeo = new THREE.PlaneGeometry(84, 52, 180, 120);
     sandGeo.rotateX(-Math.PI / 2);
     const sandMat = new THREE.ShaderMaterial({
@@ -259,34 +270,48 @@
       extensions: { derivatives: true },
       vertexShader: `
         uniform vec3 uSandRatios;
-        uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uHeisPhase, uMassLev;
+        uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uHeisPhase, uMassLev, uSineAmp;
         varying vec3 vWorldPos;
-        varying float vHeight;
 
         mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
-        float chaosSalt(vec2 p) {
+        float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
+        float noise2(vec2 p) {
           vec2 i = floor(p), f = fract(p);
           vec2 u = f * f * (3.0 - 2.0 * f);
-          float a = fract(sin(dot(i, vec2(127.1, 311.7))) * 43758.5453);
-          float b = fract(sin(dot(i + vec2(1.0, 0.0), vec2(127.1, 311.7))) * 43758.5453);
-          float c = fract(sin(dot(i + vec2(0.0, 1.0), vec2(127.1, 311.7))) * 43758.5453);
-          float d = fract(sin(dot(i + vec2(1.0, 1.0), vec2(127.1, 311.7))) * 43758.5453);
-          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+          return mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x) +
+                 (hash21(i + vec2(0.0, 1.0)) - hash21(i)) * u.y * (1.0 - u.x) +
+                 (hash21(i + vec2(1.0, 1.0)) - hash21(i + vec2(1.0, 0.0))) * u.x * u.y;
+        }
+
+        float windField(vec2 p, float t) {
+          vec2 wp = rot(0.38) * p;
+          wp.x *= 0.42;
+          float w1 = noise2(wp * 0.085 + vec2(t * 0.04, -t * 0.03));
+          float w2 = noise2(rot(1.1) * wp * 0.19 - vec2(t * 0.06, t * 0.04));
+          return w1 * 0.68 + w2 * 0.32;
         }
 
         float evalSandHeight(vec2 p) {
           float t = uHeisPhase * 0.35;
-          vec2 q = p * 0.42;
+          float macroWind = windField(p, t);
+
+          vec2 q = rot(0.32) * p * 0.40;
+          q.x *= 0.58;
+          q += vec2(macroWind * 2.4, sin(macroWind * 6.28318) * 1.0);
+
           if (uChaosOn > 0.5) {
-            float salt = chaosSalt(q * 0.55 + vec2(t * 0.10, -t * 0.08));
-            q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.45;
+            float salt = noise2(q * 0.65 + vec2(t * 0.10, -t * 0.08));
+            q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.35;
           }
-          vec2 q1 = rot(0.45) * q + vec2(t * 0.22, -t * 0.16);
-          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + t * 0.18) * 0.85));
-          vec2 q2 = rot(1.85) * (q * 1.65) + vec2(-t * 0.20, t * 0.18);
+
+          vec2 q1 = rot(0.45) * q + vec2(t * 0.20, -t * 0.14);
+          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + t * 0.16) * 0.85));
+          vec2 q2 = rot(1.85) * (q * 1.55) + vec2(-t * 0.18, t * 0.16);
           float w2 = 1.0 - abs(cos(q2.x * uSandRatios.z * 1.732 + sin(q2.y * uSandRatios.x * 1.31) * 0.75));
-          float raw = w1 * 0.58 + w2 * 0.42;
-          float sharp = pow(clamp(raw, 0.0, 1.0), uMassLev);
+
+          float sineCore = (w1 * 0.58 + w2 * 0.42) * uSineAmp;
+          float raw = sineCore * mix(0.55, 1.30, macroWind);
+          float sharp = pow(clamp(raw, 0.0, 1.35), uMassLev);
 
           if (uCutMode < 0.5) {
             float cutBase = uCutLevel * 0.65;
@@ -303,21 +328,19 @@
           vec4 wp = modelMatrix * vec4(pos, 1.0);
           float h = evalSandHeight(wp.xz);
           float shoreDamp = smoothstep(-6.0, 2.0, wp.z);
-          wp.y += h * 0.72 * shoreDamp;
-          vHeight = h;
+          wp.y += h * 0.76 * shoreDamp;
           vWorldPos = wp.xyz;
           gl_Position = projectionMatrix * viewMatrix * wp;
         }
       `,
       fragmentShader: `
         uniform vec3 uSandSemi, uSandRatios, uSunDir;
-        uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uHeisPhase, uMassLev;
+        uniform float uGhibliOn, uShadowDepth, uCutMode, uCutLevel, uChaosOn, uSaltAmt, uHeisPhase, uMassLev, uSineAmp;
         varying vec3 vWorldPos;
-        varying float vHeight;
 
         mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
         float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
-        float chaosSalt(vec2 p) {
+        float noise2(vec2 p) {
           vec2 i = floor(p), f = fract(p);
           vec2 u = f * f * (3.0 - 2.0 * f);
           return mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x) +
@@ -325,19 +348,33 @@
                  (hash21(i + vec2(1.0, 1.0)) - hash21(i + vec2(1.0, 0.0))) * u.x * u.y;
         }
 
+        float windField(vec2 p, float t) {
+          vec2 wp = rot(0.38) * p;
+          wp.x *= 0.42;
+          float w1 = noise2(wp * 0.085 + vec2(t * 0.04, -t * 0.03));
+          float w2 = noise2(rot(1.1) * wp * 0.19 - vec2(t * 0.06, t * 0.04));
+          return w1 * 0.68 + w2 * 0.32;
+        }
+
         float totemHeight(vec2 p) {
           float t = uHeisPhase * 0.35;
-          vec2 q = p * 0.42;
+          float macroWind = windField(p, t);
+          vec2 q = rot(0.32) * p * 0.40;
+          q.x *= 0.58;
+          q += vec2(macroWind * 2.4, sin(macroWind * 6.28318) * 1.0);
+
           if (uChaosOn > 0.5) {
-            float salt = chaosSalt(q * 0.55 + vec2(t * 0.10, -t * 0.08));
-            q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.45;
+            float salt = noise2(q * 0.65 + vec2(t * 0.10, -t * 0.08));
+            q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.35;
           }
-          vec2 q1 = rot(0.45) * q + vec2(t * 0.22, -t * 0.16);
-          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + t * 0.18) * 0.85));
-          vec2 q2 = rot(1.85) * (q * 1.65) + vec2(-t * 0.20, t * 0.18);
+          vec2 q1 = rot(0.45) * q + vec2(t * 0.20, -t * 0.14);
+          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + t * 0.16) * 0.85));
+          vec2 q2 = rot(1.85) * (q * 1.55) + vec2(-t * 0.18, t * 0.16);
           float w2 = 1.0 - abs(cos(q2.x * uSandRatios.z * 1.732 + sin(q2.y * uSandRatios.x * 1.31) * 0.75));
-          float raw = w1 * 0.58 + w2 * 0.42;
-          float sharp = pow(clamp(raw, 0.0, 1.0), uMassLev);
+
+          float sineCore = (w1 * 0.58 + w2 * 0.42) * uSineAmp;
+          float raw = sineCore * mix(0.55, 1.30, macroWind);
+          float sharp = pow(clamp(raw, 0.0, 1.35), uMassLev);
 
           if (uCutMode < 0.5) {
             float cutBase = uCutLevel * 0.65;
@@ -350,22 +387,38 @@
 
         void main() {
           vec2 p = vWorldPos.xz;
-          float eps = 0.09;
+          float eps = 0.08;
           float hC = totemHeight(p);
           float hX = totemHeight(p + vec2(eps, 0.0));
           float hZ = totemHeight(p + vec2(0.0, eps));
-          vec3 N = normalize(vec3((hC - hX) * 1.85, 1.0, (hC - hZ) * 1.85));
+          float slopeScale = mix(3.4, 2.1, uGhibliOn) * uShadowDepth;
+          vec3 N = normalize(vec3((hC - hX) * slopeScale, 1.0, (hC - hZ) * slopeScale));
 
           float chordWarmth = fract((uSandSemi.x + uSandSemi.y + uSandSemi.z) / 24.0);
-          vec3 valleySand = mix(vec3(0.66, 0.52, 0.36), vec3(0.62, 0.46, 0.34), chordWarmth);
-          vec3 crestSand  = mix(vec3(0.91, 0.80, 0.60), vec3(0.94, 0.76, 0.54), chordWarmth);
+          float grain = (hash21(floor(p * 48.0)) - 0.5) * mix(0.09, 0.055, uGhibliOn);
 
-          float grain = (hash21(floor(p * 42.0)) - 0.5) * 0.055;
-          vec3 albedo = mix(valleySand, crestSand, smoothstep(0.05, 0.90, hC)) + grain;
+          vec3 gValley = mix(vec3(0.64, 0.50, 0.34), vec3(0.58, 0.44, 0.32), chordWarmth);
+          vec3 gCrest  = mix(vec3(0.92, 0.80, 0.58), vec3(0.95, 0.76, 0.54), chordWarmth);
+          vec3 gAlbedo = mix(gValley, gCrest, smoothstep(0.05, 0.90, hC)) + grain;
+          float halfL  = dot(N, normalize(uSunDir)) * 0.5 + 0.5;
+          vec3 gCol    = gAlbedo * mix(0.55, 1.15, pow(halfL, 1.3 * uShadowDepth));
 
-          float halfLambert = dot(N, normalize(uSunDir)) * 0.5 + 0.5;
-          float shade = mix(0.68, 1.12, halfLambert * halfLambert);
-          vec3 col = albedo * shade;
+          vec3 pValley = vec3(0.32, 0.25, 0.18);
+          vec3 pCrest  = vec3(0.84, 0.74, 0.56);
+          vec3 pAlbedo = mix(pValley, pCrest, smoothstep(0.04, 0.88, hC)) + grain;
+          float ndotl  = max(dot(N, normalize(uSunDir)), 0.0);
+          float valleyAO = mix(0.38, 1.12, smoothstep(0.0, 0.55, hC));
+          vec3 pCol    = pAlbedo * (0.18 + 1.18 * pow(ndotl, 1.15 * uShadowDepth)) * valleyAO;
+
+          vec3 col = mix(pCol, gCol, uGhibliOn);
+
+          float waterDist = vWorldPos.y - (-0.02);
+          float wetBand = 1.0 - smoothstep(-0.02, 0.09, waterDist);
+          col *= mix(1.0, mix(0.52, 0.68, uGhibliOn), wetBand);
+
+          vec2 houseBox = abs(p - vec2(-0.8, -1.2)) - vec2(6.2, 3.3);
+          float houseShadow = 1.0 - smoothstep(-0.8, 1.8, max(houseBox.x, houseBox.y));
+          col *= mix(1.0, mix(0.45, 0.62, uGhibliOn), houseShadow * 0.75);
 
           float shoreFade = smoothstep(-8.5, -3.5, vWorldPos.z);
           gl_FragColor = vec4(col * shoreFade, shoreFade);
@@ -375,6 +428,7 @@
     const sandMesh = new THREE.Mesh(sandGeo, sandMat);
     sandMesh.position.y = -0.05;
     scene.add(sandMesh);
+
 
 
 
@@ -464,6 +518,15 @@
       };
     });
 
+    const btnGhibli = document.getElementById('btn-ghibli-mode');
+    btnGhibli.onclick = () => {
+      const next = sharedUniforms.uGhibliOn.value > 0.5 ? 0.0 : 1.0;
+      sharedUniforms.uGhibliOn.value = next;
+      btnGhibli.textContent = next > 0.5
+        ? '🎨 光影：吉卜力暖沙 (撳轉無吉卜力深影)'
+        : '📷 光影：無吉卜力真物理深影 (撳轉吉卜力)';
+    };
+
     const btnCutMode = document.getElementById('btn-cut-mode');
     btnCutMode.onclick = () => {
       const next = sharedUniforms.uCutMode.value < 0.5 ? 1.0 : 0.0;
@@ -494,9 +557,13 @@
       e.target.textContent = state.breathOn ? '🫁 呼吸閘門: 開' : '🫁 呼吸閘門: 關';
     };
 
-    document.getElementById('optDepth').oninput = (e) => {
-      const v = parseFloat(e.target.value); sharedUniforms.uOptDepth.value = v;
-      document.getElementById('optDepth-v').textContent = v.toFixed(2);
+    document.getElementById('sineAmp').oninput = (e) => {
+      const v = parseFloat(e.target.value); sharedUniforms.uSineAmp.value = v;
+      document.getElementById('sineAmp-v').textContent = v.toFixed(2) + 'x';
+    };
+    document.getElementById('shadowDepth').oninput = (e) => {
+      const v = parseFloat(e.target.value); sharedUniforms.uShadowDepth.value = v;
+      document.getElementById('shadowDepth-v').textContent = v.toFixed(2);
     };
     document.getElementById('saltAmt').oninput = (e) => {
       const v = parseFloat(e.target.value); sharedUniforms.uSaltAmt.value = v;
@@ -537,5 +604,3 @@
   </script>
 </body>
 </html>
-
-
