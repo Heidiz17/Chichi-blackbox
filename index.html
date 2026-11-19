@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>黑盒抄錶室：六大透明膠囊 × 空中定格睇山 × 滑行收工</title>
+  <title>黑盒終極抄錶室：六大膠囊 × E=mc²巨浪珠峰 × RX-7平面拉平 × 螺旋丸</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body { background: #000000; color: #fff; height: 100dvh; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #canvas-3d { position: fixed; inset: 0; width: 100%; height: 100%; }
-    #top-caps { position: fixed; top: 8px; left: 10px; z-index: 30; display: flex; align-items: center; gap: 12px; pointer-events: auto; }
-    .tri-cap { background: rgba(0,0,0,0.55); border: 1px solid rgba(30,144,255,0.45); border-radius: 7px; padding: 4px 8px; color: #1e90ff; font-size: 13px; font-weight: bold; cursor: pointer; }
-    .tri-cap.active { background: rgba(15,35,70,0.85); border-color: #38bdf8; color: #38bdf8; }
-    .cap-drawer { position: fixed; top: 42px; left: 8px; right: 8px; z-index: 25; background: rgba(0,0,0,0.78); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 8px 10px; max-height: 68dvh; overflow-y: auto; display: none; flex-direction: column; gap: 6px; }
+    #top-caps { position: fixed; top: 8px; left: 10px; z-index: 30; display: flex; align-items: center; gap: 11px; pointer-events: auto; }
+    .tri-cap { background: rgba(0,0,0,0.58); border: 1px solid rgba(30,144,255,0.5); border-radius: 7px; padding: 4px 8px; color: #1e90ff; font-size: 13px; font-weight: bold; cursor: pointer; }
+    .tri-cap.active { background: rgba(15,35,70,0.88); border-color: #38bdf8; color: #38bdf8; }
+    .cap-drawer { position: fixed; top: 42px; left: 8px; right: 8px; z-index: 25; background: rgba(0,0,0,0.80); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 8px 10px; max-height: 68dvh; overflow-y: auto; display: none; flex-direction: column; gap: 5px; }
     .cap-drawer.open { display: flex; }
     .cap-head { font-size: 11px; font-weight: bold; color: #ffd700; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 4px; }
     .chord-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; }
@@ -32,7 +32,7 @@
     .p-toggle.on-heis   { background: rgba(37,23,56,0.85); color: #c084fc; border-color: #a855f7; }
     .p-toggle.on-breath { background: rgba(16,37,63,0.85); color: #38bdf8; border-color: #0ea5e9; }
     .row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; }
-    .row label { min-width: 138px; color: #eee; text-shadow: 0 1px 2px #000; }
+    .row label { min-width: 142px; color: #eee; text-shadow: 0 1px 2px #000; }
     .row input[type=range] { flex: 1; accent-color: #ffd700; }
     .row span { min-width: 44px; text-align: right; color: #ffd700; font-family: monospace; }
     #fly-dpad { position: fixed; left: 12px; bottom: 14px; z-index: 35; display: flex; flex-direction: column; gap: 4px; }
@@ -55,7 +55,7 @@
     <button class="tri-cap" data-cap="cap-fly">▼</button>
   </div>
   <div id="fly-dpad">
-    <div style="font-size:10px;color:#ffd700;background:rgba(0,0,0,0.65);padding:2px 7px;border-radius:5px;" id="fly-hud">高空巡航 | 中掣⏸️定格睇山 | ▼落地滑行收工</div>
+    <div style="font-size:10px;color:#ffd700;background:rgba(0,0,0,0.65);padding:2px 7px;border-radius:5px;" id="fly-hud">高空巡航 | 中掣⏸️定格睇山 | ▼觸地滑行1秒收工</div>
     <div class="dp-grid">
       <div></div><button class="dp-btn" id="dp-u">▲</button><div></div>
       <button class="dp-btn" id="dp-l">◀</button><button class="dp-btn dp-mid" id="dp-pause">⏸️</button><button class="dp-btn" id="dp-r">▶</button>
@@ -63,20 +63,24 @@
     </div>
   </div>
   <div class="cap-drawer" id="cap-sky">
-    <div class="cap-head"><span>🌌 櫃桶 1：大氣光學散射（黃金 Preset）</span><b id="sky-readout">1級 I大三 [0,4,7]</b></div>
+    <div class="cap-head"><span>🌌 櫃桶 1：大氣光學 × 月讀夜空</span><b id="sky-readout">1級 I大三 [0,4,7]</b></div>
     <div class="chord-grid" id="sky-grid">
       <button class="c-btn active" data-key="1">1<small>Maj</small></button><button class="c-btn" data-key="2">2<small>min</small></button><button class="c-btn" data-key="3">3<small>min</small></button><button class="c-btn" data-key="4">4<small>Maj</small></button><button class="c-btn" data-key="5">5<small>Maj</small></button><button class="c-btn" data-key="6">6<small>min</small></button><button class="c-btn" data-key="7">7<small>vii°</small></button><button class="c-btn special" data-key="aug">Aug<small>增三</small></button><button class="c-btn special" data-key="dim">Dim<small>減三</small></button>
     </div>
     <div class="row"><label>🌫️ 大氣光學厚度</label><input type="range" id="optDepth" min="0.2" max="1.8" step="0.05" value="0.85" /><span id="optDepth-v">0.85</span></div>
     <div class="row"><label>☀️ 太陽米氏光暈</label><input type="range" id="mieGlow" min="0.0" max="1.8" step="0.05" value="0.95" /><span id="mieGlow-v">0.95</span></div>
+    <div class="row"><label>🌙 月讀夜空明月濃度</label><input type="range" id="tsukuNight" min="0.0" max="1.0" step="0.05" value="0.00" /><span id="tsukuNight-v">0.00</span></div>
   </div>
   <div class="cap-drawer" id="cap-sea">
-    <div class="cap-head"><span>🌊 櫃桶 2：大海波動（黃金 Preset）</span><span>1號平靜海</span></div>
+    <div class="cap-head"><span>🌊 櫃桶 2：大海波動 × E=mc² 水遁巨浪 × 螺旋丸</span><span>點海面可注波紋</span></div>
     <div class="dual-bar">
-      <button class="mode-btn sea" id="btn-sea-mode" style="grid-column:span 2;">🌊 海款：1號平靜海 (撳轉2號)</button>
+      <button class="mode-btn sea" id="btn-sea-mode" style="grid-column:span 2;">🌊 海款：1號平靜海 (撳轉2號狂浪)</button>
       <button class="p-toggle" id="btn-heis">⚛️ 海浪測不準: 關</button>
       <button class="p-toggle on-breath" id="btn-breath">🫁 海浪呼吸: 開</button>
     </div>
+    <div class="row"><label>⚡ 海浪張力 c²_sea (巨浪白沫)</label><input type="range" id="seaTension" min="0.2" max="2.6" step="0.05" value="0.65" /><span id="seaTension-v">0.65</span></div>
+    <div class="row"><label>🌀 螺旋丸旋渦水流 (漩渦張力)</label><input type="range" id="rasengan" min="0.0" max="2.0" step="0.05" value="0.00" /><span id="rasengan-v">0.00</span></div>
+    <div class="row"><label>🌊 潮汐推進岸線 (水遁湧岸)</label><input type="range" id="tideLevel" min="0.1" max="1.4" step="0.05" value="0.62" /><span id="tideLevel-v">0.62</span></div>
   </div>
   <div class="cap-drawer" id="cap-sand">
     <div class="cap-head"><span>🏜️ 櫃桶 3：沙與風（黃金 Preset +5%沙）</span><b id="sand-readout">1級 I大三 [0,4,7]</b></div>
@@ -96,21 +100,24 @@
     <div class="row"><label>☢️ 質能手痕 (刀鋒沙脊銳度)</label><input type="range" id="massLev" min="0.5" max="4.0" step="0.1" value="0.50" /><span id="massLev-v">0.50x</span></div>
   </div>
   <div class="cap-drawer" id="cap-isl">
-    <div class="cap-head"><span>🏝️ 櫃桶 4：海島調音（肥潤草坡＋極少搖滾）</span><span>無方格</span></div>
-    <div class="row"><label>🏝️ 主峰高度 (肥島飽滿度)</label><input type="range" id="islHeight" min="2" max="18" step="0.5" value="6.5" /><span id="islHeight-v">6.5</span></div>
-    <div class="row"><label>🍑 多重奏摺肥潤度</label><input type="range" id="islFold" min="0.0" max="1.2" step="0.05" value="0.15" /><span id="islFold-v">0.15</span></div>
-    <div class="row"><label>🎸 山頂減和弦搖滾 (少少搖滾)</label><input type="range" id="islPeak" min="0.0" max="1.2" step="0.05" value="0.05" /><span id="islPeak-v">0.05</span></div>
+    <div class="cap-head"><span>🏝️ 櫃桶 4：海島（三脊扭散 × RX-7平面拉平）</span><span>無一條條紋</span></div>
+    <div class="row"><label>🏝️ 海島質量 m_isl (高度飽滿)</label><input type="range" id="islHeight" min="2" max="22" step="0.5" value="7.5" /><span id="islHeight-v">7.5</span></div>
+    <div class="row"><label>🍑 多重奏摺肥潤度</label><input type="range" id="islFold" min="0.0" max="1.2" step="0.05" value="0.22" /><span id="islFold-v">0.22</span></div>
+    <div class="row"><label>🎸 三脊珠峰減和弦搖滾</label><input type="range" id="islPeak" min="0.0" max="1.2" step="0.05" value="0.18" /><span id="islPeak-v">0.18</span></div>
+    <div class="row"><label>📐 RX-7 平面拉平 (留岩層棱角)</label><input type="range" id="islPlanar" min="0.0" max="1.0" step="0.05" value="0.30" /><span id="islPlanar-v">0.30</span></div>
     <div class="row"><label>🌫️ 大氣遠霧融合度</label><input type="range" id="islHaze" min="0.0" max="0.8" step="0.05" value="0.28" /><span id="islHaze-v">0.28</span></div>
   </div>
   <div class="cap-drawer" id="cap-mtn">
-    <div class="cap-head"><span>🏔️ 櫃桶 5：360°遠山緩衝 ＋ 後山主峰</span><span>無方格</span></div>
-    <div class="row"><label>🏔️ 主山峰高度 (後山主峰)</label><input type="range" id="mtnHeight" min="15" max="65" step="1" value="34" /><span id="mtnHeight-v">34</span></div>
-    <div class="row"><label>🍑 多重奏摺肥潤度 (山腰)</label><input type="range" id="mtnFold" min="0.0" max="1.2" step="0.05" value="0.25" /><span id="mtnFold-v">0.25</span></div>
-    <div class="row"><label>🎸 山頂減和弦搖滾 (少少搖滾)</label><input type="range" id="mtnPeak" min="0.0" max="1.2" step="0.05" value="0.15" /><span id="mtnPeak-v">0.15</span></div>
+    <div class="cap-head"><span>🏔️ 櫃桶 5：後山珠峰 E=mc² × RX-7拉平 × 雪頂岩壁</span><span>無一條條紋</span></div>
+    <div class="row"><label>⛰️ 山脈質量 m_land (珠峰高度)</label><input type="range" id="mtnHeight" min="15" max="85" step="1" value="44" /><span id="mtnHeight-v">44</span></div>
+    <div class="row"><label>🍑 多重奏摺肥潤度 (山腰)</label><input type="range" id="mtnFold" min="0.0" max="1.2" step="0.05" value="0.32" /><span id="mtnFold-v">0.32</span></div>
+    <div class="row"><label>🎸 三脊珠峰減和弦搖滾</label><input type="range" id="mtnPeak" min="0.0" max="1.2" step="0.05" value="0.42" /><span id="mtnPeak-v">0.42</span></div>
+    <div class="row"><label>📐 RX-7 平面拉平 (留岩層棱角)</label><input type="range" id="mtnPlanar" min="0.0" max="1.0" step="0.05" value="0.35" /><span id="mtnPlanar-v">0.35</span></div>
+    <div class="row"><label>❄️ 珠峰深灰岩壁與雪頂線</label><input type="range" id="mtnSnow" min="0.0" max="1.5" step="0.05" value="0.75" /><span id="mtnSnow-v">0.75</span></div>
     <div class="row"><label>⭕ 360° 遠山緩衝高度</label><input type="range" id="ring360H" min="0.4" max="2.0" step="0.05" value="1.00" /><span id="ring360H-v">1.00x</span></div>
   </div>
   <div class="cap-drawer" id="cap-fly">
-    <div class="cap-head"><span>✈️ 櫃桶 6：萊特兄弟雙翼機（預設起飛／中掣懸停）</span><span id="fly-stat">高空巡航中</span></div>
+    <div class="cap-head"><span>✈️ 櫃桶 6：萊特兄弟雙翼機（預設巡航／中掣定格）</span><span id="fly-stat">高空巡航中</span></div>
     <div class="tri-grid" style="grid-template-columns:repeat(4,1fr);">
       <button class="p-toggle on-breath" id="pax-ming">🧑 明仔</button>
       <button class="p-toggle on-chaos" id="pax-p">🤖 P仔</button>
@@ -154,9 +161,10 @@
 
     const sharedUniforms = {
       uTime: { value: 0 }, uBreathT: { value: 0 }, uPulseGate: { value: 1.0 },
-      uQuantumSwing: { value: 0.0 }, uFbm: { value: 0.78 }, uPause: { value: 0.65 }, uTide: { value: 0.62 },
+      uQuantumSwing: { value: 0.0 }, uSeaTension: { value: 0.65 }, uRasengan: { value: 0.00 }, uTide: { value: 0.62 },
+      uRipplePos: { value: new THREE.Vector2(0, -40) }, uRippleTime: { value: 99.0 },
       uSunDir: { value: new THREE.Vector3(0.45, 0.28, -0.85).normalize() },
-      uSkySemi: { value: new THREE.Vector3(0, 4, 7) }, uOptDepth: { value: 0.85 }, uMieGlow: { value: 0.95 },
+      uSkySemi: { value: new THREE.Vector3(0, 4, 7) }, uOptDepth: { value: 0.85 }, uMieGlow: { value: 0.95 }, uTsukuNight: { value: 0.0 },
       uSandSemi: { value: new THREE.Vector3(0, 4, 7) }, uSandRatios: { value: new THREE.Vector3(...toRatios([0, 4, 7])) },
       uGhibliOn: { value: 1.0 }, uShadowDepth: { value: 0.20 }, uCutMode: { value: 0.0 }, uCutLevel: { value: 0.00 },
       uChaosOn: { value: 1.0 }, uSaltAmt: { value: 0.26 }, uWindSpeed: { value: 0.25 }, uWindPhase: { value: 0.0 },
@@ -167,7 +175,7 @@
       side: THREE.BackSide, depthWrite: false, uniforms: sharedUniforms,
       vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: `
-        uniform vec3 uSkySemi, uSunDir; uniform float uOptDepth, uMieGlow; varying vec3 vDir;
+        uniform vec3 uSkySemi, uSunDir; uniform float uOptDepth, uMieGlow, uTsukuNight; varying vec3 vDir;
         vec3 chordToScatterTint(float semi) {
           float f = pow(2.0, semi / 12.0);
           vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42));
@@ -180,25 +188,24 @@
           float h = clamp(d.y, 0.001, 1.0);
           float horizonWhiteMix = clamp(1.0 - exp(-pow(1.0 - h, 2.4) * uOptDepth * 1.45), 0.0, 0.92);
           float cosTheta = max(dot(d, sun), 0.0);
-          vec3 skyCol = mix(mix(vec3(0.88, 0.78, 0.68), chordToScatterTint(uSkySemi.x), 0.48),
+          vec3 dayCol = mix(mix(vec3(0.88, 0.78, 0.68), chordToScatterTint(uSkySemi.x), 0.48),
                             mix(vec3(0.42, 0.68, 0.94), chordToScatterTint(uSkySemi.y), 0.50), smoothstep(0.0, 0.28, h));
-          skyCol = mix(skyCol, mix(vec3(0.16, 0.44, 0.86), chordToScatterTint(uSkySemi.z), 0.55), smoothstep(0.22, 0.85, h));
-          skyCol = mix(skyCol, mix(vec3(0.86, 0.90, 0.95), vec3(1.0, 0.93, 0.82), pow(cosTheta, 2.0)), horizonWhiteMix);
-          skyCol += vec3(1.0, 0.92, 0.76) * (pow(cosTheta, 8.0) * 0.22 + pow(cosTheta, 64.0) * 0.55) * uMieGlow
+          dayCol = mix(dayCol, mix(vec3(0.16, 0.44, 0.86), chordToScatterTint(uSkySemi.z), 0.55), smoothstep(0.22, 0.85, h));
+          dayCol = mix(dayCol, mix(vec3(0.86, 0.90, 0.95), vec3(1.0, 0.93, 0.82), pow(cosTheta, 2.0)), horizonWhiteMix);
+          dayCol += vec3(1.0, 0.92, 0.76) * (pow(cosTheta, 8.0) * 0.22 + pow(cosTheta, 64.0) * 0.55) * uMieGlow
                   + vec3(1.0, 0.98, 0.92) * smoothstep(0.9993, 0.99985, cosTheta) * 1.8;
-          gl_FragColor = vec4(skyCol, 1.0);
+          vec3 nightCol = mix(vec3(0.04, 0.08, 0.16), vec3(0.01, 0.02, 0.06), smoothstep(0.0, 0.7, h))
+                        + vec3(0.75, 0.86, 1.0) * (pow(cosTheta, 16.0) * 0.35 + smoothstep(0.9988, 0.9996, cosTheta) * 2.2);
+          gl_FragColor = vec4(mix(dayCol, nightCol, uTsukuNight), 1.0);
         }
       `
     });
     scene.add(new THREE.Mesh(new THREE.SphereGeometry(620, 32, 20), skyMat));
 
-    scene.add(new THREE.HemisphereLight(0xfff5e4, 0x3b2a1a, 0.75));
-    const sunLight = new THREE.DirectionalLight(0xffe8a3, 1.45);
-    sunLight.position.set(45, 28, -85);
-    scene.add(sunLight);
+    const hemiLight = new THREE.HemisphereLight(0xfff5e4, 0x3b2a1a, 0.75); scene.add(hemiLight);
+    const sunLight = new THREE.DirectionalLight(0xffe8a3, 1.45); sunLight.position.set(45, 28, -85); scene.add(sunLight);
 
-    const cafeGroup = new THREE.Group();
-    cafeGroup.position.set(0, 0, -2.0);
+    const cafeGroup = new THREE.Group(); cafeGroup.position.set(0, 0, -2.0);
     const woodMat = new THREE.MeshStandardMaterial({ color: 0x8c5832, roughness: 0.55 });
     const darkMat = new THREE.MeshStandardMaterial({ color: 0x3b2313, roughness: 0.45 });
     const basePad = new THREE.Mesh(new THREE.BoxGeometry(12.2, 0.25, 6.2), darkMat); basePad.position.y = 0.125; cafeGroup.add(basePad);
@@ -214,8 +221,7 @@
       const h1 = (n) => Math.abs(Math.sin(n * 127.1 + 311.7) * 43758.5453) % 1;
       const n1 = (x) => { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return h1(i) * (1 - u) + h1(i + 1) * u; };
       for (let i = 0; i <= segs; i++) {
-        const t = i / segs, th = t * Math.PI * 2.0;
-        const back = 0.5 - 0.5 * Math.cos(th);
+        const t = i / segs, th = t * Math.PI * 2.0, back = 0.5 - 0.5 * Math.cos(th);
         const w = Math.sin(th * 5 + 0.8) * 2.8 + Math.cos(th * 9 - 1.2) * 1.8 + (n1(th * 7.5) - 0.5) * 5.2;
         const bayOpen = 0.45 + 0.55 * Math.min(1.0, Math.abs(Math.sin(th * 0.5 - 0.06)) * 2.5);
         const h = Math.max(3.8, (7.5 + back * 12.0 + w) * bayOpen);
@@ -225,51 +231,69 @@
       for (let i = 0; i < segs; i++) { const a = i * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-      g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-      g.setIndex(idx);
+      g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2)); g.setIndex(idx);
       const m = new THREE.ShaderMaterial({
         side: THREE.DoubleSide, uniforms: sharedUniforms,
         vertexShader: `uniform float uRing360H; varying vec2 vUv; void main(){ vUv = uv; vec3 p = position; if(p.y > 0.0) p.y *= uRing360H; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`,
-        fragmentShader: `varying vec2 vUv; void main(){ vec3 col = mix(vec3(0.32, 0.48, 0.56), vec3(0.56, 0.72, 0.84), smoothstep(0.08, 0.95, vUv.y)); col = mix(col, vec3(0.84, 0.90, 0.95), smoothstep(0.35, 0.02, vUv.y) * 0.72); gl_FragColor = vec4(col, 1.0); }`
+        fragmentShader: `uniform float uTsukuNight; varying vec2 vUv; void main(){ vec3 col = mix(vec3(0.32, 0.48, 0.56), vec3(0.56, 0.72, 0.84), smoothstep(0.08, 0.95, vUv.y)); col = mix(col, vec3(0.84, 0.90, 0.95), smoothstep(0.35, 0.02, vUv.y) * 0.72); col = mix(col, col * vec3(0.18, 0.24, 0.36), uTsukuNight); gl_FragColor = vec4(col, 1.0); }`
       });
       const mesh = new THREE.Mesh(g, m); mesh.frustumCulled = false; scene.add(mesh);
     })();
 
+
+
+        // 🏔️🏝️ 三脊扭散 × 珠峰岩壁雪頂 × RX-7 平面量化拉平引擎
     function createUnifiedTerrainMesh(opts) {
       const geo = new THREE.PlaneGeometry(2, 2, opts.segX, opts.segZ); geo.rotateX(-Math.PI / 2);
       const u = {
         uHeight: { value: opts.height }, uFold: { value: opts.fold }, uPeak: { value: opts.peak },
-        uHaze: { value: opts.haze }, uSeed: { value: opts.seed }, uSpanX: { value: opts.spanX },
-        uSpanZ: { value: opts.spanZ }, uSunDir: sharedUniforms.uSunDir, uGhibliOn: sharedUniforms.uGhibliOn
+        uPlanar: { value: opts.planar }, uSnow: { value: opts.snow }, uHaze: { value: opts.haze },
+        uSeed: { value: opts.seed }, uSpanX: { value: opts.spanX }, uSpanZ: { value: opts.spanZ },
+        uSunDir: sharedUniforms.uSunDir, uGhibliOn: sharedUniforms.uGhibliOn, uTsukuNight: sharedUniforms.uTsukuNight
       };
       const commonGLSL = `
-        uniform float uHeight, uFold, uPeak, uSeed, uSpanX, uSpanZ;
+        uniform float uHeight, uFold, uPeak, uPlanar, uSnow, uSeed, uSpanX, uSpanZ;
         mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
+        float h21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
+        float n2(vec2 p) {
+          vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
+          return mix(mix(h21(i), h21(i + vec2(1.0, 0.0)), u.x), mix(h21(i + vec2(0.0, 1.0)), h21(i + vec2(1.0, 1.0)), u.x), u.y);
+        }
+        float everestRidges(vec2 p) {
+          float sum = 0.0, amp = 0.56;
+          mat2 r = mat2(0.82, 0.57, -0.57, 0.82);
+          for (int i = 0; i < 4; i++) {
+            float ridge = 1.0 - abs(n2(p) * 2.0 - 1.0);
+            sum += amp * ridge;
+            p = r * p * 1.98 + vec2(ridge * 0.42, -ridge * 0.31);
+            amp *= 0.48;
+          }
+          return smoothstep(0.14, 1.12, sum);
+        }
         float evalMountainField(vec2 p) {
           float s = uSeed;
-          float envX = exp(-pow(p.x / (uSpanX * 0.56), 2.0));
-          float envZ = exp(-pow((p.y + sin(p.x * 0.028 + s) * (uSpanZ * 0.14)) / (uSpanZ * 0.46), 2.0));
-          float mainSpine = envX * envZ;
-          vec2 p1 = rot(0.22) * (p * (3.6 / uSpanX)) + vec2(s, s * 0.7);
-          float f1 = 1.0 - abs(sin(p1.x) * cos(p1.y));
-          vec2 p2 = rot(0.65) * (p * (9.5 / uSpanX)) + vec2(s * 1.9);
-          float f2 = 1.0 - abs(sin(p2.x + sin(p2.y * 0.8) * 0.6));
-          vec2 p3 = rot(1.25) * (p * (21.0 / uSpanX)) + vec2(s * 3.3);
-          float f3 = 1.0 - abs(cos(p3.x) * sin(p3.y + cos(p3.x) * 0.5));
-          vec2 p4 = rot(2.10) * (p * (46.0 / uSpanX)) + vec2(s * 5.1);
-          float f4 = 1.0 - abs(sin(p4.x + p4.y));
-          float baseRound = (sin(p1.x * 0.85) * cos(p1.y * 0.85) * 0.5 + 0.5);
-          float folds = pow(f1, 1.25) * 0.56 + pow(f2, 1.45) * 0.27 * uFold + pow(f3, 1.6) * 0.12 * uFold + pow(f4, 1.8) * 0.05 * uFold;
-          float baseH = mainSpine * mix(baseRound, folds, 0.35 + 0.55 * clamp(uFold, 0.0, 1.0)) * 1.22;
-          float summitMask = smoothstep(0.42, 0.86, baseH);
-          vec2 q = rot(0.48) * (p * (7.2 / uSpanX)) + vec2(s * 1.618, s * 2.718);
-          vec2 warp = vec2(sin(q.y * 1.618 + cos(q.x * 2.718 + s)), cos(q.x * 1.414 - sin(q.y * 2.236 - s))) * 0.78;
-          vec2 wp = q + warp;
-          float r1 = 1.0 - abs(sin(wp.x * 1.7) * cos(wp.y * 1.9));
-          wp = rot(1.12) * wp * 2.18 + vec2(3.1, 1.7);
-          float r2 = 1.0 - abs(sin(wp.x + cos(wp.y * 1.3) * 0.6));
-          float peakDetail = (pow(r1, 1.65) * 0.65 + pow(r2, 1.85) * 0.35) * summitMask * uPeak * 0.42;
-          return (baseH + peakDetail) * uHeight - 0.85;
+          vec2 pNorm = vec2(p.x / (uSpanX * 0.54), p.y / (uSpanZ * 0.48));
+          float ridgeMain  = exp(-pow(pNorm.x, 2.0) * 1.25 - pow(pNorm.y + sin(pNorm.x * 2.4 + s) * 0.25, 2.0) * 1.35);
+          float ridgeLeft  = exp(-pow(pNorm.x + 0.46, 2.0) * 2.8 - pow(pNorm.y - 0.18 + cos(pNorm.x * 3.0) * 0.15, 2.0) * 2.4) * 0.78;
+          float ridgeRight = exp(-pow(pNorm.x - 0.48, 2.0) * 2.6 - pow(pNorm.y + 0.16 - sin(pNorm.x * 2.8) * 0.15, 2.0) * 2.2) * 0.84;
+          float triSpine = max(ridgeMain, max(ridgeLeft, ridgeRight)) * 0.72 + (ridgeMain + ridgeLeft + ridgeRight) * 0.22;
+
+          vec2 twist = vec2(n2(p * (2.6 / uSpanX) + s) - 0.5, n2(p * (2.6 / uSpanZ) + s * 2.1) - 0.5) * (uSpanX * 0.26);
+          vec2 pw = p + twist;
+          float evMacro = everestRidges(pw * (2.8 / uSpanX) + vec2(s, s * 0.7));
+          float evFine  = everestRidges(rot(0.75) * pw * (6.8 / uSpanX) + vec2(s * 1.7));
+
+          float baseH = triSpine * mix(0.68, evMacro * 1.35, 0.30 + 0.65 * clamp(uFold, 0.0, 1.0));
+          float summitMask = smoothstep(0.30, 0.84, baseH);
+          float rawH = (baseH + evFine * summitMask * uPeak * 0.62) * uHeight - 0.85;
+
+          if (uPlanar > 0.01) {
+            float stepH = max(0.35, uHeight * (0.04 + uPlanar * 0.14));
+            float qLevel = floor(rawH / stepH);
+            float terraced = (qLevel + smoothstep(0.0, 0.28, fract(rawH / stepH))) * stepH;
+            rawH = mix(rawH, terraced, uPlanar * 0.78);
+          }
+          return rawH;
         }
       `;
       const mat = new THREE.ShaderMaterial({
@@ -278,40 +302,41 @@
           varying vec2 vLocalXZ; varying float vElev;
           void main() {
             vec2 u = position.xz;
-            vec2 localXZ = vec2(sign(u.x) * pow(abs(u.x), 1.38) * uSpanX, sign(u.y) * pow(abs(u.y), 1.45) * uSpanZ);
+            vec2 localXZ = vec2(sign(u.x) * pow(abs(u.x), 1.35) * uSpanX, sign(u.y) * pow(abs(u.y), 1.40) * uSpanZ);
             float h = evalMountainField(localXZ); vLocalXZ = localXZ; vElev = h;
             gl_Position = projectionMatrix * viewMatrix * (modelMatrix * vec4(localXZ.x, h, localXZ.y, 1.0));
           }
         `,
         fragmentShader: commonGLSL + `
-          uniform vec3 uSunDir; uniform float uHaze, uGhibliOn; varying vec2 vLocalXZ; varying float vElev;
-          float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
-          float noise2(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f); return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x), mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), u.x), u.y); }
+          uniform vec3 uSunDir; uniform float uHaze, uGhibliOn, uTsukuNight; varying vec2 vLocalXZ; varying float vElev;
           void main() {
-            float eps = max(0.04, uSpanX * 0.0012); float hC = evalMountainField(vLocalXZ);
+            float eps = max(0.06, uSpanX * 0.0018); float hC = evalMountainField(vLocalXZ);
             vec3 N = normalize(vec3(hC - evalMountainField(vLocalXZ + vec2(eps, 0.0)), eps, hC - evalMountainField(vLocalXZ + vec2(0.0, eps))));
-            float micro = (noise2(vLocalXZ * (28.0 / uSpanX)) * 0.6 + noise2(rot(0.9) * vLocalXZ * (85.0 / uSpanX)) * 0.4) - 0.5;
-            float hRatio = clamp((vElev + 0.85) / max(uHeight, 1.0), 0.0, 1.0), slope = clamp(N.y + micro * 0.14, 0.0, 1.0);
-            vec3 baseCol = mix(vec3(0.22, 0.40, 0.22), vec3(0.36, 0.58, 0.28), smoothstep(0.05, 0.48, hRatio + micro * 0.12));
-            baseCol = mix(baseCol, vec3(0.58, 0.60, 0.38), smoothstep(0.65, 0.95, hRatio));
-            baseCol = mix(vec3(0.34, 0.32, 0.34), baseCol, smoothstep(0.46, 0.76, slope)) * (1.0 + micro * 0.24);
+            float micro = (n2(vLocalXZ * (24.0 / uSpanX)) * 0.6 + n2(rot(0.9) * vLocalXZ * (72.0 / uSpanX)) * 0.4) - 0.5;
+            float hRatio = clamp((vElev + 0.85) / max(uHeight, 1.0), 0.0, 1.0), slope = 1.0 - clamp(N.y + micro * 0.12, 0.0, 1.0);
+
+            vec3 grassCol = mix(vec3(0.22, 0.42, 0.22), vec3(0.36, 0.58, 0.28), smoothstep(0.05, 0.48, hRatio + micro * 0.12));
+            vec3 rockBase = mix(vec3(0.44, 0.46, 0.50), vec3(0.22, 0.24, 0.28), smoothstep(0.18, 0.56, slope));
+            float snowMask = smoothstep(0.55, 0.88, hRatio) * smoothstep(0.48, 0.16, slope) * clamp(uSnow, 0.0, 1.5);
+            vec3 mtnMat = mix(rockBase, vec3(0.88, 0.91, 0.95), clamp(snowMask, 0.0, 1.0));
+            vec3 baseCol = mix(grassCol, mtnMat, smoothstep(0.22, 0.68, hRatio + slope * 0.35 * uSnow)) * (1.0 + micro * 0.22);
+
             float diff = pow(clamp(dot(N, normalize(uSunDir)) * 0.65 + 0.35, 0.0, 1.0), 1.15);
             vec3 litCol = baseCol * mix(vec3(0.36, 0.42, 0.56), vec3(1.24, 1.12, 0.96), diff);
-            gl_FragColor = vec4(mix(litCol, mix(vec3(0.76, 0.85, 0.94), vec3(0.86, 0.90, 0.94), uGhibliOn * 0.5), uHaze), 1.0);
+            vec3 hazeCol = mix(vec3(0.76, 0.85, 0.94), vec3(0.06, 0.10, 0.18), uTsukuNight);
+            gl_FragColor = vec4(mix(litCol * mix(1.0, 0.28, uTsukuNight), hazeCol, uHaze), 1.0);
           }
         `
       });
       const mesh = new THREE.Mesh(geo, mat); mesh.position.set(opts.posX, 0, opts.posZ); scene.add(mesh); return u;
     }
 
-    const islUniforms = createUnifiedTerrainMesh({ segX: 140, segZ: 110, spanX: 36, spanZ: 24, posX: -52, posZ: -128, height: 6.5, fold: 0.15, peak: 0.05, haze: 0.28, seed: 1.73 });
+    const islUniforms = createUnifiedTerrainMesh({ segX: 140, segZ: 110, spanX: 38, spanZ: 26, posX: -52, posZ: -128, height: 7.5, fold: 0.22, peak: 0.18, planar: 0.30, snow: 0.0, haze: 0.28, seed: 1.73 });
     const foamRing = new THREE.Mesh(new THREE.RingGeometry(19.0, 21.8, 64), new THREE.MeshBasicMaterial({ color: 0xf4f9fc, transparent: true, opacity: 0.52, side: THREE.DoubleSide }));
     foamRing.rotation.x = -Math.PI / 2; foamRing.scale.set(1.25, 0.78, 1.0); foamRing.position.set(-52, 0.03, -128); scene.add(foamRing);
-    const mtnUniforms = createUnifiedTerrainMesh({ segX: 200, segZ: 150, spanX: 115, spanZ: 72, posX: 62, posZ: -215, height: 34.0, fold: 0.25, peak: 0.15, haze: 0.42, seed: 2.14 });
+    const mtnUniforms = createUnifiedTerrainMesh({ segX: 200, segZ: 150, spanX: 128, spanZ: 80, posX: 62, posZ: -215, height: 44.0, fold: 0.32, peak: 0.42, planar: 0.35, snow: 0.75, haze: 0.38, seed: 2.14 });
 
-
-
-        const sandGeo = new THREE.PlaneGeometry(84, 52, 180, 120); sandGeo.rotateX(-Math.PI / 2);
+    const sandGeo = new THREE.PlaneGeometry(84, 52, 180, 120); sandGeo.rotateX(-Math.PI / 2);
     const sandMat = new THREE.ShaderMaterial({
       uniforms: sharedUniforms, transparent: true,
       vertexShader: `
@@ -340,7 +365,7 @@
         }
       `,
       fragmentShader: `
-        uniform vec3 uSandSemi, uSandRatios, uSunDir; uniform float uGhibliOn, uShadowDepth, uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp;
+        uniform vec3 uSandSemi, uSandRatios, uSunDir; uniform float uGhibliOn, uShadowDepth, uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp, uTsukuNight;
         varying vec3 vWorldPos;
         mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
         float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
@@ -368,7 +393,7 @@
           vec3 gCol = gAlbedo * mix(0.55, 1.15, pow(dot(N, normalize(uSunDir)) * 0.5 + 0.5, 1.3 * uShadowDepth));
           vec3 pAlbedo = mix(vec3(0.32, 0.25, 0.18), vec3(0.84, 0.74, 0.56), smoothstep(0.04, 0.88, hC)) + grain;
           vec3 pCol = pAlbedo * (0.18 + 1.18 * pow(max(dot(N, normalize(uSunDir)), 0.0), 1.15 * uShadowDepth)) * mix(0.38, 1.12, smoothstep(0.0, 0.55, hC));
-          vec3 col = mix(pCol, gCol, uGhibliOn);
+          vec3 col = mix(pCol, gCol, uGhibliOn) * mix(1.0, 0.26, uTsukuNight);
           col *= mix(1.0, mix(0.52, 0.68, uGhibliOn), 1.0 - smoothstep(-0.02, 0.09, vWorldPos.y - (-0.02)));
           vec2 houseBox = abs(p - vec2(-0.8, -1.2)) - vec2(6.2, 3.3);
           col *= mix(1.0, mix(0.45, 0.62, uGhibliOn), (1.0 - smoothstep(-0.8, 1.8, max(houseBox.x, houseBox.y))) * 0.75);
@@ -379,44 +404,79 @@
     });
     const sandMesh = new THREE.Mesh(sandGeo, sandMat); sandMesh.position.y = -0.025; scene.add(sandMesh);
 
-    const seaGeo = new THREE.PlaneGeometry(880, 880, 96, 96); seaGeo.rotateX(-Math.PI / 2);
+
+
+          // 🌊 E=mc² 巨浪滔滔白沫海洋 ＋ 螺旋丸旋渦 ＋ 點擊海面 3D 能量波紋
+    const seaGeo = new THREE.PlaneGeometry(880, 880, 128, 128); seaGeo.rotateX(-Math.PI / 2);
     const seaMat = new THREE.ShaderMaterial({
       side: THREE.DoubleSide, uniforms: sharedUniforms,
       vertexShader: `
-        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide; varying vec3 vWorldPos;
+        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uSeaTension, uRasengan, uTide, uRippleTime;
+        uniform vec2 uRipplePos; varying vec3 vWorldPos; varying float vWaveE;
         void main() {
-          vec3 pos = position; float t = uBreathT, shoreLine = -4.2 - uTide * 14.0;
-          float shallowDamp = smoothstep(shoreLine + 3.0, shoreLine - 28.0, pos.z);
-          float waveAct = smoothstep(uPause * 0.80, uPause * 0.80 + 0.20, sin(pos.z * 0.045 + sin(pos.x * 0.025) * 1.2 - t * 0.45) * 0.5 + 0.5) * (0.25 + 0.75 * uPulseGate);
-          float swell = (sin(pos.z * 0.12 + cos(pos.x * 0.03) * 0.9 - t * 0.85) * 0.6 + cos(pos.z * 0.20 - sin(pos.x * 0.04) * 0.8 - t * 1.10) * 0.4) * uFbm * 0.85;
-          pos.y += mix(swell * (0.20 + 0.80 * waveAct), (sin(pos.x * 0.22 + uTime * 1.8) * 0.18 + cos(pos.z * 0.25 + uTime * 2.0) * 0.16) * uFbm, uQuantumSwing * 0.75) * shallowDamp;
-          vec4 wp4 = modelMatrix * vec4(pos, 1.0); vWorldPos = wp4.xyz; gl_Position = projectionMatrix * viewMatrix * wp4;
+          vec3 pos = position; float t = uBreathT + uTime * 0.45;
+          float shoreLine = -4.2 - uTide * 14.0;
+          float shallowDamp = smoothstep(shoreLine + 4.0, shoreLine - 24.0, pos.z);
+          float swell1 = sin(pos.z * 0.24 + t * 2.2 + sin(pos.x * 0.06) * 1.5);
+          float swell2 = sin(pos.z * 0.42 - pos.x * 0.14 + t * 2.8);
+          float waveProf = max(0.0, 0.52 + 0.32 * swell1 + 0.18 * swell2);
+          float E_sea = waveProf * uSeaTension * (0.45 + 0.55 * uPulseGate) * (1.0 + uQuantumSwing * 0.65);
+
+          // 🌀 螺旋丸旋渦水流（海灣中央旋轉吸力波）
+          vec2 rVec = pos.xz - vec2(0.0, -55.0);
+          float rRad = length(rVec);
+          float rAng = atan(rVec.y, rVec.x) + rRad * 0.08 - uTime * 3.5;
+          float rasWave = sin(rAng * 3.0 + rRad * 0.25) * exp(-rRad * 0.018) * uRasengan * 1.4;
+
+          // 輕觸海面 3D 能量波紋
+          float dRip = length(pos.xz - uRipplePos);
+          float rip = sin(dRip * 0.8 - uRippleTime * 6.5) * exp(-dRip * 0.04) * exp(-uRippleTime * 0.85) * 1.8;
+
+          pos.y += (E_sea * 1.65 + rasWave + max(0.0, rip)) * shallowDamp;
+          vWaveE = E_sea * 1.45 + abs(rasWave) * 0.6 + max(0.0, rip);
+          vec4 wp4 = modelMatrix * vec4(pos, 1.0); vWorldPos = wp4.xyz;
+          gl_Position = projectionMatrix * viewMatrix * wp4;
         }
       `,
       fragmentShader: `
-        uniform float uTime, uBreathT, uQuantumSwing, uTide; uniform vec3 uSunDir; varying vec3 vWorldPos;
+        uniform float uTime, uBreathT, uQuantumSwing, uSeaTension, uTide, uTsukuNight;
+        uniform vec3 uSunDir; varying vec3 vWorldPos; varying float vWaveE;
         float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5454); }
         float noise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
         float fbm(vec2 p) { float v = 0.0, a = 0.5; mat2 rot = mat2(0.8, 0.6, -0.6, 0.8); for (int i = 0; i < 4; i++) { v += a * noise(p); p = rot * p * 2.05; a *= 0.5; } return v; }
         void main() {
-          vec2 p = vWorldPos.xz; float t = uBreathT;
-          float foamEdge = exp(-pow((p.y - (-4.2 - uTide * 14.0 + sin(p.x * 0.032) * 2.2)) * 0.68, 2.0)) * smoothstep(0.05, 0.5, uTide);
-          float w1 = fbm(p * 0.25 + vec2(t * 0.15, -t * 0.22));
-          vec3 normal = normalize(vec3((w1 - 0.5) * 0.35, 1.0, (w1 - 0.5) * 0.35)), viewDir = normalize(cameraPosition - vWorldPos);
-          float fresnel = pow(clamp(1.0 - max(dot(viewDir, normal), 0.0), 0.01, 1.0), 3.4);
-          float depthGrad = smoothstep(5.0, 220.0, length(vWorldPos.xz - cameraPosition.xz));
-          vec3 baseWater = mix(mix(vec3(0.07, 0.38, 0.36), vec3(0.02, 0.15, 0.27), depthGrad), mix(vec3(0.02, 0.76, 0.70), vec3(0.01, 0.22, 0.45), depthGrad), uQuantumSwing);
-          vec3 col = mix(baseWater, vec3(0.45, 0.76, 0.96), clamp(fresnel * 0.85 + 0.10, 0.0, 0.92));
-          col += vec3(0.98, 0.98, 0.96) * foamEdge * (0.42 + 0.48 * smoothstep(0.32, 0.75, fbm(p * 0.9 + vec2(0.0, uTime * 0.4))));
-          col += vec3(1.0, 0.90, 0.62) * pow(clamp(dot(normal, normalize(normalize(uSunDir) + viewDir)), 0.001, 1.0), 120.0) * 2.0;
-          gl_FragColor = vec4(col, 1.0);
+          vec2 p = vWorldPos.xz; float t = uBreathT + uTime * 0.35;
+          float foamEdge = exp(-pow((p.y - (-4.2 - uTide * 14.0 + sin(p.x * 0.032) * 2.2)) * 0.65, 2.0)) * smoothstep(0.05, 0.5, uTide);
+          float foamTex = fbm(p * 0.42 + vec2(t * 0.25, -t * 0.35));
+          // E=mc² 巨浪白沫浪花遮罩（張力越高，成個海面翻起滔天純白浪花！）
+          float surgeFoam = smoothstep(0.55, 1.15, vWaveE + (foamTex - 0.45) * 0.48);
+
+          vec3 normal = normalize(vec3((foamTex - 0.5) * 0.42, 1.0, (foamTex - 0.5) * 0.42));
+          vec3 viewDir = normalize(cameraPosition - vWorldPos);
+          float fresnel = pow(clamp(1.0 - max(dot(viewDir, normal), 0.0), 0.01, 1.0), 3.2);
+          vec3 deepSea = vec3(0.05, 0.34, 0.52);
+          vec3 midSea  = vec3(0.14, 0.58, 0.78);
+          vec3 waterCol = mix(deepSea, midSea, clamp(vWaveE * 0.55, 0.0, 1.0));
+          waterCol = mix(waterCol, vec3(0.45, 0.78, 0.96), clamp(fresnel * 0.75 + 0.08, 0.0, 0.88));
+          waterCol = mix(waterCol, vec3(0.96, 0.98, 1.0), clamp(surgeFoam + foamEdge * 0.85, 0.0, 1.0));
+          waterCol *= mix(1.0, 0.28, uTsukuNight);
+          waterCol += vec3(1.0, 0.92, 0.72) * pow(clamp(dot(normal, normalize(normalize(uSunDir) + viewDir)), 0.001, 1.0), 96.0) * (1.8 + uTsukuNight * 1.6);
+          gl_FragColor = vec4(waterCol, 1.0);
         }
       `
     });
     const seaMesh = new THREE.Mesh(seaGeo, seaMat); seaMesh.position.y = -0.02; scene.add(seaMesh);
 
-    const planeGroup = new THREE.Group();
-    const wrightGroup = new THREE.Group();
+    // 輕觸海面注入 3D 能量波紋
+    const raycaster = new THREE.Raycaster(), ptr = new THREE.Vector2();
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      ptr.x = (e.clientX / window.innerWidth) * 2 - 1; ptr.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(ptr, camera);
+      const hit = raycaster.intersectObject(seaMesh);
+      if (hit.length > 0) { sharedUniforms.uRipplePos.value.set(hit[0].point.x, hit[0].point.z); sharedUniforms.uRippleTime.value = 0.0; }
+    });
+
+    const planeGroup = new THREE.Group(), wrightGroup = new THREE.Group();
     const wingMat = new THREE.MeshStandardMaterial({ color: 0xe6d3a7, roughness: 0.65, side: THREE.DoubleSide });
     const strutMat = new THREE.MeshStandardMaterial({ color: 0x5c3818, roughness: 0.5 });
     const topWing = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.08, 1.65), wingMat); topWing.position.y = 1.45;
@@ -429,14 +489,11 @@
     const skidR = skidL.clone(); skidR.position.x = 1.1;
     const propL = new THREE.Mesh(new THREE.BoxGeometry(1.45,0.12,0.04), strutMat); propL.position.set(-1.5,0.85,0.9);
     const propR = propL.clone(); propR.position.x = 1.5;
-    wrightGroup.add(frontElev, tailRud, skidL, skidR, propL, propR);
-    planeGroup.add(wrightGroup);
+    wrightGroup.add(frontElev, tailRud, skidL, skidR, propL, propR); planeGroup.add(wrightGroup);
 
-    const paperGroup = new THREE.Group();
-    const pGeo = new THREE.BufferGeometry();
+    const paperGroup = new THREE.Group(), pGeo = new THREE.BufferGeometry();
     pGeo.setAttribute('position', new THREE.Float32BufferAttribute([0,0.3,-3.2,-2.6,0.4,2.2,0,0.3,1.8, 0,0.3,-3.2,0,0.3,1.8,2.6,0.4,2.2, 0,0.3,-3.2,0,-0.45,1.8,0,0.3,1.8], 3));
-    pGeo.computeVertexNormals();
-    paperGroup.add(new THREE.Mesh(pGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: 0.4 })));
+    pGeo.computeVertexNormals(); paperGroup.add(new THREE.Mesh(pGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: 0.4 })));
     paperGroup.visible = false; planeGroup.add(paperGroup);
 
     const makeEmoji = (em, off) => {
@@ -445,13 +502,8 @@
       const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true }));
       sp.scale.set(1.15,1.15,1); sp.position.copy(off); planeGroup.add(sp); return sp;
     };
-    const paxSprites = {
-      ming: makeEmoji('🧑', new THREE.Vector3(-0.45,0.95,-0.35)), p: makeEmoji('🤖', new THREE.Vector3(0.45,0.95,-0.35)),
-      wife: makeEmoji('👩', new THREE.Vector3(-0.45,0.95,0.35)), cats: makeEmoji('🐱', new THREE.Vector3(0.45,0.95,0.35))
-    };
+    const paxSprites = { ming: makeEmoji('🧑', new THREE.Vector3(-0.45,0.95,-0.35)), p: makeEmoji('🤖', new THREE.Vector3(0.45,0.95,-0.35)), wife: makeEmoji('👩', new THREE.Vector3(-0.45,0.95,0.35)), cats: makeEmoji('🐱', new THREE.Vector3(0.45,0.95,0.35)) };
     paxSprites.wife.visible = false; paxSprites.cats.visible = false;
-
-    // 預設高空巡航起飛狀態
     const jetState = { x: -12.0, y: 14.5, z: -26.0, yaw: 0.28, speed: 0.55 };
     planeGroup.position.set(jetState.x, jetState.y, jetState.z); scene.add(planeGroup);
 
@@ -465,20 +517,25 @@
     });
     const bindSlider = (id, vid, fn, suf = '') => { document.getElementById(id).oninput = (e) => { const v = parseFloat(e.target.value); fn(v); document.getElementById(vid).textContent = v.toFixed(suf === 'x' || suf === '' ? 2 : 1) + suf; }; };
     bindSlider('optDepth','optDepth-v',v=>sharedUniforms.uOptDepth.value=v); bindSlider('mieGlow','mieGlow-v',v=>sharedUniforms.uMieGlow.value=v);
+    bindSlider('tsukuNight','tsukuNight-v',v=>sharedUniforms.uTsukuNight.value=v);
+    bindSlider('seaTension','seaTension-v',v=>sharedUniforms.uSeaTension.value=v); bindSlider('rasengan','rasengan-v',v=>sharedUniforms.uRasengan.value=v);
+    bindSlider('tideLevel','tideLevel-v',v=>sharedUniforms.uTide.value=v);
     bindSlider('windSpeed','windSpeed-v',v=>sharedUniforms.uWindSpeed.value=v,'x'); bindSlider('sineAmp','sineAmp-v',v=>sharedUniforms.uSineAmp.value=v,'x');
     bindSlider('shadowDepth','shadowDepth-v',v=>sharedUniforms.uShadowDepth.value=v); bindSlider('saltAmt','saltAmt-v',v=>sharedUniforms.uSaltAmt.value=v);
     bindSlider('cutLevel','cutLevel-v',v=>sharedUniforms.uCutLevel.value=v); bindSlider('massLev','massLev-v',v=>sharedUniforms.uMassLev.value=v,'x');
     bindSlider('islHeight','islHeight-v',v=>islUniforms.uHeight.value=v,' '); bindSlider('islFold','islFold-v',v=>islUniforms.uFold.value=v);
-    bindSlider('islPeak','islPeak-v',v=>islUniforms.uPeak.value=v); bindSlider('islHaze','islHaze-v',v=>islUniforms.uHaze.value=v);
+    bindSlider('islPeak','islPeak-v',v=>islUniforms.uPeak.value=v); bindSlider('islPlanar','islPlanar-v',v=>islUniforms.uPlanar.value=v);
+    bindSlider('islHaze','islHaze-v',v=>islUniforms.uHaze.value=v);
     bindSlider('mtnHeight','mtnHeight-v',v=>mtnUniforms.uHeight.value=v,' '); bindSlider('mtnFold','mtnFold-v',v=>mtnUniforms.uFold.value=v);
-    bindSlider('mtnPeak','mtnPeak-v',v=>mtnUniforms.uPeak.value=v); bindSlider('ring360H','ring360H-v',v=>sharedUniforms.uRing360H.value=v,'x');
+    bindSlider('mtnPeak','mtnPeak-v',v=>mtnUniforms.uPeak.value=v); bindSlider('mtnPlanar','mtnPlanar-v',v=>mtnUniforms.uPlanar.value=v);
+    bindSlider('mtnSnow','mtnSnow-v',v=>mtnUniforms.uSnow.value=v); bindSlider('ring360H','ring360H-v',v=>sharedUniforms.uRing360H.value=v,'x');
 
     let state = { chaosOn: true, heisOn: false, breathOn: true };
     document.querySelectorAll('#sky-grid .c-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('#sky-grid .c-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); const item=TRIADS[btn.dataset.key]; sharedUniforms.uSkySemi.value.set(...item.semi); document.getElementById('sky-readout').textContent=item.label; }; });
     document.querySelectorAll('#sand-grid .c-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('#sand-grid .c-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); const item=TRIADS[btn.dataset.key]; sharedUniforms.uSandSemi.value.set(...item.semi); sharedUniforms.uSandRatios.value.set(...toRatios(item.semi)); document.getElementById('sand-readout').textContent=item.label; }; });
     document.getElementById('btn-ghibli-mode').onclick = (e) => { const n = sharedUniforms.uGhibliOn.value > 0.5 ? 0.0 : 1.0; sharedUniforms.uGhibliOn.value = n; e.target.textContent = n > 0.5 ? '🎨 光影：吉卜力暖沙 (撳轉無吉卜力深影)' : '📷 光影：無吉卜力真物理深影 (撳轉吉卜力)'; };
     document.getElementById('btn-cut-mode').onclick = (e) => { const n = sharedUniforms.uCutMode.value < 0.5 ? 1.0 : 0.0; sharedUniforms.uCutMode.value = n; e.target.textContent = n < 0.5 ? '🔪 切刀：底部縮切 (保尖峰)' : '🔪 切刀：頂部削平 (平頂台地)'; };
-    document.getElementById('btn-sea-mode').onclick = (e) => { const n = sharedUniforms.uQuantumSwing.value < 0.5 ? 1.0 : 0.0; sharedUniforms.uQuantumSwing.value = n; e.target.textContent = n > 0.5 ? '🌊 海款：2號大浪海 (撳轉1號)' : '🌊 海款：1號平靜海 (撳轉2號)'; };
+    document.getElementById('btn-sea-mode').onclick = (e) => { const n = sharedUniforms.uQuantumSwing.value < 0.5 ? 1.0 : 0.0; sharedUniforms.uQuantumSwing.value = n; e.target.textContent = n > 0.5 ? '🌊 海款：2號狂浪海 (撳轉1號)' : '🌊 海款：1號平靜海 (撳轉2號狂浪)'; };
     document.getElementById('btn-chaos').onclick = (e) => { state.chaosOn = !state.chaosOn; sharedUniforms.uChaosOn.value = state.chaosOn ? 1.0 : 0.0; e.target.classList.toggle('on-chaos', state.chaosOn); e.target.textContent = state.chaosOn ? '🌀 混沌海鹽: 開' : '🌀 混沌海鹽: 停'; };
     document.getElementById('btn-heis').onclick = (e) => { state.heisOn = !state.heisOn; e.target.classList.toggle('on-heis', state.heisOn); e.target.textContent = state.heisOn ? '⚛️ 海浪測不準: 開' : '⚛️ 海浪測不準: 關'; };
     document.getElementById('btn-breath').onclick = (e) => { state.breathOn = !state.breathOn; e.target.classList.toggle('on-breath', state.breathOn); e.target.textContent = state.breathOn ? '🫁 海浪呼吸: 開' : '🫁 海浪呼吸: 關'; };
@@ -489,23 +546,13 @@
     document.getElementById('btn-plane-type').onclick = (e) => { isPaper = !isPaper; wrightGroup.visible = !isPaper; paperGroup.visible = isPaper; e.target.textContent = isPaper ? '📄 機型：型格折紙飛機 (撳轉萊特雙翼機)' : '🛩️ 機型：萊特兄弟雙翼機 (撳轉折紙飛機)'; };
 
     const pauseBtn = document.getElementById('dp-pause');
-    const toggleHoverPause = () => {
-      isPaused = !isPaused;
-      pauseBtn.textContent = isPaused ? '▶️' : '⏸️';
-      pauseBtn.classList.toggle('paused', isPaused);
-      document.getElementById('fly-stat').textContent = isPaused ? '⏸️ 半空定格睇山中' : '高空巡航中';
-    };
+    const toggleHoverPause = () => { isPaused = !isPaused; pauseBtn.textContent = isPaused ? '▶️' : '⏸️'; pauseBtn.classList.toggle('paused', isPaused); document.getElementById('fly-stat').textContent = isPaused ? '⏸️ 半空定格睇山中' : '高空巡航中'; };
     pauseBtn.onclick = toggleHoverPause;
-
-    const relaunchFlight = () => {
-      pilotActive = true; isPaused = false; rolloutTimer = -1;
-      pauseBtn.textContent = '⏸️'; pauseBtn.classList.remove('paused');
+    document.getElementById('btn-pilot-mode').onclick = () => {
+      pilotActive = true; isPaused = false; rolloutTimer = -1; pauseBtn.textContent = '⏸️'; pauseBtn.classList.remove('paused');
       jetState.x = -12.0; jetState.y = 14.5; jetState.z = -26.0; jetState.yaw = 0.28; jetState.speed = 0.55;
-      document.getElementById('fly-dpad').classList.remove('hide');
-      document.getElementById('fly-stat').textContent = '高空巡航中';
+      document.getElementById('fly-dpad').classList.remove('hide'); document.getElementById('fly-stat').textContent = '高空巡航中';
     };
-    document.getElementById('btn-pilot-mode').onclick = relaunchFlight;
-
     [['dp-u','u'],['dp-d','d'],['dp-l','l'],['dp-r','r']].forEach(([id, k]) => {
       const el = document.getElementById(id);
       el.onpointerdown = e => { e.preventDefault(); if (isPaused && k === 'u') toggleHoverPause(); hold[k] = true; };
@@ -517,7 +564,7 @@
     function animate() {
       requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05), t = clock.getElapsedTime();
-      sharedUniforms.uTime.value = t;
+      sharedUniforms.uTime.value = t; sharedUniforms.uRippleTime.value += dt;
       const wavePulse = state.breathOn ? Math.pow(Math.sin(t * 0.9) * 0.5 + 0.5, 3.0) : 0.4;
       sharedUniforms.uPulseGate.value = wavePulse;
       if (state.heisOn) sharedUniforms.uBreathT.value += dt * (0.08 + wavePulse * 1.25);
@@ -528,44 +575,34 @@
         propL.rotation.z += dt * 22; propR.rotation.z -= dt * 22;
         const floorY = 0.42;
         if (!isPaused) {
-          if (hold.l) jetState.yaw += 0.025;
-          if (hold.r) jetState.yaw -= 0.025;
+          if (hold.l) jetState.yaw += 0.025; if (hold.r) jetState.yaw -= 0.025;
           if (hold.u) { rolloutTimer = -1; jetState.speed = Math.min(1.05, jetState.speed + 0.02); jetState.y = Math.min(140.0, jetState.y + 0.38); }
           if (hold.d) { jetState.y = Math.max(floorY, jetState.y - 0.45); }
-
           const isGrounded = (jetState.y <= floorY + 0.04);
           if (isGrounded) {
-            // 觸地滑行 1 秒後自動收工跳返岸邊海景視角
             if (rolloutTimer < 0) rolloutTimer = 1.05;
-            rolloutTimer -= dt;
-            jetState.speed *= 0.96;
+            rolloutTimer -= dt; jetState.speed *= 0.96;
             document.getElementById('fly-hud').textContent = `🛬 觸地滑行減速中... ${Math.max(0, rolloutTimer).toFixed(1)}s 後自動收工`;
             if (rolloutTimer <= 0) {
-              pilotActive = false; rolloutTimer = -1;
-              document.getElementById('fly-dpad').classList.add('hide');
-              document.getElementById('fly-stat').textContent = '已滑行降落收工';
+              pilotActive = false; rolloutTimer = -1; document.getElementById('fly-dpad').classList.add('hide'); document.getElementById('fly-stat').textContent = '已滑行降落收工';
               camera.position.set(-10.5, 4.5, 16.5); controls.target.set(0, 1.8, -4.0);
             }
           } else {
             if (!hold.u) jetState.speed += (0.55 - jetState.speed) * 0.04;
             document.getElementById('fly-hud').textContent = `高 ${Math.round(jetState.y)}m | 撳中間 ⏸️ 定格睇山 | ▼ 觸地滑行1秒收工`;
           }
-
-          jetState.x -= Math.sin(jetState.yaw) * jetState.speed;
-          jetState.z -= Math.cos(jetState.yaw) * jetState.speed;
+          jetState.x -= Math.sin(jetState.yaw) * jetState.speed; jetState.z -= Math.cos(jetState.yaw) * jetState.speed;
           planeGroup.position.set(jetState.x, jetState.y, jetState.z);
           planeGroup.rotation.set(isGrounded ? 0 : (hold.u ? 0.14 : (hold.d ? -0.15 : 0)), jetState.yaw, isGrounded ? 0 : (hold.l ? 0.36 : (hold.r ? -0.36 : 0)));
-
           if (pilotActive) {
             camera.position.lerp(new THREE.Vector3(jetState.x + Math.sin(jetState.yaw) * 16.5, jetState.y + 4.4, jetState.z + Math.cos(jetState.yaw) * 16.5), 0.14);
             controls.target.set(jetState.x - Math.sin(jetState.yaw) * 8, Math.max(1.2, jetState.y - 0.8), jetState.z - Math.cos(jetState.yaw) * 8);
           }
         } else {
-          document.getElementById('fly-hud').textContent = `⏸️ 半空定格懸停中（可拉開 4/5 號櫃桶改山，再撳 ▶️ 續飛）`;
+          document.getElementById('fly-hud').textContent = `⏸️ 半空定格懸停中（可拉開 1~5 號櫃桶推桿改山海，再撳 ▶️ 續飛）`;
         }
       }
-      controls.update();
-      renderer.render(scene, camera);
+      controls.update(); renderer.render(scene, camera);
     }
     animate();
   })();
