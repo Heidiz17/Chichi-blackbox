@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>黑盒抄錶室：真物理光學大氣散射 × 逐像素刀鋒圖騰 × 純三和弦</title>
+  <title>黑盒抄錶室：真物理光學大氣散射 × 混沌海鹽刀鋒圖騰 × 純三和弦</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body { background: #000000; color: #fff; height: 100dvh; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #canvas-3d { position: fixed; inset: 0; width: 100%; height: 100%; }
-
-    /* 純黑底部抄錶抽屜（無毛玻璃） */
     #drawer {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
       background: rgba(0, 0, 0, 0.94); border-top: 1px solid #222;
@@ -21,16 +19,12 @@
       display: flex; justify-content: space-between; align-items: center;
       font-size: 11px; font-weight: bold; color: #ffd700; margin-bottom: 6px;
     }
-    #tri-btn {
-      background: none; border: none; color: #1e90ff; font-size: 16px; padding: 2px 8px; cursor: pointer;
-    }
+    #tri-btn { background: none; border: none; color: #1e90ff; font-size: 16px; padding: 2px 8px; cursor: pointer; }
     .panel { display: flex; flex-direction: column; gap: 6px; }
     .panel.hidden { display: none; }
-
     .track-box { background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 6px; padding: 5px 7px; }
     .track-title { font-size: 10px; color: #aaa; margin-bottom: 4px; display: flex; justify-content: space-between; }
     .track-title b { color: #00ffcc; font-family: monospace; }
-
     .chord-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; }
     .c-btn {
       background: #141414; color: #bbb; border: 1px solid #2e2e2e; border-radius: 4px;
@@ -41,14 +35,12 @@
     .c-btn.active small { color: #93c5fd; }
     .c-btn.special { border-color: #581c87; }
     .c-btn.special.active { background: #3b0764; border-color: #d946ef; }
-
     .dual-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
     .mode-btn {
       background: #143326; color: #4ade80; border: 1px solid #22c55e;
       border-radius: 6px; padding: 6px 4px; font-size: 10.5px; font-weight: bold; text-align: center;
     }
     .mode-btn.sea { background: #0c2438; color: #38bdf8; border-color: #0284c7; }
-
     .tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
     .p-toggle {
       background: #111; color: #777; border: 1px solid #333; border-radius: 5px;
@@ -57,7 +49,6 @@
     .p-toggle.on-chaos  { background: #132a1c; color: #4ade80; border-color: #22c55e; }
     .p-toggle.on-heis   { background: #251738; color: #c084fc; border-color: #a855f7; }
     .p-toggle.on-breath { background: #10253f; color: #38bdf8; border-color: #0ea5e9; }
-
     .row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; }
     .row label { min-width: 126px; color: #ccc; }
     .row input[type=range] { flex: 1; accent-color: #ffd700; }
@@ -66,14 +57,12 @@
 </head>
 <body>
   <div id="canvas-3d"></div>
-
   <div id="drawer">
     <div id="drawer-head">
-      <span>🔭 真物理光學大氣散射 × 逐像素刀鋒圖騰 × 純三和弦</span>
+      <span>🔭 真物理大氣散射 × 混沌海鹽刀鋒沙脊 × 純三和弦</span>
       <button id="tri-btn">▼</button>
     </div>
     <div class="panel" id="panel">
-      <!-- 軌道 A：真物理大氣散射（遠厚白散射、近薄深邃、向陽金暈） -->
       <div class="track-box">
         <div class="track-title">
           <span>🌌 軌道 A：大氣光學散射（三和弦調頻）</span>
@@ -91,11 +80,9 @@
           <button class="c-btn special" data-key="dim">Dim<small>減三</small></button>
         </div>
       </div>
-
-      <!-- 軌道 B：逐像素刀鋒圖騰沙場 -->
       <div class="track-box">
         <div class="track-title">
-          <span>🏜️ 軌道 B：逐像素刀鋒圖騰（三和弦干涉）</span>
+          <span>🏜️ 軌道 B：流線刀鋒沙脊（三和弦＋混沌海鹽）</span>
           <b id="sand-readout">Dim 減三和弦 [0,3,6]</b>
         </div>
         <div class="chord-grid" id="sand-grid">
@@ -110,51 +97,43 @@
           <button class="c-btn special active" data-key="dim">Dim<small>減三</small></button>
         </div>
       </div>
-
       <div class="dual-bar">
         <button class="mode-btn" id="btn-cut-mode">🔪 切刀：底部縮切 (保尖峰)</button>
         <button class="mode-btn sea" id="btn-sea-mode">🌊 海款：1號平靜海 (撳轉2號)</button>
       </div>
-
       <div class="tri-grid">
-        <button class="p-toggle on-chaos" id="btn-chaos">🌀 混沌仔仔: 開</button>
+        <button class="p-toggle on-chaos" id="btn-chaos">🌀 混沌海鹽: 開</button>
         <button class="p-toggle on-heis" id="btn-heis">⚛️ 測不準: 永動</button>
         <button class="p-toggle on-breath" id="btn-breath">🫁 呼吸閘門: 開</button>
       </div>
-
       <div class="row">
         <label>🔭 大氣光學厚度 (遠白近深)</label>
-        <input type="range" id="optDepth" min="0.1" max="2.5" step="0.05" value="1.15" />
-        <span id="optDepth-v">1.15</span>
+        <input type="range" id="optDepth" min="0.1" max="2.5" step="0.05" value="0.85" />
+        <span id="optDepth-v">0.85</span>
       </div>
       <div class="row">
-        <label>☀️ 太陽米氏前向散射光暈</label>
-        <input type="range" id="mieGlow" min="0.0" max="2.0" step="0.05" value="0.95" />
-        <span id="mieGlow-v">0.95</span>
+        <label>🧂 混沌海鹽調味 (打散格仔)</label>
+        <input type="range" id="saltAmt" min="0.0" max="1.0" step="0.02" value="0.48" />
+        <span id="saltAmt-v">0.48</span>
       </div>
       <div class="row">
         <label>🔪 底部縮切深度 (露尖峰)</label>
-        <input type="range" id="cutLevel" min="0.0" max="0.85" step="0.02" value="0.32" />
-        <span id="cutLevel-v">0.32</span>
+        <input type="range" id="cutLevel" min="0.0" max="0.85" step="0.02" value="0.28" />
+        <span id="cutLevel-v">0.28</span>
       </div>
       <div class="row">
-        <label>☢️ 質能手痕 (刀鋒圖騰銳度)</label>
-        <input type="range" id="massLev" min="0.5" max="4.0" step="0.1" value="2.40" />
-        <span id="massLev-v">2.40x</span>
+        <label>☢️ 質能手痕 (刀鋒沙脊銳度)</label>
+        <input type="range" id="massLev" min="0.5" max="4.0" step="0.1" value="2.20" />
+        <span id="massLev-v">2.20x</span>
       </div>
     </div>
   </div>
 
-
-
-
-    <script>
+  <script>
   (function () {
     'use strict';
-
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(64, window.innerWidth / window.innerHeight, 0.2, 900);
-    // 相機擺喺沙灘高處斜望向木屋與海平線，同時睇盡腳下沙場圖騰同遠方大海天空！
     camera.position.set(-11, 4.8, 16);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -191,19 +170,19 @@
       uTide: { value: 0.62 },
       uSunDir: { value: new THREE.Vector3(0.22, 0.22, -0.95).normalize() },
       uSkySemi: { value: new THREE.Vector3(0, 4, 7) },
-      uOptDepth: { value: 1.15 }, // 大氣光學厚度：控制遠處(地平線)白光折射勁、近處(天頂)薄而深邃
-      uMieGlow: { value: 0.95 },  // 太陽米氏前向散射光暈
+      uOptDepth: { value: 0.85 },
+      uMieGlow: { value: 0.95 },
       uSandSemi: { value: new THREE.Vector3(0, 3, 6) },
       uSandRatios: { value: new THREE.Vector3(...toRatios([0, 3, 6])) },
       uCutMode: { value: 0.0 },
-      uCutLevel: { value: 0.32 },
+      uCutLevel: { value: 0.28 },
       uChaosOn: { value: 1.0 },
-      uChaosAmt: { value: 0.65 },
+      uSaltAmt: { value: 0.48 },
       uHeisPhase: { value: 0.0 },
-      uMassLev: { value: 2.40 }
+      uMassLev: { value: 2.20 }
     };
 
-    // 1. 軌道 A：真物理光學大氣散射天空（Rayleigh 光學厚度 + Mie 前向散射，鎖死和弦色相唔亂漂！）
+    // 1. 軌道 A：真物理光學大氣散射天空
     const skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false, uniforms: sharedUniforms,
       vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
@@ -211,54 +190,31 @@
         uniform vec3 uSkySemi, uSunDir;
         uniform float uOptDepth, uMieGlow;
         varying vec3 vDir;
-
-        // 將三和弦音程轉換為大氣層吸收/散射係數（消除反物理毒綠）
         vec3 chordToScatterTint(float semi) {
           float f = pow(2.0, semi / 12.0);
           vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42));
           float excessG = max(0.0, raw.g - max(raw.r, raw.b));
-          raw.g -= excessG * 0.62;
-          raw.b += excessG * 0.45;
-          raw.r += excessG * 0.20;
+          raw.g -= excessG * 0.62; raw.b += excessG * 0.45; raw.r += excessG * 0.20;
           return raw;
         }
-
         void main() {
-          vec3 d = normalize(vDir);
-          vec3 sun = normalize(uSunDir);
+          vec3 d = normalize(vDir), sun = normalize(uSunDir);
           float h = clamp(d.y, 0.001, 1.0);
-
-          // 🔭 真物理光學厚度 (Optical Depth / Air Mass)：
-          // 望向地平線(遠處, h->0)視線穿過極厚大氣層，光線多次折射合體變白霧；望向天頂(近處, h->1)空氣薄，色彩深邃！
           float airMass = pow(1.0 - h, 2.4) * uOptDepth;
           float horizonWhiteMix = clamp(1.0 - exp(-airMass * 1.45), 0.0, 0.92);
-
-          // ☀️ 太陽角度散射（向陽面 vs 背陽面）
           float cosTheta = max(dot(d, sun), 0.0);
           float sunSide = pow(cosTheta, 2.0);
-
-          // 三和弦三音代表高空(五音)、中層(三音)、低空(根音)大氣折射色彩
-          vec3 cLow  = chordToScatterTint(uSkySemi.x);
-          vec3 cMid  = chordToScatterTint(uSkySemi.y);
-          vec3 cHigh = chordToScatterTint(uSkySemi.z);
-
-          // 結合晴空瑞利蔚藍基底，隨高度漸變
+          vec3 cLow = chordToScatterTint(uSkySemi.x), cMid = chordToScatterTint(uSkySemi.y), cHigh = chordToScatterTint(uSkySemi.z);
           vec3 zenithBlue = mix(vec3(0.16, 0.44, 0.86), cHigh, 0.55);
-          vec3 midSky     = mix(vec3(0.42, 0.68, 0.94), cMid, 0.50);
-          vec3 lowSky     = mix(vec3(0.88, 0.78, 0.68), cLow, 0.48);
-
+          vec3 midSky = mix(vec3(0.42, 0.68, 0.94), cMid, 0.50);
+          vec3 lowSky = mix(vec3(0.88, 0.78, 0.68), cLow, 0.48);
           vec3 skyCol = mix(lowSky, midSky, smoothstep(0.0, 0.28, h));
           skyCol = mix(skyCol, zenithBlue, smoothstep(0.22, 0.85, h));
-
-          // 遠處地平線厚大氣白光折射（向陽處帶暖金白，背陽處帶冷霧白）
           vec3 horizonScattering = mix(vec3(0.86, 0.90, 0.95), vec3(1.0, 0.93, 0.82), sunSide);
           skyCol = mix(skyCol, horizonScattering, horizonWhiteMix);
-
-          // ☀️ 米氏前向散射光暈 (Mie Scattering) + 太陽白金本體
           float mieHalo = (pow(cosTheta, 8.0) * 0.22 + pow(cosTheta, 64.0) * 0.55) * uMieGlow;
           float sunDisc = smoothstep(0.9993, 0.99985, cosTheta) * 1.8;
           skyCol += vec3(1.0, 0.92, 0.76) * mieHalo + vec3(1.0, 0.98, 0.92) * sunDisc;
-
           gl_FragColor = vec4(skyCol, 1.0);
         }
       `
@@ -270,34 +226,30 @@
     sunLight.position.set(22, 22, -95);
     scene.add(sunLight);
 
-    // 2. 高腳咖啡木屋參照（坐落喺岸邊 z = -2）
+    // 2. 高腳咖啡木屋
     const cafeGroup = new THREE.Group();
     cafeGroup.position.set(0, 0, -2.0);
     const woodMat = new THREE.MeshStandardMaterial({ color: 0x8c5832, roughness: 0.55 });
     const darkMat = new THREE.MeshStandardMaterial({ color: 0x3b2313, roughness: 0.45 });
     const basePad = new THREE.Mesh(new THREE.BoxGeometry(12.2, 0.25, 6.2), darkMat);
-    basePad.position.y = 0.125;
-    cafeGroup.add(basePad);
-
+    basePad.position.y = 0.125; cafeGroup.add(basePad);
     [[-5.0, -2.0], [5.0, -2.0], [-5.0, 2.0], [5.0, 2.0]].forEach(([px, pz]) => {
       const post = new THREE.Mesh(new THREE.BoxGeometry(0.28, 3.289, 0.28), darkMat);
-      post.position.set(px, 0.25 + 1.64, pz);
-      cafeGroup.add(post);
+      post.position.set(px, 0.25 + 1.64, pz); cafeGroup.add(post);
     });
     const cabin = new THREE.Mesh(new THREE.BoxGeometry(10.7, 2.55, 4.1), woodMat);
-    cabin.position.y = 0.25 + 3.289 + 1.275;
-    cafeGroup.add(cabin);
+    cabin.position.y = 0.25 + 3.289 + 1.275; cafeGroup.add(cabin);
     const roof = new THREE.Mesh(new THREE.BoxGeometry(11.4, 0.22, 4.8), darkMat);
-    roof.position.y = 0.25 + 3.289 + 2.65;
-    cafeGroup.add(roof);
+    roof.position.y = 0.25 + 3.289 + 2.65; cafeGroup.add(roof);
     scene.add(cafeGroup);
 
-    // 3. 軌道 B：逐像素刀鋒圖騰沙場（Pixel-Level Ridge Normal，重現你上次做山嗰種銳利立體幾何！）
+    // 3. 軌道 B：流線刀鋒沙脊（移植你《海森堡寧靜海》嘅混沌海鹽 ＋ 無理數旋轉角度，徹底打破格仔！）
     const sandGeo = new THREE.PlaneGeometry(84, 52, 160, 100);
     sandGeo.rotateX(-Math.PI / 2);
     const sandMat = new THREE.ShaderMaterial({
       uniforms: sharedUniforms,
       transparent: true,
+      extensions: { derivatives: true },
       vertexShader: `
         varying vec3 vWorldPos;
         void main() {
@@ -310,31 +262,42 @@
       `,
       fragmentShader: `
         uniform vec3 uSandSemi, uSandRatios, uSunDir;
-        uniform float uCutMode, uCutLevel, uChaosOn, uChaosAmt, uHeisPhase, uMassLev;
+        uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uHeisPhase, uMassLev;
         varying vec3 vWorldPos;
 
-        vec2 chaosFold(vec2 p, float amt, float heis) {
-          vec2 z = p * 0.14;
-          for (int i = 0; i < 2; i++) {
-            z = abs(z) / max(dot(z, z), 0.22) - (1.12 + 0.12 * sin(heis * 0.5));
-            z = mat2(0.8, -0.6, 0.6, 0.8) * z;
-          }
-          return z * amt * 1.15;
+        mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
+
+        // 🧂 你《海森堡寧靜海》嘅混沌海鹽雜湊（徹底打破規律格仔！）
+        float chaosSalt(vec2 p) {
+          vec2 i = floor(p), f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          float a = fract(sin(dot(i, vec2(127.1, 311.7))) * 43758.5453);
+          float b = fract(sin(dot(i + vec2(1.0, 0.0), vec2(127.1, 311.7))) * 43758.5453);
+          float c = fract(sin(dot(i + vec2(0.0, 1.0), vec2(127.1, 311.7))) * 43758.5453);
+          float d = fract(sin(dot(i + vec2(1.0, 1.0), vec2(127.1, 311.7))) * 43758.5453);
+          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
         }
 
-        // 🔪 核心刀鋒圖騰函數（逐像素計算，解像度無限高清！）
-        float totemHeight(vec2 xz) {
-          vec2 sp = xz + uChaosOn * chaosFold(xz, uChaosAmt, uHeisPhase);
-          float freq = 1.15;
-          float tm = uHeisPhase * 0.65;
+        // 🔪 移植自你自助山秘製海嘅「流線刀鋒波脊」算法（有長短變化、唔排隊、唔成格！）
+        float totemHeight(vec2 p) {
+          float t = uHeisPhase * 0.45;
+          vec2 q = p * 0.48;
 
-          // 三道 120度對稱三和弦波，用 1.0 - abs(sin) 造出像刀鋒一樣銳利嘅幾何脊線！
-          float r1 = 1.0 - abs(sin(dot(sp, vec2(1.0, 0.0)) * freq * uSandRatios.x - tm));
-          float r2 = 1.0 - abs(sin(dot(sp, vec2(-0.5, 0.866)) * freq * uSandRatios.y - tm * 1.12));
-          float r3 = 1.0 - abs(sin(dot(sp, vec2(-0.5, -0.866)) * freq * uSandRatios.z - tm * 1.24));
+          // 落混沌海鹽扭曲空間（打破正交格仔）
+          if (uChaosOn > 0.5) {
+            float salt = chaosSalt(q * 0.55 + vec2(t * 0.12, -t * 0.10));
+            q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.45;
+          }
 
-          float raw = (r1 + r2 + r3) / 3.0;
-          // ☢️ 質能手痕 (mc²聚變銳化)：推高指數令脊線收縮成刀切圖騰！
+          // 第一層：主和弦頻率 × 黃金比例流線波脊 (旋轉 0.45 弧度)
+          vec2 q1 = rot(0.45) * q + vec2(t * 0.25, -t * 0.18);
+          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + t * 0.2) * 0.85));
+
+          // 第二層：三音交錯細膩波脊 (旋轉 1.85 弧度，打破平行線)
+          vec2 q2 = rot(1.85) * (q * 1.65) + vec2(-t * 0.22, t * 0.20);
+          float w2 = 1.0 - abs(cos(q2.x * uSandRatios.z * 1.732 + sin(q2.y * uSandRatios.x * 1.31) * 0.75));
+
+          float raw = w1 * 0.58 + w2 * 0.42;
           float sharp = pow(clamp(raw, 0.0, 1.0), uMassLev);
 
           if (uCutMode < 0.5) {
@@ -349,26 +312,24 @@
         vec3 naturalSandTint(float semi) {
           float f = pow(2.0, semi / 12.0);
           vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42));
-          return mix(raw, vec3(0.86, 0.75, 0.56), 0.62);
+          return mix(raw, vec3(0.88, 0.77, 0.58), 0.72);
         }
 
         void main() {
           vec2 p = vWorldPos.xz;
-          // 逐像素計出極高精細度法線（每一條圖騰脊線都有向陽亮面同背陽暗影！）
-          float eps = 0.04;
+          float eps = 0.08;
           float hC = totemHeight(p);
           float hX = totemHeight(p + vec2(eps, 0.0));
           float hZ = totemHeight(p + vec2(0.0, eps));
-          vec3 N = normalize(vec3((hC - hX) * 4.5, 1.0, (hC - hZ) * 4.5));
+          vec3 N = normalize(vec3((hC - hX) * 3.4, 1.0, (hC - hZ) * 3.4));
 
-          vec3 baseSand = vec3(0.58, 0.48, 0.35);
+          vec3 baseSand = vec3(0.68, 0.56, 0.40);
           vec3 ridgeCol = mix(naturalSandTint(uSandSemi.x), naturalSandTint(uSandSemi.z), 0.5);
-          vec3 albedo   = mix(baseSand, ridgeCol, smoothstep(0.02, 0.85, hC));
+          vec3 albedo   = mix(baseSand, ridgeCol, smoothstep(0.05, 0.85, hC));
 
-          // 強對比平行光陰影 + 山谷暗角壓暗 (AO)
-          float diff = max(dot(N, normalize(uSunDir)), 0.18);
-          float valleyAO = mix(0.62, 1.12, smoothstep(0.0, 0.65, hC));
-          vec3 col = albedo * (0.35 + 0.95 * diff) * valleyAO;
+          float diff = max(dot(N, normalize(uSunDir)), 0.22);
+          float valleyAO = mix(0.75, 1.15, smoothstep(0.0, 0.65, hC));
+          vec3 col = albedo * (0.42 + 0.88 * diff) * valleyAO;
 
           float shoreFade = smoothstep(-8.5, -3.5, vWorldPos.z);
           gl_FragColor = vec4(col * shoreFade, shoreFade);
@@ -379,29 +340,26 @@
     sandMesh.position.y = 0.02;
     scene.add(sandMesh);
 
-    // 4. 兩款大海即時切換
+    // 4. 兩款大海
     const seaGeo = new THREE.PlaneGeometry(420, 420, 96, 96);
     seaGeo.rotateX(-Math.PI / 2);
     const seaMat = new THREE.ShaderMaterial({
-      side: THREE.DoubleSide,
-      uniforms: sharedUniforms,
+      side: THREE.DoubleSide, uniforms: sharedUniforms,
       vertexShader: `
         uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide;
         varying vec3 vWorldPos;
         void main() {
-          vec3 pos = position;
-          float t = uBreathT;
+          vec3 pos = position; float t = uBreathT;
           float shoreLine = -4.2 - uTide * 14.0;
           float shallowDamp = smoothstep(shoreLine + 3.0, shoreLine - 28.0, pos.z);
           float groupEnv = sin(pos.z * 0.045 + sin(pos.x * 0.025) * 1.2 - t * 0.45) * 0.5 + 0.5;
-          float waveAct  = smoothstep(uPause * 0.80, uPause * 0.80 + 0.20, groupEnv) * (0.25 + 0.75 * uPulseGate);
+          float waveAct = smoothstep(uPause * 0.80, uPause * 0.80 + 0.20, groupEnv) * (0.25 + 0.75 * uPulseGate);
           float swell = (sin(pos.z * 0.12 + cos(pos.x * 0.03) * 0.9 - t * 0.85) * 0.6 +
                          cos(pos.z * 0.20 - sin(pos.x * 0.04) * 0.8 - t * 1.10) * 0.4) * uFbm * 0.85;
           float calmDisp = swell * (0.20 + 0.80 * waveAct);
           float bigWaveDisp = (sin(pos.x * 0.22 + uTime * 1.8) * 0.18 + cos(pos.z * 0.25 + uTime * 2.0) * 0.16) * uFbm;
           pos.y += mix(calmDisp, bigWaveDisp, uQuantumSwing * 0.75) * shallowDamp;
-          vec4 wp4 = modelMatrix * vec4(pos, 1.0);
-          vWorldPos = wp4.xyz;
+          vec4 wp4 = modelMatrix * vec4(pos, 1.0); vWorldPos = wp4.xyz;
           gl_Position = projectionMatrix * viewMatrix * wp4;
         }
       `,
@@ -420,25 +378,20 @@
           return v;
         }
         void main() {
-          vec2 p = vWorldPos.xz;
-          float t = uBreathT;
+          vec2 p = vWorldPos.xz; float t = uBreathT;
           float tideLine = -4.2 - uTide * 14.0 + sin(p.x * 0.032) * 2.2;
           float foamEdge = exp(-pow((p.y - tideLine) * 0.68, 2.0)) * smoothstep(0.05, 0.5, uTide);
-
           float w1 = fbm(p * 0.25 + vec2(t * 0.15, -t * 0.22));
           vec3 normal = normalize(vec3((w1 - 0.5) * 0.35, 1.0, (w1 - 0.5) * 0.35));
           vec3 viewDir = normalize(cameraPosition - vWorldPos);
           float fresnel = pow(clamp(1.0 - max(dot(viewDir, normal), 0.0), 0.01, 1.0), 3.4);
-
           float depthGrad = smoothstep(5.0, 145.0, length(vWorldPos.xz - cameraPosition.xz));
           vec3 seaMode1 = mix(vec3(0.07, 0.38, 0.36), vec3(0.02, 0.15, 0.27), depthGrad);
           vec3 seaMode2 = mix(vec3(0.02, 0.76, 0.70), vec3(0.01, 0.22, 0.45), depthGrad);
           vec3 baseWater = mix(seaMode1, seaMode2, uQuantumSwing);
-
           vec3 col = mix(baseWater, vec3(0.45, 0.76, 0.96), clamp(fresnel * 0.85 + 0.10, 0.0, 0.92));
           float foamNoise = smoothstep(0.32, 0.75, fbm(p * 0.9 + vec2(0.0, uTime * 0.4)));
           col += vec3(0.98, 0.98, 0.96) * foamEdge * (0.42 + 0.48 * foamNoise);
-
           vec3 halfVec = normalize(normalize(uSunDir) + viewDir);
           col += vec3(1.0, 0.90, 0.62) * pow(clamp(dot(normal, halfVec), 0.001, 1.0), 120.0) * 2.0;
           gl_FragColor = vec4(col, 1.0);
@@ -447,17 +400,11 @@
     });
     const seaMesh = new THREE.Mesh(seaGeo, seaMat);
     seaMesh.position.y = -0.02;
-    scene.add(seaMesh);
+        scene.add(seaMesh);
 
-    // 5. UI 互動
     let state = { chaosOn: true, heisOn: true, breathOn: true, heisPhase: 0.0 };
-
-    const triBtn = document.getElementById('tri-btn');
-    const panel = document.getElementById('panel');
-    triBtn.onclick = () => {
-      panel.classList.toggle('hidden');
-      triBtn.textContent = panel.classList.contains('hidden') ? '▲' : '▼';
-    };
+    const triBtn = document.getElementById('tri-btn'), panel = document.getElementById('panel');
+    triBtn.onclick = () => { panel.classList.toggle('hidden'); triBtn.textContent = panel.classList.contains('hidden') ? '▲' : '▼'; };
 
     document.querySelectorAll('#sky-grid .c-btn').forEach(btn => {
       btn.onclick = () => {
@@ -468,7 +415,6 @@
         document.getElementById('sky-readout').textContent = item.label;
       };
     });
-
     document.querySelectorAll('#sand-grid .c-btn').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('#sand-grid .c-btn').forEach(b => b.classList.remove('active'));
@@ -484,25 +430,20 @@
     btnCutMode.onclick = () => {
       const next = sharedUniforms.uCutMode.value < 0.5 ? 1.0 : 0.0;
       sharedUniforms.uCutMode.value = next;
-      btnCutMode.textContent = next < 0.5
-        ? '🔪 切刀：底部縮切 (保尖峰)'
-        : '🔪 切刀：頂部削平 (平頂台地)';
+      btnCutMode.textContent = next < 0.5 ? '🔪 切刀：底部縮切 (保尖峰)' : '🔪 切刀：頂部削平 (平頂台地)';
     };
-
     const btnSeaMode = document.getElementById('btn-sea-mode');
     btnSeaMode.onclick = () => {
       const next = sharedUniforms.uQuantumSwing.value < 0.5 ? 1.0 : 0.0;
       sharedUniforms.uQuantumSwing.value = next;
-      btnSeaMode.textContent = next > 0.5
-        ? '🌊 海款：2號大浪海 (撳轉1號)'
-        : '🌊 海款：1號平靜海 (撳轉2號)';
+      btnSeaMode.textContent = next > 0.5 ? '🌊 海款：2號大浪海 (撳轉1號)' : '🌊 海款：1號平靜海 (撳轉2號)';
     };
 
     document.getElementById('btn-chaos').onclick = (e) => {
       state.chaosOn = !state.chaosOn;
       sharedUniforms.uChaosOn.value = state.chaosOn ? 1.0 : 0.0;
       e.target.classList.toggle('on-chaos', state.chaosOn);
-      e.target.textContent = state.chaosOn ? '🌀 混沌仔仔: 開' : '🌀 混沌仔仔: 停';
+      e.target.textContent = state.chaosOn ? '🌀 混沌海鹽: 開' : '🌀 混沌海鹽: 停';
     };
     document.getElementById('btn-heis').onclick = (e) => {
       state.heisOn = !state.heisOn;
@@ -516,23 +457,19 @@
     };
 
     document.getElementById('optDepth').oninput = (e) => {
-      const v = parseFloat(e.target.value);
-      sharedUniforms.uOptDepth.value = v;
+      const v = parseFloat(e.target.value); sharedUniforms.uOptDepth.value = v;
       document.getElementById('optDepth-v').textContent = v.toFixed(2);
     };
-    document.getElementById('mieGlow').oninput = (e) => {
-      const v = parseFloat(e.target.value);
-      sharedUniforms.uMieGlow.value = v;
-      document.getElementById('mieGlow-v').textContent = v.toFixed(2);
+    document.getElementById('saltAmt').oninput = (e) => {
+      const v = parseFloat(e.target.value); sharedUniforms.uSaltAmt.value = v;
+      document.getElementById('saltAmt-v').textContent = v.toFixed(2);
     };
     document.getElementById('cutLevel').oninput = (e) => {
-      const v = parseFloat(e.target.value);
-      sharedUniforms.uCutLevel.value = v;
+      const v = parseFloat(e.target.value); sharedUniforms.uCutLevel.value = v;
       document.getElementById('cutLevel-v').textContent = v.toFixed(2);
     };
     document.getElementById('massLev').oninput = (e) => {
-      const v = parseFloat(e.target.value);
-      sharedUniforms.uMassLev.value = v;
+      const v = parseFloat(e.target.value); sharedUniforms.uMassLev.value = v;
       document.getElementById('massLev-v').textContent = v.toFixed(2) + 'x';
     };
 
@@ -545,21 +482,15 @@
     const clock = new THREE.Clock();
     function animate() {
       requestAnimationFrame(animate);
-      const dt = Math.min(clock.getDelta(), 0.05);
-      const t = clock.getElapsedTime();
-
+      const dt = Math.min(clock.getDelta(), 0.05), t = clock.getElapsedTime();
       sharedUniforms.uTime.value = t;
       const wavePulse = Math.pow(Math.sin(t * 0.9) * 0.5 + 0.5, 3.0);
       sharedUniforms.uPulseGate.value = wavePulse;
       sharedUniforms.uBreathT.value += dt * (0.08 + wavePulse * 1.25);
-
       let effSpeed = 0.0;
-      if (state.heisOn) {
-        effSpeed = state.breathOn ? Math.pow(Math.max(0, Math.sin(t * 0.85)), 4.0) * 1.45 : 0.65;
-      }
+      if (state.heisOn) effSpeed = state.breathOn ? Math.pow(Math.max(0, Math.sin(t * 0.85)), 4.0) * 1.45 : 0.65;
       state.heisPhase += dt * effSpeed;
       sharedUniforms.uHeisPhase.value = state.heisPhase;
-
       controls.update();
       renderer.render(scene, camera);
     }
