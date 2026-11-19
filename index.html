@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>黑盒抄錶室：正弦波主骨幹 × 海風沙堤 × 吉卜力/真物理深影</title>
+  <title>黑盒抄錶室：海風推沙(+5%沙量) × 正弦波主骨幹 × 吉卜力/真物理深影</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
@@ -13,7 +13,7 @@
     #drawer {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
       background: rgba(0, 0, 0, 0.94); border-top: 1px solid #222;
-      padding: 8px 10px 14px; max-height: 68dvh; overflow-y: auto;
+      padding: 8px 10px 14px; max-height: 70dvh; overflow-y: auto;
     }
     #drawer-head {
       display: flex; justify-content: space-between; align-items: center;
@@ -51,7 +51,7 @@
     .p-toggle.on-heis   { background: #251738; color: #c084fc; border-color: #a855f7; }
     .p-toggle.on-breath { background: #10253f; color: #38bdf8; border-color: #0ea5e9; }
     .row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; }
-    .row label { min-width: 132px; color: #ccc; }
+    .row label { min-width: 134px; color: #ccc; }
     .row input[type=range] { flex: 1; accent-color: #ffd700; }
     .row span { min-width: 44px; text-align: right; color: #ffd700; font-family: monospace; }
   </style>
@@ -60,12 +60,11 @@
 
 
 
-
   <body>
   <div id="canvas-3d"></div>
   <div id="drawer">
     <div id="drawer-head">
-      <span>🔭 正弦波主骨幹 × 海風沙堤 × 吉卜力/真物理深影</span>
+      <span>🔭 海風推沙(+5%沙量) × 正弦波骨幹 × 吉卜力/深影</span>
       <button id="tri-btn">▼</button>
     </div>
     <div class="panel" id="panel">
@@ -88,7 +87,7 @@
       </div>
       <div class="track-box">
         <div class="track-title">
-          <span>🏜️ 軌道 B：正弦波沙丘骨幹（三和弦＋海風吹拂）</span>
+          <span>🏜️ 軌道 B：固體沙丘骨幹（無海森堡・純靠風吹）</span>
           <b id="sand-readout">Dim 減三和弦 [0,3,6]</b>
         </div>
         <div class="chord-grid" id="sand-grid">
@@ -110,8 +109,13 @@
       </div>
       <div class="tri-grid">
         <button class="p-toggle on-chaos" id="btn-chaos">🌀 混沌海鹽: 開</button>
-        <button class="p-toggle on-heis" id="btn-heis">⚛️ 測不準: 永動</button>
-        <button class="p-toggle on-breath" id="btn-breath">🫁 呼吸閘門: 開</button>
+        <button class="p-toggle on-heis" id="btn-heis">⚛️ 海浪測不準: 開</button>
+        <button class="p-toggle on-breath" id="btn-breath">🫁 海浪呼吸: 開</button>
+      </div>
+      <div class="row">
+        <label>🌬️ 海風風速 (0=沙定・風起沙移)</label>
+        <input type="range" id="windSpeed" min="0.0" max="1.5" step="0.05" value="0.35" />
+        <span id="windSpeed-v">0.35x</span>
       </div>
       <div class="row">
         <label>〰️ 正弦波主骨幹 (大細張力)</label>
@@ -195,7 +199,8 @@
       uCutLevel: { value: 0.28 },
       uChaosOn: { value: 1.0 },
       uSaltAmt: { value: 0.48 },
-      uHeisPhase: { value: 0.0 },
+      uWindSpeed: { value: 0.35 },
+      uWindPhase: { value: 0.0 },
       uMassLev: { value: 2.20 },
       uSineAmp: { value: 1.00 }
     };
@@ -261,7 +266,7 @@
 
 
 
-        // 3. 軌道 B：正弦波主骨幹 (uSineAmp 可調大細) ＋ 海風沙堤 ＋ 吉卜力/真物理深影
+        // 3. 軌道 B：固體沙丘（無海森堡自發永動・淨係海風 uWindPhase 先吹得郁！+5% 沙面覆蓋）
     const sandGeo = new THREE.PlaneGeometry(84, 52, 180, 120);
     sandGeo.rotateX(-Math.PI / 2);
     const sandMat = new THREE.ShaderMaterial({
@@ -270,7 +275,7 @@
       extensions: { derivatives: true },
       vertexShader: `
         uniform vec3 uSandRatios;
-        uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uHeisPhase, uMassLev, uSineAmp;
+        uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp;
         varying vec3 vWorldPos;
 
         mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
@@ -283,30 +288,30 @@
                  (hash21(i + vec2(1.0, 1.0)) - hash21(i + vec2(1.0, 0.0))) * u.x * u.y;
         }
 
-        float windField(vec2 p, float t) {
+        float windField(vec2 p, float w) {
           vec2 wp = rot(0.38) * p;
           wp.x *= 0.42;
-          float w1 = noise2(wp * 0.085 + vec2(t * 0.04, -t * 0.03));
-          float w2 = noise2(rot(1.1) * wp * 0.19 - vec2(t * 0.06, t * 0.04));
+          float w1 = noise2(wp * 0.085 + vec2(w * 0.14, -w * 0.10));
+          float w2 = noise2(rot(1.1) * wp * 0.19 - vec2(w * 0.18, w * 0.12));
           return w1 * 0.68 + w2 * 0.32;
         }
 
         float evalSandHeight(vec2 p) {
-          float t = uHeisPhase * 0.35;
-          float macroWind = windField(p, t);
+          float w = uWindPhase;
+          float macroWind = windField(p, w);
 
           vec2 q = rot(0.32) * p * 0.40;
           q.x *= 0.58;
-          q += vec2(macroWind * 2.4, sin(macroWind * 6.28318) * 1.0);
+          q += vec2(macroWind * 2.4 + w * 0.25, sin(macroWind * 6.28318) * 1.0);
 
           if (uChaosOn > 0.5) {
-            float salt = noise2(q * 0.65 + vec2(t * 0.10, -t * 0.08));
+            float salt = noise2(q * 0.65 + vec2(w * 0.12, -w * 0.09));
             q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.35;
           }
 
-          vec2 q1 = rot(0.45) * q + vec2(t * 0.20, -t * 0.14);
-          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + t * 0.16) * 0.85));
-          vec2 q2 = rot(1.85) * (q * 1.55) + vec2(-t * 0.18, t * 0.16);
+          vec2 q1 = rot(0.45) * q + vec2(w * 0.28, -w * 0.18);
+          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + w * 0.20) * 0.85));
+          vec2 q2 = rot(1.85) * (q * 1.55) + vec2(-w * 0.22, w * 0.18);
           float w2 = 1.0 - abs(cos(q2.x * uSandRatios.z * 1.732 + sin(q2.y * uSandRatios.x * 1.31) * 0.75));
 
           float sineCore = (w1 * 0.58 + w2 * 0.42) * uSineAmp;
@@ -328,14 +333,14 @@
           vec4 wp = modelMatrix * vec4(pos, 1.0);
           float h = evalSandHeight(wp.xz);
           float shoreDamp = smoothstep(-6.0, 2.0, wp.z);
-          wp.y += h * 0.76 * shoreDamp;
+          wp.y += h * 0.78 * shoreDamp;
           vWorldPos = wp.xyz;
           gl_Position = projectionMatrix * viewMatrix * wp;
         }
       `,
       fragmentShader: `
         uniform vec3 uSandSemi, uSandRatios, uSunDir;
-        uniform float uGhibliOn, uShadowDepth, uCutMode, uCutLevel, uChaosOn, uSaltAmt, uHeisPhase, uMassLev, uSineAmp;
+        uniform float uGhibliOn, uShadowDepth, uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp;
         varying vec3 vWorldPos;
 
         mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
@@ -348,28 +353,28 @@
                  (hash21(i + vec2(1.0, 1.0)) - hash21(i + vec2(1.0, 0.0))) * u.x * u.y;
         }
 
-        float windField(vec2 p, float t) {
+        float windField(vec2 p, float w) {
           vec2 wp = rot(0.38) * p;
           wp.x *= 0.42;
-          float w1 = noise2(wp * 0.085 + vec2(t * 0.04, -t * 0.03));
-          float w2 = noise2(rot(1.1) * wp * 0.19 - vec2(t * 0.06, t * 0.04));
+          float w1 = noise2(wp * 0.085 + vec2(w * 0.14, -w * 0.10));
+          float w2 = noise2(rot(1.1) * wp * 0.19 - vec2(w * 0.18, w * 0.12));
           return w1 * 0.68 + w2 * 0.32;
         }
 
         float totemHeight(vec2 p) {
-          float t = uHeisPhase * 0.35;
-          float macroWind = windField(p, t);
+          float w = uWindPhase;
+          float macroWind = windField(p, w);
           vec2 q = rot(0.32) * p * 0.40;
           q.x *= 0.58;
-          q += vec2(macroWind * 2.4, sin(macroWind * 6.28318) * 1.0);
+          q += vec2(macroWind * 2.4 + w * 0.25, sin(macroWind * 6.28318) * 1.0);
 
           if (uChaosOn > 0.5) {
-            float salt = noise2(q * 0.65 + vec2(t * 0.10, -t * 0.08));
+            float salt = noise2(q * 0.65 + vec2(w * 0.12, -w * 0.09));
             q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.35;
           }
-          vec2 q1 = rot(0.45) * q + vec2(t * 0.20, -t * 0.14);
-          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + t * 0.16) * 0.85));
-          vec2 q2 = rot(1.85) * (q * 1.55) + vec2(-t * 0.18, t * 0.16);
+          vec2 q1 = rot(0.45) * q + vec2(w * 0.28, -w * 0.18);
+          float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + w * 0.20) * 0.85));
+          vec2 q2 = rot(1.85) * (q * 1.55) + vec2(-w * 0.22, w * 0.18);
           float w2 = 1.0 - abs(cos(q2.x * uSandRatios.z * 1.732 + sin(q2.y * uSandRatios.x * 1.31) * 0.75));
 
           float sineCore = (w1 * 0.58 + w2 * 0.42) * uSineAmp;
@@ -426,13 +431,12 @@
       `
     });
     const sandMesh = new THREE.Mesh(sandGeo, sandMat);
-    sandMesh.position.y = -0.05;
+    sandMesh.position.y = -0.025; // 🏝️ 精準托高 +0.025，增加約 5% 露出水面嘅沙量！
     scene.add(sandMesh);
 
 
 
-
-        // 4. 兩款大海
+        // 4. 兩款大海（大海繼續擁有海森堡測不準湧浪）
     const seaGeo = new THREE.PlaneGeometry(420, 420, 96, 96);
     seaGeo.rotateX(-Math.PI / 2);
     const seaMat = new THREE.ShaderMaterial({
@@ -494,7 +498,7 @@
     seaMesh.position.y = -0.02;
     scene.add(seaMesh);
 
-    let state = { chaosOn: true, heisOn: true, breathOn: true, heisPhase: 0.0 };
+    let state = { chaosOn: true, heisOn: true, breathOn: true };
     const triBtn = document.getElementById('tri-btn'), panel = document.getElementById('panel');
     triBtn.onclick = () => { panel.classList.toggle('hidden'); triBtn.textContent = panel.classList.contains('hidden') ? '▲' : '▼'; };
 
@@ -549,14 +553,18 @@
     document.getElementById('btn-heis').onclick = (e) => {
       state.heisOn = !state.heisOn;
       e.target.classList.toggle('on-heis', state.heisOn);
-      e.target.textContent = state.heisOn ? '⚛️ 測不準: 永動' : '⚛️ 測不準: 凍結';
+      e.target.textContent = state.heisOn ? '⚛️ 海浪測不準: 開' : '⚛️ 海浪測不準: 關';
     };
     document.getElementById('btn-breath').onclick = (e) => {
       state.breathOn = !state.breathOn;
       e.target.classList.toggle('on-breath', state.breathOn);
-      e.target.textContent = state.breathOn ? '🫁 呼吸閘門: 開' : '🫁 呼吸閘門: 關';
+      e.target.textContent = state.breathOn ? '🫁 海浪呼吸: 開' : '🫁 海浪呼吸: 關';
     };
 
+    document.getElementById('windSpeed').oninput = (e) => {
+      const v = parseFloat(e.target.value); sharedUniforms.uWindSpeed.value = v;
+      document.getElementById('windSpeed-v').textContent = v.toFixed(2) + 'x';
+    };
     document.getElementById('sineAmp').oninput = (e) => {
       const v = parseFloat(e.target.value); sharedUniforms.uSineAmp.value = v;
       document.getElementById('sineAmp-v').textContent = v.toFixed(2) + 'x';
@@ -589,13 +597,13 @@
       requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05), t = clock.getElapsedTime();
       sharedUniforms.uTime.value = t;
-      const wavePulse = Math.pow(Math.sin(t * 0.9) * 0.5 + 0.5, 3.0);
+      const wavePulse = state.breathOn ? Math.pow(Math.sin(t * 0.9) * 0.5 + 0.5, 3.0) : 0.4;
       sharedUniforms.uPulseGate.value = wavePulse;
-      sharedUniforms.uBreathT.value += dt * (0.08 + wavePulse * 1.25);
-      let effSpeed = 0.0;
-      if (state.heisOn) effSpeed = state.breathOn ? Math.pow(Math.max(0, Math.sin(t * 0.85)), 4.0) * 1.45 : 0.65;
-      state.heisPhase += dt * effSpeed;
-      sharedUniforms.uHeisPhase.value = state.heisPhase;
+      if (state.heisOn) sharedUniforms.uBreathT.value += dt * (0.08 + wavePulse * 1.25);
+
+      // 🌬️ 沙有重量，無風唔會自己郁，淨係海風 uWindSpeed 先吹得郁！
+      sharedUniforms.uWindPhase.value += dt * (sharedUniforms.uWindSpeed.value * 0.55);
+
       controls.update();
       renderer.render(scene, camera);
     }
