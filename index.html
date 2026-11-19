@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>黑盒抄錶室：能量手痕 × 質能手痕 兩兄弟 × 雙軌1-7七和弦</title>
+  <title>黑盒抄錶室：白光大氣三和弦天空 × 底部縮切保峰圖騰 × 雙款大海</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
@@ -11,53 +11,55 @@
     body { background: #000000; color: #fff; height: 100dvh; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #canvas-3d { position: fixed; inset: 0; width: 100%; height: 100%; }
 
-    /* 底部純黑抄錶控制台（無毛玻璃） */
+    /* 純黑底部抄錶抽屜（無毛玻璃） */
     #drawer {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
       background: rgba(0, 0, 0, 0.94); border-top: 1px solid #222;
-      padding: 8px 12px 14px; max-height: 66dvh; overflow-y: auto;
+      padding: 8px 10px 14px; max-height: 64dvh; overflow-y: auto;
     }
     #drawer-head {
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 12px; font-weight: bold; color: #ffd700; margin-bottom: 8px;
+      font-size: 11.5px; font-weight: bold; color: #ffd700; margin-bottom: 6px;
     }
     #tri-btn {
       background: none; border: none; color: #1e90ff; font-size: 16px; padding: 2px 8px; cursor: pointer;
     }
-    .panel { display: flex; flex-direction: column; gap: 7px; }
+    .panel { display: flex; flex-direction: column; gap: 6px; }
     .panel.hidden { display: none; }
 
-    .track-box {
-      background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 6px; padding: 6px 8px;
-    }
-    .track-title {
-      font-size: 10.5px; color: #aaa; margin-bottom: 5px; display: flex; justify-content: space-between;
-    }
+    .track-box { background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 6px; padding: 5px 7px; }
+    .track-title { font-size: 10px; color: #aaa; margin-bottom: 4px; display: flex; justify-content: space-between; }
     .track-title b { color: #00ffcc; font-family: monospace; }
 
-    .chord-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .chord-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; }
     .c-btn {
-      background: #141414; color: #bbb; border: 1px solid #2e2e2e; border-radius: 5px;
-      padding: 4px 1px; font-size: 11px; font-weight: bold; text-align: center;
+      background: #141414; color: #bbb; border: 1px solid #2e2e2e; border-radius: 4px;
+      padding: 4px 0; font-size: 10px; font-weight: bold; text-align: center;
     }
-    .c-btn small { display: block; font-size: 7.5px; color: #777; font-weight: normal; }
+    .c-btn small { display: block; font-size: 7px; color: #777; font-weight: normal; }
     .c-btn.active { background: #14284b; color: #fff; border-color: #1e90ff; }
     .c-btn.active small { color: #93c5fd; }
+    .c-btn.special { border-color: #581c87; }
+    .c-btn.special.active { background: #3b0764; border-color: #d946ef; }
 
-    /* 物理兄弟與開關列 */
-    .toggle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
-    .tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-    .p-toggle {
-      background: #111; color: #777; border: 1px solid #333; border-radius: 6px;
-      padding: 6px 4px; font-size: 11px; font-weight: bold; text-align: center;
+    .dual-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .mode-btn {
+      background: #182232; color: #ffd700; border: 1px solid #3b82f6;
+      border-radius: 6px; padding: 6px 4px; font-size: 10.5px; font-weight: bold; text-align: center;
     }
-    .p-toggle.on-energy { background: #2b210e; color: #fbbf24; border-color: #f59e0b; }
-    .p-toggle.on-mass   { background: #2d1226; color: #f472b6; border-color: #ec4899; }
+    .mode-btn.bottom-cut { background: #143326; color: #4ade80; border-color: #22c55e; }
+    .mode-btn.sea { background: #0c2438; color: #38bdf8; border-color: #0284c7; }
+
+    .tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    .p-toggle {
+      background: #111; color: #777; border: 1px solid #333; border-radius: 5px;
+      padding: 5px 2px; font-size: 10.5px; font-weight: bold; text-align: center;
+    }
     .p-toggle.on-chaos  { background: #132a1c; color: #4ade80; border-color: #22c55e; }
     .p-toggle.on-heis   { background: #251738; color: #c084fc; border-color: #a855f7; }
     .p-toggle.on-breath { background: #10253f; color: #38bdf8; border-color: #0ea5e9; }
 
-    .row { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+    .row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; }
     .row label { min-width: 122px; color: #ccc; }
     .row input[type=range] { flex: 1; accent-color: #ffd700; }
     .row span { min-width: 44px; text-align: right; color: #ffd700; font-family: monospace; }
@@ -68,51 +70,54 @@
 
   <div id="drawer">
     <div id="drawer-head">
-      <span>📟 抄錶室：能量手痕 × 質能手痕 兩兄弟 × 雙軌七和弦</span>
+      <span>🔬 抄錶室：白光大氣三和弦天空 × 底部縮切保峰圖騰</span>
       <button id="tri-btn">▼</button>
     </div>
     <div class="panel" id="panel">
-      <!-- 軌道 A：天空光譜（純和弦半音算色） -->
+      <!-- 軌道 A：天空光譜（3音三和弦 ＋ 白色大氣散射混合，無螢光綠） -->
       <div class="track-box">
         <div class="track-title">
-          <span>🌌 軌道 A：天空光譜（純音程算色）</span>
-          <b id="sky-readout">1級 Imaj7 [0,4,7,11]</b>
+          <span>🌌 軌道 A：天空（3音三和弦＋白光大氣散射）</span>
+          <b id="sky-readout">1級 I大三 [0,4,7]</b>
         </div>
         <div class="chord-grid" id="sky-grid">
-          <button class="c-btn active" data-deg="1">1<small>Imaj7</small></button>
-          <button class="c-btn" data-deg="2">2<small>ii7</small></button>
-          <button class="c-btn" data-deg="3">3<small>iii7</small></button>
-          <button class="c-btn" data-deg="4">4<small>IVmaj7</small></button>
-          <button class="c-btn" data-deg="5">5<small>V7</small></button>
-          <button class="c-btn" data-deg="6">6<small>vi7</small></button>
-          <button class="c-btn" data-deg="7">7<small>viiø7</small></button>
+          <button class="c-btn active" data-key="1">1<small>Maj</small></button>
+          <button class="c-btn" data-key="2">2<small>min</small></button>
+          <button class="c-btn" data-key="3">3<small>min</small></button>
+          <button class="c-btn" data-key="4">4<small>Maj</small></button>
+          <button class="c-btn" data-key="5">5<small>Maj</small></button>
+          <button class="c-btn" data-key="6">6<small>min</small></button>
+          <button class="c-btn" data-key="7">7<small>vii°</small></button>
+          <button class="c-btn special" data-key="aug">Aug<small>增三</small></button>
+          <button class="c-btn special" data-key="dim">Dim<small>減三</small></button>
         </div>
       </div>
 
-      <!-- 軌道 B：地面沙場（波形＋沙色純音程算色） -->
+      <!-- 軌道 B：沙場圖騰（純三和弦波形＋算色） -->
       <div class="track-box">
         <div class="track-title">
-          <span>🏜️ 軌道 B：地面沙場（波形＋沙色純音程算色）</span>
-          <b id="sand-readout">7級 viiø7 [11,14,17,21]</b>
+          <span>🏜️ 軌道 B：沙場圖騰（3音波形＋自然沙色）</span>
+          <b id="sand-readout">Dim 減三和弦 [0,3,6]</b>
         </div>
         <div class="chord-grid" id="sand-grid">
-          <button class="c-btn" data-deg="1">1<small>Imaj7</small></button>
-          <button class="c-btn" data-deg="2">2<small>ii7</small></button>
-          <button class="c-btn" data-deg="3">3<small>iii7</small></button>
-          <button class="c-btn" data-deg="4">4<small>IVmaj7</small></button>
-          <button class="c-btn" data-deg="5">5<small>V7</small></button>
-          <button class="c-btn" data-deg="6">6<small>vi7</small></button>
-          <button class="c-btn active" data-deg="7">7<small>viiø7</small></button>
+          <button class="c-btn" data-key="1">1<small>Maj</small></button>
+          <button class="c-btn" data-key="2">2<small>min</small></button>
+          <button class="c-btn" data-key="3">3<small>min</small></button>
+          <button class="c-btn" data-key="4">4<small>Maj</small></button>
+          <button class="c-btn" data-key="5">5<small>Maj</small></button>
+          <button class="c-btn" data-key="6">6<small>min</small></button>
+          <button class="c-btn" data-key="7">7<small>vii°</small></button>
+          <button class="c-btn special" data-key="aug">Aug<small>增三</small></button>
+          <button class="c-btn special active" data-key="dim">Dim<small>減三</small></button>
         </div>
       </div>
 
-      <!-- 手痕兩兄弟獨立開關（可單開、可雙開、可全關） -->
-      <div class="toggle-grid">
-        <button class="p-toggle on-energy" id="btn-energy">⚡ 能量手痕 (位動轉換): 開</button>
-        <button class="p-toggle on-mass" id="btn-mass">☢️ 質能手痕 (E=mc²聚變): 開</button>
+      <!-- 🔪 切刀模式對比（底部縮切 vs 頂部削平） ＋ 🌊 兩款海即時切換 -->
+      <div class="dual-bar">
+        <button class="mode-btn bottom-cut" id="btn-cut-mode">🔪 切刀：底部縮切 (保尖峰)</button>
+        <button class="mode-btn sea" id="btn-sea-mode">🌊 海款：1號平靜海 (撳轉2號)</button>
       </div>
 
-      <!-- 三大背景物理開關 -->
       <div class="tri-grid">
         <button class="p-toggle on-chaos" id="btn-chaos">🌀 混沌仔仔: 開</button>
         <button class="p-toggle on-heis" id="btn-heis">⚛️ 測不準: 永動</button>
@@ -120,40 +125,37 @@
       </div>
 
       <div class="row">
-        <label>⚡ 能量手痕槓桿 (跳躍)</label>
-        <input type="range" id="energyLev" min="0.1" max="2.5" step="0.05" value="1.15" />
-        <span id="energyLev-v">1.15x</span>
+        <label>☁️ 七色合體白光混合</label>
+        <input type="range" id="atmoWhite" min="0" max="1.0" step="0.02" value="0.58" />
+        <span id="atmoWhite-v">58%</span>
       </div>
       <div class="row">
-        <label>☢️ 質能手痕槓桿 (mc²)</label>
-        <input type="range" id="massLev" min="0.1" max="2.5" step="0.05" value="1.20" />
-        <span id="massLev-v">1.20x</span>
+        <label>🔪 切刀深度 (Cut Level)</label>
+        <input type="range" id="cutLevel" min="0.0" max="0.85" step="0.02" value="0.38" />
+        <span id="cutLevel-v">0.38</span>
       </div>
       <div class="row">
-        <label>🏜️ 浮沙粒子維數 (粒)</label>
-        <input type="range" id="sandDim" min="0" max="800" step="20" value="360" />
-        <span id="sandDim-v">360粒</span>
+        <label>⚡ 能量手痕 (尖峰拉高)</label>
+        <input type="range" id="energyLev" min="0.1" max="2.5" step="0.05" value="1.25" />
+        <span id="energyLev-v">1.25x</span>
       </div>
       <div class="row">
-        <label>🌀 混沌扭曲度 (Chaos)</label>
-        <input type="range" id="chaosAmt" min="0" max="2.0" step="0.05" value="0.75" />
-        <span id="chaosAmt-v">0.75</span>
-      </div>
-      <div class="row">
-        <label>🛑 沙場最高Y限幅</label>
-        <input type="range" id="maxY" min="0.05" max="0.60" step="0.01" value="0.24" />
-        <span id="maxY-v">0.24m</span>
+        <label>☢️ 質能手痕 (mc²圖騰銳化)</label>
+        <input type="range" id="massLev" min="0.2" max="3.0" step="0.05" value="1.55" />
+        <span id="massLev-v">1.55x</span>
       </div>
     </div>
   </div>
 
-  <script>
+
+
+    <script>
   (function () {
     'use strict';
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.2, 900);
-    camera.position.set(-14, 5.5, 21);
+    const camera = new THREE.PerspectiveCamera(64, window.innerWidth / window.innerHeight, 0.2, 900);
+    camera.position.set(-14, 5.2, 22);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -164,76 +166,102 @@
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.target.set(0, 2.0, -3);
+    controls.target.set(0, 1.8, -5);
 
-    const DIATONIC_7TH = {
-      1: { label: '1級 Imaj7 [0,4,7,11]',   semi: [0, 4, 7, 11] },
-      2: { label: '2級 ii7 [2,5,9,12]',     semi: [2, 5, 9, 12] },
-      3: { label: '3級 iii7 [4,7,11,14]',   semi: [4, 7, 11, 14] },
-      4: { label: '4級 IVmaj7 [5,9,12,16]', semi: [5, 9, 12, 16] },
-      5: { label: '5級 V7 [7,11,14,17]',    semi: [7, 11, 14, 17] },
-      6: { label: '6級 vi7 [9,12,16,19]',   semi: [9, 12, 16, 19] },
-      7: { label: '7級 viiø7 [11,14,17,21]',semi: [11, 14, 17, 21] }
+    const TRIADS = {
+      '1':   { label: '1級 I大三 [0,4,7]',     semi: [0, 4, 7] },
+      '2':   { label: '2級 ii小三 [2,5,9]',    semi: [2, 5, 9] },
+      '3':   { label: '3級 iii小三 [4,7,11]',  semi: [4, 7, 11] },
+      '4':   { label: '4級 IV大三 [5,9,12]',   semi: [5, 9, 12] },
+      '5':   { label: '5級 V大三 [7,11,14]',   semi: [7, 11, 14] },
+      '6':   { label: '6級 vi小三 [9,12,16]',  semi: [9, 12, 16] },
+      '7':   { label: '7級 vii°減三 [11,14,17]',semi: [11, 14, 17] },
+      'aug': { label: 'Aug 增三和弦 [0,4,8]',  semi: [0, 4, 8] },
+      'dim': { label: 'Dim 減三和弦 [0,3,6]',  semi: [0, 3, 6] }
     };
     const toRatios = (semi) => semi.map(s => Math.pow(2, s / 12));
 
-    // 1. 軌道 A：天空光譜（零自訂色，純音程半音算色）
-    const skyUniforms = {
-      uSkySemi: { value: new THREE.Vector4(0, 4, 7, 11) },
+    const sharedUniforms = {
+      uTime: { value: 0 },
+      uBreathT: { value: 0 },
+      uPulseGate: { value: 1.0 },
+      uQuantumSwing: { value: 0.0 },
+      uSolarPower: { value: 3.2 },
+      uFbm: { value: 0.78 },
+      uPause: { value: 0.65 },
+      uTide: { value: 0.62 },
+      uHeis: { value: 0.22 },
+      uSunDir: { value: new THREE.Vector3(0.18, 0.24, -0.95).normalize() },
+      uSkySemi: { value: new THREE.Vector3(0, 4, 7) },
+      uAtmoWhite: { value: 0.58 }, // 七色合體白光大氣散射混合度
+      uSandSemi: { value: new THREE.Vector3(0, 3, 6) },
+      uSandRatios: { value: new THREE.Vector3(...toRatios([0, 3, 6])) },
+      uCutMode: { value: 0.0 },    // 0.0 = 底部縮切(保尖峰), 1.0 = 頂部削平(平頂台地)
+      uCutLevel: { value: 0.38 },
       uChaosOn: { value: 1.0 },
-      uChaosAmt: { value: 0.75 },
+      uChaosAmt: { value: 0.65 },
       uHeisPhase: { value: 0.0 },
-      uSunDir: { value: new THREE.Vector3(0.22, 0.24, -0.94).normalize() }
+      uEnergyLev: { value: 1.25 },
+      uMassLev: { value: 1.55 },
+      uWindDir: { value: new THREE.Vector2(0.85, 0.52).normalize() }
     };
 
+    // 1. 軌道 A：白光大氣散射 × 3音三和弦天空（消除假綠，還原真實大氣通透感！）
     const skyMat = new THREE.ShaderMaterial({
-      side: THREE.BackSide, depthWrite: false, uniforms: skyUniforms,
+      side: THREE.BackSide, depthWrite: false, uniforms: sharedUniforms,
       vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: `
-        uniform vec4 uSkySemi;
-        uniform float uChaosOn, uChaosAmt, uHeisPhase;
-        uniform vec3 uSunDir;
+        uniform vec3 uSkySemi, uSunDir;
+        uniform float uAtmoWhite, uChaosOn, uChaosAmt, uHeisPhase;
         varying vec3 vDir;
 
-        vec3 pitchToSpectrum(float semitone, float shift) {
-          float freq = pow(2.0, semitone / 12.0);
-          vec3 phase = vec3(0.0, 0.333, 0.667) + freq * 0.42 + shift;
-          return 0.5 + 0.5 * cos(6.28318 * phase);
+        // 物理瑞利大氣光譜：過濾純毒綠，並與七色合體白光/晴空藍散射混合
+        vec3 atmosphericChordColor(float semi, float shift, float heightFactor) {
+          float f = pow(2.0, semi / 12.0);
+          vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42 + shift));
+
+          // 壓抑過度突兀嘅純綠通道（真實大氣散射綠光會轉化成青藍或暖金）
+          float excessGreen = max(0.0, raw.g - max(raw.r, raw.b));
+          raw.g -= excessGreen * 0.58;
+          raw.b += excessGreen * 0.42;
+          raw.r += excessGreen * 0.22;
+
+          // 七色合體變白光：地平線偏暖白霧氣，高空偏晴空蔚藍白光
+          vec3 rayleighSky = mix(vec3(0.96, 0.94, 0.90), vec3(0.58, 0.78, 0.98), heightFactor);
+          return mix(raw, rayleighSky, uAtmoWhite);
         }
 
         void main() {
           vec3 d = normalize(vDir);
           float h = clamp(d.y, 0.0, 1.0);
-          float chaosWarp = uChaosOn * sin(d.x * 4.5 + d.z * 3.8 + uHeisPhase * 0.4) * 0.08 * uChaosAmt;
-          float quantumShift = uHeisPhase * 0.03;
+          float cw = uChaosOn * sin(d.x * 4.0 + d.z * 3.5 + uHeisPhase * 0.35) * 0.05 * uChaosAmt;
+          float qs = uHeisPhase * 0.02;
 
-          vec3 cRoot = pitchToSpectrum(uSkySemi.x, quantumShift + chaosWarp);
-          vec3 c3rd  = pitchToSpectrum(uSkySemi.y, quantumShift - chaosWarp);
-          vec3 c5th  = pitchToSpectrum(uSkySemi.z, quantumShift + chaosWarp * 0.5);
-          vec3 c7th  = pitchToSpectrum(uSkySemi.w, quantumShift);
+          // 根音(地平線)、三音(中層)、五音(天頂)
+          vec3 c1 = atmosphericChordColor(uSkySemi.x, qs + cw, 0.1);
+          vec3 c3 = atmosphericChordColor(uSkySemi.y, qs - cw, 0.5);
+          vec3 c5 = atmosphericChordColor(uSkySemi.z, qs, 0.95);
 
-          vec3 col = mix(cRoot, c3rd, smoothstep(0.0, 0.22, h));
-          col = mix(col, c5th, smoothstep(0.18, 0.55, h));
-          col = mix(col, c7th, smoothstep(0.48, 0.95, h));
+          vec3 col = mix(c1, c3, smoothstep(0.0, 0.30, h));
+          col = mix(col, c5, smoothstep(0.25, 0.85, h));
 
+          // 太陽白金核心與散射光暈
           float sunAmt = max(dot(d, normalize(uSunDir)), 0.0);
-          float core = smoothstep(0.9993, 0.99985, sunAmt);
-          float halo = pow(sunAmt, 90.0) * 0.45;
-          col += (cRoot + c7th) * 0.5 * halo + vec3(1.0) * core * 1.4;
+          col += vec3(1.0, 0.96, 0.86) * (pow(sunAmt, 85.0) * 0.42 + smoothstep(0.9993, 0.99985, sunAmt) * 1.6);
           gl_FragColor = vec4(col, 1.0);
         }
       `
     });
-    scene.add(new THREE.Mesh(new THREE.SphereGeometry(500, 28, 18), skyMat));
+    scene.add(new THREE.Mesh(new THREE.SphereGeometry(520, 28, 18), skyMat));
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.85));
-    const sunLight = new THREE.DirectionalLight(0xffffff, 1.25);
+    scene.add(new THREE.HemisphereLight(0xfff5e4, 0x4a3b2c, 0.85));
+    const sunLight = new THREE.DirectionalLight(0xffe8a3, 1.35);
     sunLight.position.set(22, 24, -90);
     scene.add(sunLight);
 
     // 2. 高腳咖啡木屋參照（0.25m 石屎底台）
     const cafeGroup = new THREE.Group();
-    cafeGroup.position.set(0, 0, -6.5);
+    cafeGroup.position.set(0, 0, -2.0);
     const woodMat = new THREE.MeshStandardMaterial({ color: 0x8c5832, roughness: 0.55 });
     const darkMat = new THREE.MeshStandardMaterial({ color: 0x3b2313, roughness: 0.45 });
     const basePad = new THREE.Mesh(new THREE.BoxGeometry(12.2, 0.25, 6.2), darkMat);
@@ -253,180 +281,176 @@
     cafeGroup.add(roof);
     scene.add(cafeGroup);
 
-    // 3. 軌道 B：地面沙場（七和弦波形 ＋ 零自訂色 ＋ 最高Y限幅）
-    const sandUniforms = {
-      uSandSemi: { value: new THREE.Vector4(11, 14, 17, 21) },
-      uSandRatios: { value: new THREE.Vector4(...toRatios([11, 14, 17, 21])) },
-      uChaosOn: { value: 1.0 },
-      uChaosAmt: { value: 0.75 },
-      uHeisPhase: { value: 0.0 },
-      uMaxY: { value: 0.24 },
-      uWindDir: { value: new THREE.Vector2(0.85, 0.52).normalize() },
-      uSunDir: skyUniforms.uSunDir
-    };
-
-    const sandGeo = new THREE.PlaneGeometry(76, 76, 165, 165);
+    // 3. 軌道 B：沙場圖騰（支援「底部縮切保尖峰」vs「頂部削平」即時對比！）
+    const sandGeo = new THREE.PlaneGeometry(80, 48, 190, 120);
     sandGeo.rotateX(-Math.PI / 2);
-
     const sandMat = new THREE.ShaderMaterial({
-      uniforms: sandUniforms,
+      uniforms: sharedUniforms,
       extensions: { derivatives: true },
+      transparent: true,
       vertexShader: `
-        uniform vec4 uSandRatios;
-        uniform float uChaosOn, uChaosAmt, uHeisPhase, uMaxY;
-        uniform vec2 uWindDir;
+        uniform vec3 uSandRatios;
+        uniform float uCutMode, uCutLevel, uChaosOn, uChaosAmt, uHeisPhase, uEnergyLev, uMassLev;
         varying vec3 vWorldPos;
-        varying float vHeight;
+        varying float vTotemVal;
+        varying float vExposed;
 
         vec2 chaosFold(vec2 p, float amt, float heis) {
-          vec2 z = p * 0.14;
-          for (int i = 0; i < 3; i++) {
-            z = abs(z) / max(dot(z, z), 0.15) - (1.15 + 0.12 * sin(heis * 0.7));
+          vec2 z = p * 0.12;
+          for (int i = 0; i < 2; i++) {
+            z = abs(z) / max(dot(z, z), 0.25) - (1.1 + 0.15 * sin(heis * 0.6));
             z = mat2(0.8, -0.6, 0.6, 0.8) * z;
           }
-          return z * amt * 1.4;
+          return z * amt * 1.05;
         }
 
         void main() {
           vec3 pos = position;
-          vec2 cOffset = uChaosOn * chaosFold(pos.xz, uChaosAmt, uHeisPhase);
-          vec2 samplePos = pos.xz + cOffset;
+          pos.z += 14.0;
 
-          float freq = 0.85;
-          float tMove = uHeisPhase * 0.85;
-          float w1 = sin(dot(samplePos, uWindDir) * freq * uSandRatios.x - tMove * 1.0);
-          float w2 = sin(dot(samplePos, vec2(uWindDir.y, -uWindDir.x)*0.6 + uWindDir*0.8) * freq * uSandRatios.y - tMove * 1.25) * 0.75;
-          float w3 = sin(dot(samplePos, uWindDir*0.9 - vec2(0.3, -0.4)) * freq * uSandRatios.z - tMove * 1.5) * 0.55;
-          float w4 = sin(dot(samplePos, vec2(-uWindDir.y, uWindDir.x)) * freq * uSandRatios.w - tMove * 1.8) * 0.42;
+          vec2 cOff = uChaosOn * chaosFold(pos.xz, uChaosAmt, uHeisPhase);
+          vec2 sp = pos.xz + cOff;
 
-          float rawY = ((w1 + w2 + w3 + w4) / 2.72) * 0.22 + 0.11;
-          float finalY = min(uMaxY, max(0.0, rawY));
+          float freq = 0.95;
+          float tm = uHeisPhase * 0.75;
+          float w1 = sin(dot(sp, vec2(1.0, 0.0)) * freq * uSandRatios.x - tm);
+          float w2 = sin(dot(sp, vec2(-0.5, 0.866)) * freq * uSandRatios.y - tm * 1.15);
+          float w3 = sin(dot(sp, vec2(-0.5, -0.866)) * freq * uSandRatios.z - tm * 1.3);
 
-          pos.y = finalY;
-          vHeight = finalY;
+          float rawWave = abs(w1 + w2 + w3) / 3.0;
+          // 質能手痕 (mc²聚變銳化)
+          float sharpWave = pow(rawWave, uMassLev);
+
+          float finalNormH = 0.0;
+          if (uCutMode < 0.5) {
+            // 🔪 模式 0：底部縮切（Bottom Cut）— 抬高沙床基準線，吞沒底部雜波，100%保留頂部銳利圖騰尖峰！
+            float cutBase = uCutLevel * 0.65;
+            finalNormH = max(0.0, sharpWave - cutBase) / max(1.0 - cutBase, 0.1);
+            vExposed = smoothstep(0.0, 0.08, sharpWave - cutBase);
+          } else {
+            // 🔪 模式 1：頂部削平（Top Clamp）— 超過上限就被削成平頂台地
+            float topCap = max(0.15, 1.0 - uCutLevel * 0.75);
+            finalNormH = min(topCap, sharpWave);
+            vExposed = 1.0;
+          }
+
+          // 安全高度上限 0.24m（絕不穿入 0.25m 木屋底台）
+          pos.y = min(0.24, finalNormH * 0.22 * uEnergyLev);
+          vTotemVal = finalNormH;
+
           vec4 wp = modelMatrix * vec4(pos, 1.0);
           vWorldPos = wp.xyz;
           gl_Position = projectionMatrix * viewMatrix * wp;
         }
       `,
       fragmentShader: `
-        uniform vec4 uSandSemi;
-        uniform float uMaxY, uHeisPhase;
-        uniform vec3 uSunDir;
+        uniform vec3 uSandSemi, uSunDir;
+        uniform float uHeisPhase;
         varying vec3 vWorldPos;
-        varying float vHeight;
+        varying float vTotemVal;
+        varying float vExposed;
 
-        vec3 pitchToSpectrum(float semitone, float shift) {
-          float freq = pow(2.0, semitone / 12.0);
-          vec3 phase = vec3(0.0, 0.333, 0.667) + freq * 0.42 + shift;
-          return 0.5 + 0.5 * cos(6.28318 * phase);
+        vec3 naturalSandChordColor(float semi, float shift) {
+          float f = pow(2.0, semi / 12.0);
+          vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42 + shift));
+          // 與天然暖沙白光混合，令沙色高級有質感
+          return mix(raw, vec3(0.88, 0.78, 0.60), 0.55);
         }
 
         void main() {
           vec3 N = normalize(cross(dFdy(vWorldPos), dFdx(vWorldPos)));
           if (N.y < 0.0) N = -N;
 
-          float hRatio = clamp(vHeight / max(uMaxY, 0.01), 0.0, 1.0);
-          float qShift = uHeisPhase * 0.025;
+          float qs = uHeisPhase * 0.02;
+          // 底部平沙基準面用溫暖沙底色，破沙而出嘅圖騰尖峰用和弦亮色！
+          vec3 flatBaseSand = vec3(0.56, 0.46, 0.34);
+          vec3 ridgeCol = mix(naturalSandChordColor(uSandSemi.x, qs), naturalSandChordColor(uSandSemi.z, qs), 0.5);
+          vec3 col = mix(flatBaseSand, ridgeCol, vExposed * smoothstep(0.05, 0.85, vTotemVal));
 
-          vec3 valleyCol = mix(pitchToSpectrum(uSandSemi.y, qShift), pitchToSpectrum(uSandSemi.w, qShift), 0.5) * 0.48;
-          vec3 crestCol  = mix(pitchToSpectrum(uSandSemi.x, qShift), pitchToSpectrum(uSandSemi.z, qShift), 0.5) * 0.92;
-          vec3 baseSand  = mix(valleyCol, crestCol, hRatio);
+          float diff = max(dot(N, normalize(uSunDir)), 0.28);
+          col *= (0.48 + 0.78 * diff);
 
-          float diff = max(dot(N, normalize(uSunDir)), 0.22);
-          vec3 col = baseSand * (0.45 + 0.80 * diff);
-          float edgeDist = length(vWorldPos.xz) / 42.0;
-          col *= mix(1.0, 0.65, smoothstep(0.4, 1.0, edgeDist));
+          float shoreFade = smoothstep(-9.0, -3.5, vWorldPos.z);
+          gl_FragColor = vec4(col * shoreFade, shoreFade);
+        }
+      `
+    });
+    const sandMesh = new THREE.Mesh(sandGeo, sandMat);
+    sandMesh.position.y = 0.02;
+    scene.add(sandMesh);
 
+    // 4. 兩款大海即時切換 (cartridge-sea_2 核心)
+    const seaGeo = new THREE.PlaneGeometry(420, 420, 96, 96);
+    seaGeo.rotateX(-Math.PI / 2);
+    const seaMat = new THREE.ShaderMaterial({
+      side: THREE.DoubleSide,
+      uniforms: sharedUniforms,
+      vertexShader: `
+        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide, uHeis;
+        varying vec3 vWorldPos;
+        void main() {
+          vec3 pos = position;
+          float t = uBreathT;
+          float shoreLine = -4.2 - uTide * 14.0;
+          float shallowDamp = smoothstep(shoreLine + 3.0, shoreLine - 28.0, pos.z);
+          float groupEnv = sin(pos.z * 0.045 + sin(pos.x * 0.025) * 1.2 - t * 0.45) * 0.5 + 0.5;
+          float waveAct  = smoothstep(uPause * 0.80, uPause * 0.80 + 0.20, groupEnv) * (0.25 + 0.75 * uPulseGate);
+          float swell = (sin(pos.z * 0.12 + cos(pos.x * 0.03) * 0.9 - t * 0.85) * 0.6 +
+                         cos(pos.z * 0.20 - sin(pos.x * 0.04) * 0.8 - t * 1.10) * 0.4) * uFbm * 0.85;
+          float calmDisp = swell * (0.20 + 0.80 * waveAct);
+          float bigWaveDisp = (sin(pos.x * 0.22 + uTime * 1.8) * 0.18 + cos(pos.z * 0.25 + uTime * 2.0) * 0.16) * uFbm;
+          pos.y += mix(calmDisp, bigWaveDisp, uQuantumSwing * 0.75) * shallowDamp;
+          vec4 wp4 = modelMatrix * vec4(pos, 1.0);
+          vWorldPos = wp4.xyz;
+          gl_Position = projectionMatrix * viewMatrix * wp4;
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide;
+        uniform vec3 uSunDir;
+        varying vec3 vWorldPos;
+        float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 437.5854); }
+        float noise(vec2 p) {
+          vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+          return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+        }
+        float fbm(vec2 p) {
+          float v = 0.0, a = 0.5; mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
+          for (int i = 0; i < 4; i++) { v += a * noise(p); p = rot * p * 2.05; a *= 0.5; }
+          return v;
+        }
+        void main() {
+          vec2 p = vWorldPos.xz;
+          float t = uBreathT;
+          float tideLine = -4.2 - uTide * 14.0 + sin(p.x * 0.032) * 2.2;
+          float foamEdge = exp(-pow((p.y - tideLine) * 0.68, 2.0)) * smoothstep(0.05, 0.5, uTide);
+
+          float w1 = fbm(p * 0.25 + vec2(t * 0.15, -t * 0.22));
+          vec3 normal = normalize(vec3((w1 - 0.5) * 0.35, 1.0, (w1 - 0.5) * 0.35));
+          vec3 viewDir = normalize(cameraPosition - vWorldPos);
+          float fresnel = pow(clamp(1.0 - max(dot(viewDir, normal), 0.0), 0.01, 1.0), 3.4);
+
+          float depthGrad = smoothstep(5.0, 145.0, length(vWorldPos.xz - cameraPosition.xz));
+          vec3 seaMode1 = mix(vec3(0.07, 0.38, 0.36), vec3(0.02, 0.15, 0.27), depthGrad);
+          vec3 seaMode2 = mix(vec3(0.02, 0.76, 0.70), vec3(0.01, 0.22, 0.45), depthGrad);
+          vec3 baseWater = mix(seaMode1, seaMode2, uQuantumSwing);
+
+          vec3 col = mix(baseWater, vec3(0.45, 0.76, 0.96), clamp(fresnel * 0.85 + 0.10, 0.0, 0.92));
+          float foamNoise = smoothstep(0.32, 0.75, fbm(p * 0.9 + vec2(0.0, uTime * 0.4)));
+          col += vec3(0.98, 0.98, 0.96) * foamEdge * (0.42 + 0.48 * foamNoise);
+
+          vec3 halfVec = normalize(normalize(uSunDir) + viewDir);
+          col += vec3(1.0, 0.90, 0.62) * pow(clamp(dot(normal, halfVec), 0.001, 1.0), 120.0) * 2.0;
           gl_FragColor = vec4(col, 1.0);
         }
       `
     });
-    scene.add(new THREE.Mesh(sandGeo, sandMat));
+    const seaMesh = new THREE.Mesh(seaGeo, seaMat);
+    seaMesh.position.y = -0.02;
+    scene.add(seaMesh);
 
-    // 4. 【手痕兩兄弟粒子系統】：自定義 Shader 支援每粒沙獨立大小(質量 m)與發光亮度(能量 E=mc²)！
-    const MAX_PARTICLES = 800;
-    let activeParticles = 360;
-
-    const pGeo = new THREE.BufferGeometry();
-    const pPositions = new Float32Array(MAX_PARTICLES * 3);
-    const pMassAttr  = new Float32Array(MAX_PARTICLES); // 每粒沙嘅動態質量 m
-    const pEnergyAttr= new Float32Array(MAX_PARTICLES); // 每粒沙釋放嘅光能量 E
-    const pPhases    = new Float32Array(MAX_PARTICLES);
-    const pBaseSeeds = new Float32Array(MAX_PARTICLES);
-
-    for (let i = 0; i < MAX_PARTICLES; i++) {
-      pPositions[i * 3]     = (Math.random() - 0.5) * 42;
-      pPositions[i * 3 + 1] = 0.03;
-      pPositions[i * 3 + 2] = (Math.random() - 0.5) * 42;
-      pMassAttr[i]   = 1.0;
-      pEnergyAttr[i] = 0.5;
-      pPhases[i]     = Math.random() * Math.PI * 2;
-      pBaseSeeds[i]  = 0.45 + Math.random() * 0.85;
-    }
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
-    pGeo.setAttribute('aMass', new THREE.BufferAttribute(pMassAttr, 1));
-    pGeo.setAttribute('aEnergy', new THREE.BufferAttribute(pEnergyAttr, 1));
-    pGeo.setDrawRange(0, activeParticles);
-
-    const pUniforms = {
-      uChordColor: { value: new THREE.Color(1, 1, 1) },
-      uPixelRatio: { value: Math.min(window.devicePixelRatio, 1.5) }
-    };
-
-    const pMat = new THREE.ShaderMaterial({
-      uniforms: pUniforms,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      vertexShader: `
-        attribute float aMass;
-        attribute float aEnergy;
-        uniform float uPixelRatio;
-        varying float vEnergy;
-        void main() {
-          vEnergy = aEnergy;
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          // 質量 m 越大，粒子體積越大（聚沙成塔）
-          gl_PointSize = clamp((18.0 * aMass * uPixelRatio) / -mvPosition.z, 2.0, 26.0);
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 uChordColor;
-        varying float vEnergy;
-        void main() {
-          float d = length(gl_PointCoord - vec2(0.5));
-          if (d > 0.5) discard;
-          float soft = smoothstep(0.5, 0.08, d);
-          // 能量 E 越高（質量轉化為光能），核心越白亮耀眼
-          vec3 col = mix(uChordColor * 0.7, vec3(1.0, 0.98, 0.92), clamp(vEnergy * 0.85, 0.0, 1.0));
-          gl_FragColor = vec4(col, soft * (0.45 + 0.55 * clamp(vEnergy, 0.0, 1.0)));
-        }
-      `
-    });
-    scene.add(new THREE.Points(pGeo, pMat));
-
-    function syncParticleColorFromChord(semiArr) {
-      const f = Math.pow(2, semiArr[3] / 12);
-      const r = 0.55 + 0.45 * Math.cos(6.28318 * (0.0 + f * 0.42));
-      const g = 0.55 + 0.45 * Math.cos(6.28318 * (0.333 + f * 0.42));
-      const b = 0.55 + 0.45 * Math.cos(6.28318 * (0.667 + f * 0.42));
-      pUniforms.uChordColor.value.setRGB(r, g, b);
-    }
-    syncParticleColorFromChord(DIATONIC_7TH[7].semi);
-
-    // 5. 抄錶控制狀態
-    let state = {
-      energyOn: true,  // ⚡ 能量手痕 (mgh + 1/2 mv^2)
-      massOn: true,    // ☢️ 質能手痕 (E = mc^2)
-      chaosOn: true,
-      heisOn: true,
-      breathOn: true,
-      energyLev: 1.15,
-      massLev: 1.20,
-      heisPhase: 0.0
-    };
+    // 5. UI 互動
+    let state = { chaosOn: true, heisOn: true, breathOn: true, heisPhase: 0.0 };
 
     const triBtn = document.getElementById('tri-btn');
     const panel = document.getElementById('panel');
@@ -435,13 +459,12 @@
       triBtn.textContent = panel.classList.contains('hidden') ? '▲' : '▼';
     };
 
-    // 軌道 A 與 B 獨立七和弦按鈕
     document.querySelectorAll('#sky-grid .c-btn').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('#sky-grid .c-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const item = DIATONIC_7TH[parseInt(btn.dataset.deg, 10)];
-        skyUniforms.uSkySemi.value.set(...item.semi);
+        const item = TRIADS[btn.dataset.key];
+        sharedUniforms.uSkySemi.value.set(...item.semi);
         document.getElementById('sky-readout').textContent = item.label;
       };
     });
@@ -450,77 +473,69 @@
       btn.onclick = () => {
         document.querySelectorAll('#sand-grid .c-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const item = DIATONIC_7TH[parseInt(btn.dataset.deg, 10)];
-        sandUniforms.uSandSemi.value.set(...item.semi);
-        sandUniforms.uSandRatios.value.set(...toRatios(item.semi));
-        syncParticleColorFromChord(item.semi);
+        const item = TRIADS[btn.dataset.key];
+        sharedUniforms.uSandSemi.value.set(...item.semi);
+        sharedUniforms.uSandRatios.value.set(...toRatios(item.semi));
         document.getElementById('sand-readout').textContent = item.label;
       };
     });
 
-    // 手痕兩兄弟獨立開關
-    const btnEnergy = document.getElementById('btn-energy');
-    btnEnergy.onclick = () => {
-      state.energyOn = !state.energyOn;
-      btnEnergy.classList.toggle('on-energy', state.energyOn);
-      btnEnergy.textContent = state.energyOn ? '⚡ 能量手痕 (位動轉換): 開' : '⚡ 能量手痕 (位動轉換): 關';
+    // 🔪 切刀模式切換：底部縮切 (保尖峰) vs 頂部削平 (平頂台地)
+    const btnCutMode = document.getElementById('btn-cut-mode');
+    btnCutMode.onclick = () => {
+      const next = sharedUniforms.uCutMode.value < 0.5 ? 1.0 : 0.0;
+      sharedUniforms.uCutMode.value = next;
+      btnCutMode.classList.toggle('bottom-cut', next < 0.5);
+      btnCutMode.textContent = next < 0.5
+        ? '🔪 切刀：底部縮切 (保尖峰)'
+        : '🔪 切刀：頂部削平 (平頂台地)';
     };
 
-        const btnMass = document.getElementById('btn-mass');
-    btnMass.onclick = () => {
-      state.massOn = !state.massOn;
-      btnMass.classList.toggle('on-mass', state.massOn);
-      btnMass.textContent = state.massOn ? '☢️ 質能手痕 (E=mc²聚變): 開' : '☢️ 質能手痕 (E=mc²聚變): 關';
+    const btnSeaMode = document.getElementById('btn-sea-mode');
+    btnSeaMode.onclick = () => {
+      const next = sharedUniforms.uQuantumSwing.value < 0.5 ? 1.0 : 0.0;
+      sharedUniforms.uQuantumSwing.value = next;
+      btnSeaMode.textContent = next > 0.5
+        ? '🌊 海款：2號大浪海 (撳轉1號)'
+        : '🌊 海款：1號平靜海 (撳轉2號)';
     };
 
-    // 三大背景開關
-    const btnChaos = document.getElementById('btn-chaos');
-    btnChaos.onclick = () => {
+    document.getElementById('btn-chaos').onclick = (e) => {
       state.chaosOn = !state.chaosOn;
-      skyUniforms.uChaosOn.value = state.chaosOn ? 1.0 : 0.0;
-      sandUniforms.uChaosOn.value = state.chaosOn ? 1.0 : 0.0;
-      btnChaos.classList.toggle('on-chaos', state.chaosOn);
-      btnChaos.textContent = state.chaosOn ? '🌀 混沌仔仔: 開' : '🌀 混沌仔仔: 停';
+      sharedUniforms.uChaosOn.value = state.chaosOn ? 1.0 : 0.0;
+      e.target.classList.toggle('on-chaos', state.chaosOn);
+      e.target.textContent = state.chaosOn ? '🌀 混沌仔仔: 開' : '🌀 混沌仔仔: 停';
     };
-
-    const btnHeis = document.getElementById('btn-heis');
-    btnHeis.onclick = () => {
+    document.getElementById('btn-heis').onclick = (e) => {
       state.heisOn = !state.heisOn;
-      btnHeis.classList.toggle('on-heis', state.heisOn);
-      btnHeis.textContent = state.heisOn ? '⚛️ 測不準: 永動' : '⚛️ 測不準: 凍結';
+      e.target.classList.toggle('on-heis', state.heisOn);
+      e.target.textContent = state.heisOn ? '⚛️ 測不準: 永動' : '⚛️ 測不準: 凍結';
     };
-
-    const btnBreath = document.getElementById('btn-breath');
-    btnBreath.onclick = () => {
+    document.getElementById('btn-breath').onclick = (e) => {
       state.breathOn = !state.breathOn;
-      btnBreath.classList.toggle('on-breath', state.breathOn);
-      btnBreath.textContent = state.breathOn ? '🫁 呼吸閘門: 開' : '🫁 呼吸閘門: 關';
+      e.target.classList.toggle('on-breath', state.breathOn);
+      e.target.textContent = state.breathOn ? '🫁 呼吸閘門: 開' : '🫁 呼吸閘門: 關';
     };
 
-    // 推桿綁定
+    document.getElementById('atmoWhite').oninput = (e) => {
+      const v = parseFloat(e.target.value);
+      sharedUniforms.uAtmoWhite.value = v;
+      document.getElementById('atmoWhite-v').textContent = Math.round(v * 100) + '%';
+    };
+    document.getElementById('cutLevel').oninput = (e) => {
+      const v = parseFloat(e.target.value);
+      sharedUniforms.uCutLevel.value = v;
+      document.getElementById('cutLevel-v').textContent = v.toFixed(2);
+    };
     document.getElementById('energyLev').oninput = (e) => {
-      state.energyLev = parseFloat(e.target.value);
-      document.getElementById('energyLev-v').textContent = state.energyLev.toFixed(2) + 'x';
+      const v = parseFloat(e.target.value);
+      sharedUniforms.uEnergyLev.value = v;
+      document.getElementById('energyLev-v').textContent = v.toFixed(2) + 'x';
     };
     document.getElementById('massLev').oninput = (e) => {
-      state.massLev = parseFloat(e.target.value);
-      document.getElementById('massLev-v').textContent = state.massLev.toFixed(2) + 'x';
-    };
-    document.getElementById('sandDim').oninput = (e) => {
-      activeParticles = parseInt(e.target.value, 10);
-      pGeo.setDrawRange(0, activeParticles);
-      document.getElementById('sandDim-v').textContent = activeParticles + '粒';
-    };
-    document.getElementById('chaosAmt').oninput = (e) => {
       const v = parseFloat(e.target.value);
-      skyUniforms.uChaosAmt.value = v;
-      sandUniforms.uChaosAmt.value = v;
-      document.getElementById('chaosAmt-v').textContent = v.toFixed(2);
-    };
-    document.getElementById('maxY').oninput = (e) => {
-      const v = parseFloat(e.target.value);
-      sandUniforms.uMaxY.value = v;
-      document.getElementById('maxY-v').textContent = v.toFixed(2) + 'm';
+      sharedUniforms.uMassLev.value = v;
+      document.getElementById('massLev-v').textContent = v.toFixed(2) + 'x';
     };
 
     window.addEventListener('resize', () => {
@@ -533,65 +548,19 @@
     function animate() {
       requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
-      const rawT = clock.getElapsedTime();
+      const t = clock.getElapsedTime();
 
-      let effectiveSpeed = 0.0;
+      sharedUniforms.uTime.value = t;
+      const wavePulse = Math.pow(Math.sin(t * 0.9) * 0.5 + 0.5, 3.0);
+      sharedUniforms.uPulseGate.value = wavePulse;
+      sharedUniforms.uBreathT.value += dt * (0.08 + wavePulse * 1.25);
+
+      let effSpeed = 0.0;
       if (state.heisOn) {
-        if (state.breathOn) {
-          const breathGate = Math.pow(Math.max(0, Math.sin(rawT * 0.85)), 4.0);
-          effectiveSpeed = breathGate * 1.45;
-        } else {
-          effectiveSpeed = 0.65;
-        }
+        effSpeed = state.breathOn ? Math.pow(Math.max(0, Math.sin(t * 0.85)), 4.0) * 1.45 : 0.65;
       }
-
-      state.heisPhase += dt * effectiveSpeed;
-      skyUniforms.uHeisPhase.value = state.heisPhase;
-      sandUniforms.uHeisPhase.value = state.heisPhase;
-
-      // 更新「能量手痕」同「質能手痕」兩兄弟物理引擎
-      if (activeParticles > 0 && effectiveSpeed > 0.001) {
-        const wX = sandUniforms.uWindDir.value.x;
-        const wZ = sandUniforms.uWindDir.value.y;
-        const maxCeil = sandUniforms.uMaxY.value * 1.55 * state.energyLev;
-
-        for (let i = 0; i < activeParticles; i++) {
-          pPhases[i] += dt * effectiveSpeed * 2.2 * pBaseSeeds[i];
-          const wave = Math.abs(Math.sin(pPhases[i]));
-
-          // 哥哥：⚡ 能量手痕 (E = mgh + 0.5 mv^2)
-          let h = 0.02;
-          let vHor = effectiveSpeed * 1.6;
-          if (state.energyOn) {
-            h = wave * maxCeil * pBaseSeeds[i];
-            const potRatio = Math.min(1.0, h / Math.max(maxCeil, 0.05));
-            const kinRatio = Math.max(0.05, 1.0 - potRatio * 0.85);
-            vHor = Math.sqrt(2.0 * kinRatio) * effectiveSpeed * 3.0 * state.energyLev;
-          }
-
-          // 弟弟：☢️ 質能手痕 (E = mc^2)
-          if (state.massOn) {
-            const fusionCycle = 0.5 + 0.5 * Math.cos(pPhases[i] * 1.5 + i);
-            pMassAttr[i]   = (0.4 + fusionCycle * 1.6) * state.massLev;
-            pEnergyAttr[i] = (1.1 - fusionCycle * 0.9) * state.massLev;
-          } else {
-            pMassAttr[i]   = 0.85;
-            pEnergyAttr[i] = 0.35;
-          }
-
-          let x = pPositions[i * 3] + wX * vHor * dt;
-          let z = pPositions[i * 3 + 2] + wZ * vHor * dt;
-          if (x > 21) x -= 42; if (x < -21) x += 42;
-          if (z > 21) z -= 42; if (z < -21) z += 42;
-
-          pPositions[i * 3]     = x;
-          pPositions[i * 3 + 1] = 0.02 + h;
-          pPositions[i * 3 + 2] = z;
-        }
-        pGeo.attributes.position.needsUpdate = true;
-        pGeo.attributes.aMass.needsUpdate = true;
-        pGeo.attributes.aEnergy.needsUpdate = true;
-      }
+      state.heisPhase += dt * effSpeed;
+      sharedUniforms.uHeisPhase.value = state.heisPhase;
 
       controls.update();
       renderer.render(scene, camera);
@@ -601,3 +570,6 @@
   </script>
 </body>
 </html>
+
+
+
