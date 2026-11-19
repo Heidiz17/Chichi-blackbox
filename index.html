@@ -3,55 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>黑盒抄錶室：海風推沙(+5%沙量) × 正弦波主骨幹 × 吉卜力/真物理深影</title>
+  <title>黑盒抄錶室：五大透明膠囊櫃桶 × 360°遠山 × 肥山微搖滾</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body { background: #000000; color: #fff; height: 100dvh; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #canvas-3d { position: fixed; inset: 0; width: 100%; height: 100%; }
-    #drawer {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
-      background: rgba(0, 0, 0, 0.94); border-top: 1px solid #222;
-      padding: 8px 10px 14px; max-height: 70dvh; overflow-y: auto;
+    #top-caps {
+      position: fixed; top: 8px; left: 10px; z-index: 30;
+      display: flex; align-items: center; gap: 14px; pointer-events: auto;
     }
-    #drawer-head {
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 11px; font-weight: bold; color: #ffd700; margin-bottom: 6px;
+    .tri-cap {
+      background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(30, 144, 255, 0.45);
+      border-radius: 7px; padding: 4px 8px; color: #1e90ff; font-size: 13px;
+      font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 3px;
     }
-    #tri-btn { background: none; border: none; color: #1e90ff; font-size: 16px; padding: 2px 8px; cursor: pointer; }
-    .panel { display: flex; flex-direction: column; gap: 6px; }
-    .panel.hidden { display: none; }
-    .track-box { background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 6px; padding: 5px 7px; }
-    .track-title { font-size: 10px; color: #aaa; margin-bottom: 4px; display: flex; justify-content: space-between; }
-    .track-title b { color: #00ffcc; font-family: monospace; }
+    .tri-cap.active { background: rgba(15, 35, 70, 0.85); border-color: #38bdf8; color: #38bdf8; }
+    .cap-drawer {
+      position: fixed; top: 42px; left: 8px; right: 8px; z-index: 25;
+      background: rgba(0, 0, 0, 0.78); border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px; padding: 8px 10px; max-height: 68dvh; overflow-y: auto;
+      display: none; flex-direction: column; gap: 6px;
+    }
+    .cap-drawer.open { display: flex; }
+    .cap-head { font-size: 11px; font-weight: bold; color: #ffd700; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 4px; }
     .chord-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; }
     .c-btn {
-      background: #141414; color: #bbb; border: 1px solid #2e2e2e; border-radius: 4px;
+      background: rgba(20, 20, 20, 0.75); color: #ccc; border: 1px solid #333; border-radius: 4px;
       padding: 4px 0; font-size: 10px; font-weight: bold; text-align: center;
     }
-    .c-btn small { display: block; font-size: 7px; color: #777; font-weight: normal; }
+    .c-btn small { display: block; font-size: 7px; color: #888; font-weight: normal; }
     .c-btn.active { background: #14284b; color: #fff; border-color: #1e90ff; }
-    .c-btn.active small { color: #93c5fd; }
     .c-btn.special { border-color: #581c87; }
     .c-btn.special.active { background: #3b0764; border-color: #d946ef; }
     .dual-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
     .mode-btn {
-      background: #143326; color: #4ade80; border: 1px solid #22c55e;
+      background: rgba(20, 51, 38, 0.8); color: #4ade80; border: 1px solid #22c55e;
       border-radius: 6px; padding: 6px 4px; font-size: 10.5px; font-weight: bold; text-align: center;
     }
-    .mode-btn.sea { background: #0c2438; color: #38bdf8; border-color: #0284c7; }
-    .mode-btn.art { background: #2d1b0e; color: #fbbf24; border-color: #f59e0b; grid-column: span 2; }
+    .mode-btn.sea { background: rgba(12, 36, 56, 0.8); color: #38bdf8; border-color: #0284c7; }
+    .mode-btn.art { background: rgba(45, 27, 14, 0.85); color: #fbbf24; border-color: #f59e0b; grid-column: span 2; }
     .tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
     .p-toggle {
-      background: #111; color: #777; border: 1px solid #333; border-radius: 5px;
+      background: rgba(17, 17, 17, 0.8); color: #888; border: 1px solid #333; border-radius: 5px;
       padding: 5px 2px; font-size: 10.5px; font-weight: bold; text-align: center;
     }
-    .p-toggle.on-chaos  { background: #132a1c; color: #4ade80; border-color: #22c55e; }
-    .p-toggle.on-heis   { background: #251738; color: #c084fc; border-color: #a855f7; }
-    .p-toggle.on-breath { background: #10253f; color: #38bdf8; border-color: #0ea5e9; }
+    .p-toggle.on-chaos  { background: rgba(19, 42, 28, 0.85); color: #4ade80; border-color: #22c55e; }
+    .p-toggle.on-heis   { background: rgba(37, 23, 56, 0.85); color: #c084fc; border-color: #a855f7; }
+    .p-toggle.on-breath { background: rgba(16, 37, 63, 0.85); color: #38bdf8; border-color: #0ea5e9; }
     .row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; }
-    .row label { min-width: 134px; color: #ccc; }
+    .row label { min-width: 138px; color: #eee; text-shadow: 0 1px 2px #000; }
     .row input[type=range] { flex: 1; accent-color: #ffd700; }
     .row span { min-width: 44px; text-align: right; color: #ffd700; font-family: monospace; }
   </style>
@@ -59,92 +61,72 @@
 
 
 
-
   <body>
   <div id="canvas-3d"></div>
-  <div id="drawer">
-    <div id="drawer-head">
-      <span>🔭 海風推沙(+5%沙量) × 正弦波骨幹 × 吉卜力/深影</span>
-      <button id="tri-btn">▼</button>
+  <div id="top-caps">
+    <button class="tri-cap" data-cap="cap-sky">▼</button>
+    <button class="tri-cap" data-cap="cap-sea">▼</button>
+    <button class="tri-cap" data-cap="cap-sand">▼</button>
+    <button class="tri-cap" data-cap="cap-isl">▼</button>
+    <button class="tri-cap" data-cap="cap-mtn">▼</button>
+  </div>
+
+  <!-- 櫃桶 1：🌌 天空（黃金 Preset） -->
+  <div class="cap-drawer" id="cap-sky">
+    <div class="cap-head"><span>🌌 櫃桶 1：大氣光學散射（黃金 Preset）</span><b id="sky-readout">1級 I大三 [0,4,7]</b></div>
+    <div class="chord-grid" id="sky-grid">
+      <button class="c-btn active" data-key="1">1<small>Maj</small></button><button class="c-btn" data-key="2">2<small>min</small></button><button class="c-btn" data-key="3">3<small>min</small></button><button class="c-btn" data-key="4">4<small>Maj</small></button><button class="c-btn" data-key="5">5<small>Maj</small></button><button class="c-btn" data-key="6">6<small>min</small></button><button class="c-btn" data-key="7">7<small>vii°</small></button><button class="c-btn special" data-key="aug">Aug<small>增三</small></button><button class="c-btn special" data-key="dim">Dim<small>減三</small></button>
     </div>
-    <div class="panel" id="panel">
-      <div class="track-box">
-        <div class="track-title">
-          <span>🌌 軌道 A：大氣光學散射（三和弦調頻）</span>
-          <b id="sky-readout">1級 I大三 [0,4,7]</b>
-        </div>
-        <div class="chord-grid" id="sky-grid">
-          <button class="c-btn active" data-key="1">1<small>Maj</small></button>
-          <button class="c-btn" data-key="2">2<small>min</small></button>
-          <button class="c-btn" data-key="3">3<small>min</small></button>
-          <button class="c-btn" data-key="4">4<small>Maj</small></button>
-          <button class="c-btn" data-key="5">5<small>Maj</small></button>
-          <button class="c-btn" data-key="6">6<small>min</small></button>
-          <button class="c-btn" data-key="7">7<small>vii°</small></button>
-          <button class="c-btn special" data-key="aug">Aug<small>增三</small></button>
-          <button class="c-btn special" data-key="dim">Dim<small>減三</small></button>
-        </div>
-      </div>
-      <div class="track-box">
-        <div class="track-title">
-          <span>🏜️ 軌道 B：固體沙丘骨幹（無海森堡・純靠風吹）</span>
-          <b id="sand-readout">Dim 減三和弦 [0,3,6]</b>
-        </div>
-        <div class="chord-grid" id="sand-grid">
-          <button class="c-btn" data-key="1">1<small>Maj</small></button>
-          <button class="c-btn" data-key="2">2<small>min</small></button>
-          <button class="c-btn" data-key="3">3<small>min</small></button>
-          <button class="c-btn" data-key="4">4<small>Maj</small></button>
-          <button class="c-btn" data-key="5">5<small>Maj</small></button>
-          <button class="c-btn" data-key="6">6<small>min</small></button>
-          <button class="c-btn" data-key="7">7<small>vii°</small></button>
-          <button class="c-btn special" data-key="aug">Aug<small>增三</small></button>
-          <button class="c-btn special active" data-key="dim">Dim<small>減三</small></button>
-        </div>
-      </div>
-      <div class="dual-bar">
-        <button class="mode-btn art" id="btn-ghibli-mode">🎨 光影：吉卜力暖沙 (撳轉無吉卜力深影)</button>
-        <button class="mode-btn" id="btn-cut-mode">🔪 切刀：底部縮切 (保尖峰)</button>
-        <button class="mode-btn sea" id="btn-sea-mode">🌊 海款：1號平靜海 (撳轉2號)</button>
-      </div>
-      <div class="tri-grid">
-        <button class="p-toggle on-chaos" id="btn-chaos">🌀 混沌海鹽: 開</button>
-        <button class="p-toggle on-heis" id="btn-heis">⚛️ 海浪測不準: 開</button>
-        <button class="p-toggle on-breath" id="btn-breath">🫁 海浪呼吸: 開</button>
-      </div>
-      <div class="row">
-        <label>🌬️ 海風風速 (0=沙定・風起沙移)</label>
-        <input type="range" id="windSpeed" min="0.0" max="1.5" step="0.05" value="0.35" />
-        <span id="windSpeed-v">0.35x</span>
-      </div>
-      <div class="row">
-        <label>〰️ 正弦波主骨幹 (大細張力)</label>
-        <input type="range" id="sineAmp" min="0.2" max="1.6" step="0.05" value="1.00" />
-        <span id="sineAmp-v">1.00x</span>
-      </div>
-      <div class="row">
-        <label>🌑 陰影深度 (芝女光暗對比)</label>
-        <input type="range" id="shadowDepth" min="0.2" max="2.2" step="0.05" value="1.25" />
-        <span id="shadowDepth-v">1.25</span>
-      </div>
-      <div class="row">
-        <label>🧂 混沌海鹽調味 (揉皺波形)</label>
-        <input type="range" id="saltAmt" min="0.0" max="1.0" step="0.02" value="0.48" />
-        <span id="saltAmt-v">0.48</span>
-      </div>
-      <div class="row">
-        <label>🔪 底部縮切深度 (露尖峰)</label>
-        <input type="range" id="cutLevel" min="0.0" max="0.85" step="0.02" value="0.28" />
-        <span id="cutLevel-v">0.28</span>
-      </div>
-      <div class="row">
-        <label>☢️ 質能手痕 (刀鋒沙脊銳度)</label>
-        <input type="range" id="massLev" min="0.5" max="4.0" step="0.1" value="2.20" />
-        <span id="massLev-v">2.20x</span>
-      </div>
+    <div class="row"><label>🌫️ 大氣光學厚度</label><input type="range" id="optDepth" min="0.2" max="1.8" step="0.05" value="0.85" /><span id="optDepth-v">0.85</span></div>
+    <div class="row"><label>☀️ 太陽米氏光暈</label><input type="range" id="mieGlow" min="0.0" max="1.8" step="0.05" value="0.95" /><span id="mieGlow-v">0.95</span></div>
+  </div>
+
+  <!-- 櫃桶 2：🌊 大海（黃金 Preset） -->
+  <div class="cap-drawer" id="cap-sea">
+    <div class="cap-head"><span>🌊 櫃桶 2：大海波動（黃金 Preset）</span><span>1號平靜海</span></div>
+    <div class="dual-bar">
+      <button class="mode-btn sea" id="btn-sea-mode" style="grid-column:span 2;">🌊 海款：1號平靜海 (撳轉2號)</button>
+      <button class="p-toggle" id="btn-heis">⚛️ 海浪測不準: 關</button>
+      <button class="p-toggle on-breath" id="btn-breath">🫁 海浪呼吸: 開</button>
     </div>
   </div>
 
+  <!-- 櫃桶 3：🏜️ 沙與風（截圖 131534 黃金 Preset，一個掣都無少） -->
+  <div class="cap-drawer" id="cap-sand">
+    <div class="cap-head"><span>🏜️ 櫃桶 3：沙與風（黃金 Preset +5%沙）</span><b id="sand-readout">1級 I大三 [0,4,7]</b></div>
+    <div class="chord-grid" id="sand-grid">
+      <button class="c-btn active" data-key="1">1<small>Maj</small></button><button class="c-btn" data-key="2">2<small>min</small></button><button class="c-btn" data-key="3">3<small>min</small></button><button class="c-btn" data-key="4">4<small>Maj</small></button><button class="c-btn" data-key="5">5<small>Maj</small></button><button class="c-btn" data-key="6">6<small>min</small></button><button class="c-btn" data-key="7">7<small>vii°</small></button><button class="c-btn special" data-key="aug">Aug<small>增三</small></button><button class="c-btn special" data-key="dim">Dim<small>減三</small></button>
+    </div>
+    <div class="dual-bar">
+      <button class="mode-btn art" id="btn-ghibli-mode">🎨 光影：吉卜力暖沙 (撳轉無吉卜力深影)</button>
+      <button class="mode-btn" id="btn-cut-mode">🔪 切刀：底部縮切 (保尖峰)</button>
+      <button class="p-toggle on-chaos" id="btn-chaos">🌀 混沌海鹽: 開</button>
+    </div>
+    <div class="row"><label>🌬️ 海風風速 (0=沙定・風起沙移)</label><input type="range" id="windSpeed" min="0.0" max="1.5" step="0.05" value="0.25" /><span id="windSpeed-v">0.25x</span></div>
+    <div class="row"><label>〰️ 正弦波主骨幹 (大細張力)</label><input type="range" id="sineAmp" min="0.2" max="1.6" step="0.05" value="0.20" /><span id="sineAmp-v">0.20x</span></div>
+    <div class="row"><label>🌑 陰影深度 (芝女光暗對比)</label><input type="range" id="shadowDepth" min="0.2" max="2.2" step="0.05" value="0.20" /><span id="shadowDepth-v">0.20</span></div>
+    <div class="row"><label>🧂 混沌海鹽調味 (揉皺波形)</label><input type="range" id="saltAmt" min="0.0" max="1.0" step="0.02" value="0.26" /><span id="saltAmt-v">0.26</span></div>
+    <div class="row"><label>🔪 底部縮切深度 (露尖峰)</label><input type="range" id="cutLevel" min="0.0" max="0.85" step="0.02" value="0.00" /><span id="cutLevel-v">0.00</span></div>
+    <div class="row"><label>☢️ 質能手痕 (刀鋒沙脊銳度)</label><input type="range" id="massLev" min="0.5" max="4.0" step="0.1" value="0.50" /><span id="massLev-v">0.50x</span></div>
+  </div>
+
+  <!-- 櫃桶 4：🏝️ 海島（同源雙生引擎・肥島極少搖滾 Preset） -->
+  <div class="cap-drawer" id="cap-isl">
+    <div class="cap-head"><span>🏝️ 櫃桶 4：海島調音（肥潤草坡＋極少搖滾）</span><span>無方格</span></div>
+    <div class="row"><label>🏝️ 主峰高度 (肥島飽滿度)</label><input type="range" id="islHeight" min="2" max="18" step="0.5" value="6.5" /><span id="islHeight-v">6.5</span></div>
+    <div class="row"><label>🍑 多重奏摺肥潤度</label><input type="range" id="islFold" min="0.0" max="1.2" step="0.05" value="0.15" /><span id="islFold-v">0.15</span></div>
+    <div class="row"><label>🎸 山頂減和弦搖滾 (少少搖滾)</label><input type="range" id="islPeak" min="0.0" max="1.2" step="0.05" value="0.05" /><span id="islPeak-v">0.05</span></div>
+    <div class="row"><label>🌫️ 大氣遠霧融合度</label><input type="range" id="islHaze" min="0.0" max="0.8" step="0.05" value="0.28" /><span id="islHaze-v">0.28</span></div>
+  </div>
+
+  <!-- 櫃桶 5：🏔️ 360°遠山 & 後山（同源雙生引擎・肥山加少少搖滾 Preset） -->
+  <div class="cap-drawer" id="cap-mtn">
+    <div class="cap-head"><span>🏔️ 櫃桶 5：360°遠山緩衝 ＋ 後山主峰</span><span>無方格</span></div>
+    <div class="row"><label>🏔️ 主山峰高度 (後山主峰)</label><input type="range" id="mtnHeight" min="15" max="65" step="1" value="34" /><span id="mtnHeight-v">34</span></div>
+    <div class="row"><label>🍑 多重奏摺肥潤度 (山腰)</label><input type="range" id="mtnFold" min="0.0" max="1.2" step="0.05" value="0.25" /><span id="mtnFold-v">0.25</span></div>
+    <div class="row"><label>🎸 山頂減和弦搖滾 (少少搖滾)</label><input type="range" id="mtnPeak" min="0.0" max="1.2" step="0.05" value="0.15" /><span id="mtnPeak-v">0.15</span></div>
+    <div class="row"><label>⭕ 360° 遠山緩衝高度</label><input type="range" id="ring360H" min="0.4" max="2.0" step="0.05" value="1.00" /><span id="ring360H-v">1.00x</span></div>
+  </div>
 
 
 
@@ -152,19 +134,19 @@
   (function () {
     'use strict';
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(64, window.innerWidth / window.innerHeight, 0.2, 900);
-    camera.position.set(-11, 4.8, 16);
+    const camera = new THREE.PerspectiveCamera(64, window.innerWidth / window.innerHeight, 0.2, 1100);
+    camera.position.set(-10.5, 4.5, 16.5);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.45));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.12;
     document.getElementById('canvas-3d').appendChild(renderer.domElement);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.target.set(0, 1.2, 1.0);
+    controls.target.set(0, 1.8, -4.0);
 
     const TRIADS = {
       '1':   { label: '1級 I大三 [0,4,7]',     semi: [0, 4, 7] },
@@ -180,38 +162,21 @@
     const toRatios = (semi) => semi.map(s => Math.pow(2, s / 12));
 
     const sharedUniforms = {
-      uTime: { value: 0 },
-      uBreathT: { value: 0 },
-      uPulseGate: { value: 1.0 },
-      uQuantumSwing: { value: 0.0 },
-      uFbm: { value: 0.78 },
-      uPause: { value: 0.65 },
-      uTide: { value: 0.62 },
+      uTime: { value: 0 }, uBreathT: { value: 0 }, uPulseGate: { value: 1.0 },
+      uQuantumSwing: { value: 0.0 }, uFbm: { value: 0.78 }, uPause: { value: 0.65 }, uTide: { value: 0.62 },
       uSunDir: { value: new THREE.Vector3(0.45, 0.28, -0.85).normalize() },
-      uSkySemi: { value: new THREE.Vector3(0, 4, 7) },
-      uOptDepth: { value: 0.85 },
-      uMieGlow: { value: 0.95 },
-      uSandSemi: { value: new THREE.Vector3(0, 3, 6) },
-      uSandRatios: { value: new THREE.Vector3(...toRatios([0, 3, 6])) },
-      uGhibliOn: { value: 1.0 },
-      uShadowDepth: { value: 1.25 },
-      uCutMode: { value: 0.0 },
-      uCutLevel: { value: 0.28 },
-      uChaosOn: { value: 1.0 },
-      uSaltAmt: { value: 0.48 },
-      uWindSpeed: { value: 0.35 },
-      uWindPhase: { value: 0.0 },
-      uMassLev: { value: 2.20 },
-      uSineAmp: { value: 1.00 }
+      uSkySemi: { value: new THREE.Vector3(0, 4, 7) }, uOptDepth: { value: 0.85 }, uMieGlow: { value: 0.95 },
+      uSandSemi: { value: new THREE.Vector3(0, 4, 7) }, uSandRatios: { value: new THREE.Vector3(...toRatios([0, 4, 7])) },
+      uGhibliOn: { value: 1.0 }, uShadowDepth: { value: 0.20 }, uCutMode: { value: 0.0 }, uCutLevel: { value: 0.00 },
+      uChaosOn: { value: 1.0 }, uSaltAmt: { value: 0.26 }, uWindSpeed: { value: 0.25 }, uWindPhase: { value: 0.0 },
+      uMassLev: { value: 0.50 }, uSineAmp: { value: 0.20 }, uRing360H: { value: 1.00 }
     };
 
     const skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false, uniforms: sharedUniforms,
       vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: `
-        uniform vec3 uSkySemi, uSunDir;
-        uniform float uOptDepth, uMieGlow;
-        varying vec3 vDir;
+        uniform vec3 uSkySemi, uSunDir; uniform float uOptDepth, uMieGlow; varying vec3 vDir;
         vec3 chordToScatterTint(float semi) {
           float f = pow(2.0, semi / 12.0);
           vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42));
@@ -222,26 +187,19 @@
         void main() {
           vec3 d = normalize(vDir), sun = normalize(uSunDir);
           float h = clamp(d.y, 0.001, 1.0);
-          float airMass = pow(1.0 - h, 2.4) * uOptDepth;
-          float horizonWhiteMix = clamp(1.0 - exp(-airMass * 1.45), 0.0, 0.92);
+          float horizonWhiteMix = clamp(1.0 - exp(-pow(1.0 - h, 2.4) * uOptDepth * 1.45), 0.0, 0.92);
           float cosTheta = max(dot(d, sun), 0.0);
-          float sunSide = pow(cosTheta, 2.0);
-          vec3 cLow = chordToScatterTint(uSkySemi.x), cMid = chordToScatterTint(uSkySemi.y), cHigh = chordToScatterTint(uSkySemi.z);
-          vec3 zenithBlue = mix(vec3(0.16, 0.44, 0.86), cHigh, 0.55);
-          vec3 midSky = mix(vec3(0.42, 0.68, 0.94), cMid, 0.50);
-          vec3 lowSky = mix(vec3(0.88, 0.78, 0.68), cLow, 0.48);
-          vec3 skyCol = mix(lowSky, midSky, smoothstep(0.0, 0.28, h));
-          skyCol = mix(skyCol, zenithBlue, smoothstep(0.22, 0.85, h));
-          vec3 horizonScattering = mix(vec3(0.86, 0.90, 0.95), vec3(1.0, 0.93, 0.82), sunSide);
-          skyCol = mix(skyCol, horizonScattering, horizonWhiteMix);
-          float mieHalo = (pow(cosTheta, 8.0) * 0.22 + pow(cosTheta, 64.0) * 0.55) * uMieGlow;
-          float sunDisc = smoothstep(0.9993, 0.99985, cosTheta) * 1.8;
-          skyCol += vec3(1.0, 0.92, 0.76) * mieHalo + vec3(1.0, 0.98, 0.92) * sunDisc;
+          vec3 skyCol = mix(mix(vec3(0.88, 0.78, 0.68), chordToScatterTint(uSkySemi.x), 0.48),
+                            mix(vec3(0.42, 0.68, 0.94), chordToScatterTint(uSkySemi.y), 0.50), smoothstep(0.0, 0.28, h));
+          skyCol = mix(skyCol, mix(vec3(0.16, 0.44, 0.86), chordToScatterTint(uSkySemi.z), 0.55), smoothstep(0.22, 0.85, h));
+          skyCol = mix(skyCol, mix(vec3(0.86, 0.90, 0.95), vec3(1.0, 0.93, 0.82), pow(cosTheta, 2.0)), horizonWhiteMix);
+          skyCol += vec3(1.0, 0.92, 0.76) * (pow(cosTheta, 8.0) * 0.22 + pow(cosTheta, 64.0) * 0.55) * uMieGlow
+                  + vec3(1.0, 0.98, 0.92) * smoothstep(0.9993, 0.99985, cosTheta) * 1.8;
           gl_FragColor = vec4(skyCol, 1.0);
         }
       `
     });
-    scene.add(new THREE.Mesh(new THREE.SphereGeometry(520, 32, 20), skyMat));
+    scene.add(new THREE.Mesh(new THREE.SphereGeometry(620, 32, 20), skyMat));
 
     scene.add(new THREE.HemisphereLight(0xfff5e4, 0x3b2a1a, 0.75));
     const sunLight = new THREE.DirectionalLight(0xffe8a3, 1.45);
@@ -264,232 +222,273 @@
     roof.position.y = 0.25 + 3.289 + 2.65; cafeGroup.add(roof);
     scene.add(cafeGroup);
 
+    // ⭕ 龍尾灘 360° 全景扁扁哋遙望小山仔緩衝環（半徑 435m，無縫閉合圓圈）
+    (function build360Ring() {
+      const segs = 280, rad = 435.0, pos = [], uvs = [], idx = [];
+      const h1 = (n) => Math.abs(Math.sin(n * 127.1 + 311.7) * 43758.5453) % 1;
+      const n1 = (x) => { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return h1(i) * (1 - u) + h1(i + 1) * u; };
+      for (let i = 0; i <= segs; i++) {
+        const t = i / segs, th = t * Math.PI * 2.0;
+        const back = 0.5 - 0.5 * Math.cos(th);
+        const w = Math.sin(th * 5 + 0.8) * 2.8 + Math.cos(th * 9 - 1.2) * 1.8 + (n1(th * 7.5) - 0.5) * 5.2;
+        const bayOpen = 0.45 + 0.55 * Math.min(1.0, Math.abs(Math.sin(th * 0.5 - 0.06)) * 2.5);
+        const h = Math.max(3.8, (7.5 + back * 12.0 + w) * bayOpen);
+        const x = Math.sin(th) * rad, z = -Math.cos(th) * rad;
+        pos.push(x, -4.0, z, x, h, z);
+        uvs.push(t, 0.0, t, 1.0);
+      }
+      for (let i = 0; i < segs; i++) { const a = i * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+      g.setIndex(idx);
+      const m = new THREE.ShaderMaterial({
+        side: THREE.DoubleSide, uniforms: sharedUniforms,
+        vertexShader: `uniform float uRing360H; varying vec2 vUv; void main(){ vUv = uv; vec3 p = position; if(p.y > 0.0) p.y *= uRing360H; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`,
+        fragmentShader: `varying vec2 vUv; void main(){ vec3 col = mix(vec3(0.32, 0.48, 0.56), vec3(0.56, 0.72, 0.84), smoothstep(0.08, 0.95, vUv.y)); col = mix(col, vec3(0.84, 0.90, 0.95), smoothstep(0.35, 0.02, vUv.y) * 0.72); gl_FragColor = vec4(col, 1.0); }`
+      });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.frustumCulled = false;
+      scene.add(mesh);
+    })();
 
 
-        // 3. 軌道 B：固體沙丘（無海森堡自發永動・淨係海風 uWindPhase 先吹得郁！+5% 沙面覆蓋）
+
+        // 🏔️🏝️ 同源雙生山島引擎（融合大刀屻2多重奏摺肥山 ＋ 大刀4山頂加密分段減和弦，零方格解析法線！）
+    function createUnifiedTerrainMesh(opts) {
+      const geo = new THREE.PlaneGeometry(2, 2, opts.segX, opts.segZ);
+      geo.rotateX(-Math.PI / 2);
+      const u = {
+        uHeight: { value: opts.height },
+        uFold: { value: opts.fold },
+        uPeak: { value: opts.peak },
+        uHaze: { value: opts.haze },
+        uSeed: { value: opts.seed },
+        uSpanX: { value: opts.spanX },
+        uSpanZ: { value: opts.spanZ },
+        uSunDir: sharedUniforms.uSunDir,
+        uGhibliOn: sharedUniforms.uGhibliOn
+      };
+      const commonGLSL = `
+        uniform float uHeight, uFold, uPeak, uSeed, uSpanX, uSpanZ;
+        mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
+        float evalMountainField(vec2 p) {
+          float s = uSeed;
+          float envX = exp(-pow(p.x / (uSpanX * 0.56), 2.0));
+          float envZ = exp(-pow((p.y + sin(p.x * 0.028 + s) * (uSpanZ * 0.14)) / (uSpanZ * 0.46), 2.0));
+          float mainSpine = envX * envZ;
+
+          vec2 p1 = rot(0.22) * (p * (3.6 / uSpanX)) + vec2(s, s * 0.7);
+          float f1 = 1.0 - abs(sin(p1.x) * cos(p1.y));
+          vec2 p2 = rot(0.65) * (p * (9.5 / uSpanX)) + vec2(s * 1.9);
+          float f2 = 1.0 - abs(sin(p2.x + sin(p2.y * 0.8) * 0.6));
+          vec2 p3 = rot(1.25) * (p * (21.0 / uSpanX)) + vec2(s * 3.3);
+          float f3 = 1.0 - abs(cos(p3.x) * sin(p3.y + cos(p3.x) * 0.5));
+          vec2 p4 = rot(2.10) * (p * (46.0 / uSpanX)) + vec2(s * 5.1);
+          float f4 = 1.0 - abs(sin(p4.x + p4.y));
+
+          float baseRound = (sin(p1.x * 0.85) * cos(p1.y * 0.85) * 0.5 + 0.5);
+          float folds = pow(f1, 1.25) * 0.56 + pow(f2, 1.45) * 0.27 * uFold + pow(f3, 1.6) * 0.12 * uFold + pow(f4, 1.8) * 0.05 * uFold;
+          float baseH = mainSpine * mix(baseRound, folds, 0.35 + 0.55 * clamp(uFold, 0.0, 1.0)) * 1.22;
+
+          // 過咗半山腰先啟動「減和弦不協調音程（少少搖滾）」
+          float summitMask = smoothstep(0.42, 0.86, baseH);
+          vec2 q = rot(0.48) * (p * (7.2 / uSpanX)) + vec2(s * 1.618, s * 2.718);
+          vec2 warp = vec2(sin(q.y * 1.618 + cos(q.x * 2.718 + s)), cos(q.x * 1.414 - sin(q.y * 2.236 - s))) * 0.78;
+          vec2 wp = q + warp;
+          float r1 = 1.0 - abs(sin(wp.x * 1.7) * cos(wp.y * 1.9));
+          wp = rot(1.12) * wp * 2.18 + vec2(3.1, 1.7);
+          float r2 = 1.0 - abs(sin(wp.x + cos(wp.y * 1.3) * 0.6));
+          float peakDetail = (pow(r1, 1.65) * 0.65 + pow(r2, 1.85) * 0.35) * summitMask * uPeak * 0.42;
+
+          return (baseH + peakDetail) * uHeight - 0.85;
+        }
+      `;
+      const mat = new THREE.ShaderMaterial({
+        uniforms: u,
+        vertexShader: commonGLSL + `
+          varying vec2 vLocalXZ;
+          varying float vElev;
+          void main() {
+            // 山頂自適應網格加密（pow 曲線令主峰網格極度細密）
+            vec2 u = position.xz;
+            vec2 localXZ = vec2(sign(u.x) * pow(abs(u.x), 1.38) * uSpanX, sign(u.y) * pow(abs(u.y), 1.45) * uSpanZ);
+            float h = evalMountainField(localXZ);
+            vLocalXZ = localXZ; vElev = h;
+            vec4 wp = modelMatrix * vec4(localXZ.x, h, localXZ.y, 1.0);
+            gl_Position = projectionMatrix * viewMatrix * wp;
+          }
+        `,
+        fragmentShader: commonGLSL + `
+          uniform vec3 uSunDir; uniform float uHaze, uGhibliOn;
+          varying vec2 vLocalXZ; varying float vElev;
+          float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
+          float noise2(vec2 p) {
+            vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+            return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x), mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), u.x), u.y);
+          }
+          void main() {
+            // 連續解析梯度法線（徹底消滅三角形一格格馬賽克！）
+            float eps = max(0.04, uSpanX * 0.0012);
+            float hC = evalMountainField(vLocalXZ);
+            float hX = evalMountainField(vLocalXZ + vec2(eps, 0.0));
+            float hZ = evalMountainField(vLocalXZ + vec2(0.0, eps));
+            vec3 N = normalize(vec3(hC - hX, eps, hC - hZ));
+
+            float micro = (noise2(vLocalXZ * (28.0 / uSpanX)) * 0.6 + noise2(rot(0.9) * vLocalXZ * (85.0 / uSpanX)) * 0.4) - 0.5;
+            float hRatio = clamp((vElev + 0.85) / max(uHeight, 1.0), 0.0, 1.0);
+            float slope = clamp(N.y + micro * 0.14, 0.0, 1.0);
+
+            vec3 footCol  = vec3(0.22, 0.40, 0.22);
+            vec3 grassCol = vec3(0.36, 0.58, 0.28);
+            vec3 rockCol  = vec3(0.34, 0.32, 0.34);
+            vec3 ridgeCol = vec3(0.58, 0.60, 0.38);
+
+            vec3 baseCol = mix(footCol, grassCol, smoothstep(0.05, 0.48, hRatio + micro * 0.12));
+            baseCol = mix(baseCol, ridgeCol, smoothstep(0.65, 0.95, hRatio));
+            baseCol = mix(rockCol, baseCol, smoothstep(0.46, 0.76, slope));
+            baseCol *= (1.0 + micro * 0.24);
+
+            float sunDot = dot(N, normalize(uSunDir));
+            float diff = pow(clamp(sunDot * 0.65 + 0.35, 0.0, 1.0), 1.15);
+            vec3 litCol = baseCol * mix(vec3(0.36, 0.42, 0.56), vec3(1.24, 1.12, 0.96), diff);
+            vec3 hazeCol = mix(vec3(0.76, 0.85, 0.94), vec3(0.86, 0.90, 0.94), uGhibliOn * 0.5);
+            gl_FragColor = vec4(mix(litCol, hazeCol, uHaze), 1.0);
+          }
+        `
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(opts.posX, 0, opts.posZ);
+      scene.add(mesh);
+      return u;
+    }
+
+    // 🏝️ 實例 1：左後方海島（肥島極少搖滾 Preset：height 6.5, fold 0.15, peak 0.05）
+    const islUniforms = createUnifiedTerrainMesh({
+      segX: 140, segZ: 110, spanX: 36, spanZ: 24, posX: -52, posZ: -128,
+      height: 6.5, fold: 0.15, peak: 0.05, haze: 0.28, seed: 1.73
+    });
+    // 海島岸邊呼吸白浪泡沫環
+    const foamRing = new THREE.Mesh(
+      new THREE.RingGeometry(19.0, 21.8, 64),
+      new THREE.MeshBasicMaterial({ color: 0xf4f9fc, transparent: true, opacity: 0.52, side: THREE.DoubleSide })
+    );
+    foamRing.rotation.x = -Math.PI / 2;
+    foamRing.scale.set(1.25, 0.78, 1.0);
+    foamRing.position.set(-52, 0.03, -128);
+    scene.add(foamRing);
+
+    // 🏔️ 實例 2：右後方主山脈（肥山加少少搖滾 Preset：height 34, fold 0.25, peak 0.15）
+    const mtnUniforms = createUnifiedTerrainMesh({
+      segX: 200, segZ: 150, spanX: 115, spanZ: 72, posX: 62, posZ: -215,
+      height: 34.0, fold: 0.25, peak: 0.15, haze: 0.42, seed: 2.14
+    });
+
+
+
+        // 3. 沙js膠囊（黃金定型 Preset：風起沙移 +5% 沙量）
     const sandGeo = new THREE.PlaneGeometry(84, 52, 180, 120);
     sandGeo.rotateX(-Math.PI / 2);
     const sandMat = new THREE.ShaderMaterial({
-      uniforms: sharedUniforms,
-      transparent: true,
-      extensions: { derivatives: true },
+      uniforms: sharedUniforms, transparent: true, extensions: { derivatives: true },
       vertexShader: `
-        uniform vec3 uSandRatios;
-        uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp;
+        uniform vec3 uSandRatios; uniform float uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp;
         varying vec3 vWorldPos;
-
         mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
         float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
-        float noise2(vec2 p) {
-          vec2 i = floor(p), f = fract(p);
-          vec2 u = f * f * (3.0 - 2.0 * f);
-          return mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x) +
-                 (hash21(i + vec2(0.0, 1.0)) - hash21(i)) * u.y * (1.0 - u.x) +
-                 (hash21(i + vec2(1.0, 1.0)) - hash21(i + vec2(1.0, 0.0))) * u.x * u.y;
-        }
-
-        float windField(vec2 p, float w) {
-          vec2 wp = rot(0.38) * p;
-          wp.x *= 0.42;
-          float w1 = noise2(wp * 0.085 + vec2(w * 0.14, -w * 0.10));
-          float w2 = noise2(rot(1.1) * wp * 0.19 - vec2(w * 0.18, w * 0.12));
-          return w1 * 0.68 + w2 * 0.32;
-        }
-
+        float noise2(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f); return mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x) + (hash21(i + vec2(0.0, 1.0)) - hash21(i)) * u.y * (1.0 - u.x) + (hash21(i + vec2(1.0, 1.0)) - hash21(i + vec2(1.0, 0.0))) * u.x * u.y; }
+        float windField(vec2 p, float w) { vec2 wp = rot(0.38) * p; wp.x *= 0.42; return noise2(wp * 0.085 + vec2(w * 0.14, -w * 0.10)) * 0.68 + noise2(rot(1.1) * wp * 0.19 - vec2(w * 0.18, w * 0.12)) * 0.32; }
         float evalSandHeight(vec2 p) {
-          float w = uWindPhase;
-          float macroWind = windField(p, w);
-
-          vec2 q = rot(0.32) * p * 0.40;
-          q.x *= 0.58;
-          q += vec2(macroWind * 2.4 + w * 0.25, sin(macroWind * 6.28318) * 1.0);
-
-          if (uChaosOn > 0.5) {
-            float salt = noise2(q * 0.65 + vec2(w * 0.12, -w * 0.09));
-            q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.35;
-          }
-
+          float w = uWindPhase, macroWind = windField(p, w);
+          vec2 q = rot(0.32) * p * 0.40; q.x *= 0.58; q += vec2(macroWind * 2.4 + w * 0.25, sin(macroWind * 6.28318) * 1.0);
+          if (uChaosOn > 0.5) { float salt = noise2(q * 0.65 + vec2(w * 0.12, -w * 0.09)); q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.35; }
           vec2 q1 = rot(0.45) * q + vec2(w * 0.28, -w * 0.18);
           float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + w * 0.20) * 0.85));
           vec2 q2 = rot(1.85) * (q * 1.55) + vec2(-w * 0.22, w * 0.18);
           float w2 = 1.0 - abs(cos(q2.x * uSandRatios.z * 1.732 + sin(q2.y * uSandRatios.x * 1.31) * 0.75));
-
-          float sineCore = (w1 * 0.58 + w2 * 0.42) * uSineAmp;
-          float raw = sineCore * mix(0.55, 1.30, macroWind);
-          float sharp = pow(clamp(raw, 0.0, 1.35), uMassLev);
-
-          if (uCutMode < 0.5) {
-            float cutBase = uCutLevel * 0.65;
-            return max(0.0, sharp - cutBase) / max(1.0 - cutBase, 0.1);
-          } else {
-            float topCap = max(0.15, 1.0 - uCutLevel * 0.75);
-            return min(topCap, sharp);
-          }
+          float sharp = pow(clamp((w1 * 0.58 + w2 * 0.42) * uSineAmp * mix(0.55, 1.30, macroWind), 0.0, 1.35), uMassLev);
+          if (uCutMode < 0.5) { float cutBase = uCutLevel * 0.65; return max(0.0, sharp - cutBase) / max(1.0 - cutBase, 0.1); }
+          return min(max(0.15, 1.0 - uCutLevel * 0.75), sharp);
         }
-
         void main() {
-          vec3 pos = position;
-          pos.z += 12.0;
-          vec4 wp = modelMatrix * vec4(pos, 1.0);
-          float h = evalSandHeight(wp.xz);
-          float shoreDamp = smoothstep(-6.0, 2.0, wp.z);
-          wp.y += h * 0.78 * shoreDamp;
-          vWorldPos = wp.xyz;
-          gl_Position = projectionMatrix * viewMatrix * wp;
+          vec3 pos = position; pos.z += 12.0; vec4 wp = modelMatrix * vec4(pos, 1.0);
+          wp.y += evalSandHeight(wp.xz) * 0.78 * smoothstep(-6.0, 2.0, wp.z);
+          vWorldPos = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp;
         }
       `,
       fragmentShader: `
-        uniform vec3 uSandSemi, uSandRatios, uSunDir;
-        uniform float uGhibliOn, uShadowDepth, uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp;
+        uniform vec3 uSandSemi, uSandRatios, uSunDir; uniform float uGhibliOn, uShadowDepth, uCutMode, uCutLevel, uChaosOn, uSaltAmt, uWindPhase, uMassLev, uSineAmp;
         varying vec3 vWorldPos;
-
         mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
         float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
-        float noise2(vec2 p) {
-          vec2 i = floor(p), f = fract(p);
-          vec2 u = f * f * (3.0 - 2.0 * f);
-          return mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x) +
-                 (hash21(i + vec2(0.0, 1.0)) - hash21(i)) * u.y * (1.0 - u.x) +
-                 (hash21(i + vec2(1.0, 1.0)) - hash21(i + vec2(1.0, 0.0))) * u.x * u.y;
-        }
-
-        float windField(vec2 p, float w) {
-          vec2 wp = rot(0.38) * p;
-          wp.x *= 0.42;
-          float w1 = noise2(wp * 0.085 + vec2(w * 0.14, -w * 0.10));
-          float w2 = noise2(rot(1.1) * wp * 0.19 - vec2(w * 0.18, w * 0.12));
-          return w1 * 0.68 + w2 * 0.32;
-        }
-
+        float noise2(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f); return mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x) + (hash21(i + vec2(0.0, 1.0)) - hash21(i)) * u.y * (1.0 - u.x) + (hash21(i + vec2(1.0, 1.0)) - hash21(i + vec2(1.0, 0.0))) * u.x * u.y; }
+        float windField(vec2 p, float w) { vec2 wp = rot(0.38) * p; wp.x *= 0.42; return noise2(wp * 0.085 + vec2(w * 0.14, -w * 0.10)) * 0.68 + noise2(rot(1.1) * wp * 0.19 - vec2(w * 0.18, w * 0.12)) * 0.32; }
         float totemHeight(vec2 p) {
-          float w = uWindPhase;
-          float macroWind = windField(p, w);
-          vec2 q = rot(0.32) * p * 0.40;
-          q.x *= 0.58;
-          q += vec2(macroWind * 2.4 + w * 0.25, sin(macroWind * 6.28318) * 1.0);
-
-          if (uChaosOn > 0.5) {
-            float salt = noise2(q * 0.65 + vec2(w * 0.12, -w * 0.09));
-            q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.35;
-          }
+          float w = uWindPhase, macroWind = windField(p, w);
+          vec2 q = rot(0.32) * p * 0.40; q.x *= 0.58; q += vec2(macroWind * 2.4 + w * 0.25, sin(macroWind * 6.28318) * 1.0);
+          if (uChaosOn > 0.5) { float salt = noise2(q * 0.65 + vec2(w * 0.12, -w * 0.09)); q += vec2(cos(salt * 6.28318), sin(salt * 6.28318)) * uSaltAmt * 1.35; }
           vec2 q1 = rot(0.45) * q + vec2(w * 0.28, -w * 0.18);
           float w1 = 1.0 - abs(sin(q1.x * uSandRatios.x * 1.414 + cos(q1.y * uSandRatios.y * 1.618 + w * 0.20) * 0.85));
           vec2 q2 = rot(1.85) * (q * 1.55) + vec2(-w * 0.22, w * 0.18);
           float w2 = 1.0 - abs(cos(q2.x * uSandRatios.z * 1.732 + sin(q2.y * uSandRatios.x * 1.31) * 0.75));
-
-          float sineCore = (w1 * 0.58 + w2 * 0.42) * uSineAmp;
-          float raw = sineCore * mix(0.55, 1.30, macroWind);
-          float sharp = pow(clamp(raw, 0.0, 1.35), uMassLev);
-
-          if (uCutMode < 0.5) {
-            float cutBase = uCutLevel * 0.65;
-            return max(0.0, sharp - cutBase) / max(1.0 - cutBase, 0.1);
-          } else {
-            float topCap = max(0.15, 1.0 - uCutLevel * 0.75);
-            return min(topCap, sharp);
-          }
+          float sharp = pow(clamp((w1 * 0.58 + w2 * 0.42) * uSineAmp * mix(0.55, 1.30, macroWind), 0.0, 1.35), uMassLev);
+          if (uCutMode < 0.5) { float cutBase = uCutLevel * 0.65; return max(0.0, sharp - cutBase) / max(1.0 - cutBase, 0.1); }
+          return min(max(0.15, 1.0 - uCutLevel * 0.75), sharp);
         }
-
         void main() {
-          vec2 p = vWorldPos.xz;
-          float eps = 0.08;
-          float hC = totemHeight(p);
-          float hX = totemHeight(p + vec2(eps, 0.0));
-          float hZ = totemHeight(p + vec2(0.0, eps));
+          vec2 p = vWorldPos.xz; float eps = 0.08, hC = totemHeight(p);
           float slopeScale = mix(3.4, 2.1, uGhibliOn) * uShadowDepth;
-          vec3 N = normalize(vec3((hC - hX) * slopeScale, 1.0, (hC - hZ) * slopeScale));
-
+          vec3 N = normalize(vec3((hC - totemHeight(p + vec2(eps, 0.0))) * slopeScale, 1.0, (hC - totemHeight(p + vec2(0.0, eps))) * slopeScale));
           float chordWarmth = fract((uSandSemi.x + uSandSemi.y + uSandSemi.z) / 24.0);
           float grain = (hash21(floor(p * 48.0)) - 0.5) * mix(0.09, 0.055, uGhibliOn);
-
-          vec3 gValley = mix(vec3(0.64, 0.50, 0.34), vec3(0.58, 0.44, 0.32), chordWarmth);
-          vec3 gCrest  = mix(vec3(0.92, 0.80, 0.58), vec3(0.95, 0.76, 0.54), chordWarmth);
-          vec3 gAlbedo = mix(gValley, gCrest, smoothstep(0.05, 0.90, hC)) + grain;
-          float halfL  = dot(N, normalize(uSunDir)) * 0.5 + 0.5;
-          vec3 gCol    = gAlbedo * mix(0.55, 1.15, pow(halfL, 1.3 * uShadowDepth));
-
-          vec3 pValley = vec3(0.32, 0.25, 0.18);
-          vec3 pCrest  = vec3(0.84, 0.74, 0.56);
-          vec3 pAlbedo = mix(pValley, pCrest, smoothstep(0.04, 0.88, hC)) + grain;
-          float ndotl  = max(dot(N, normalize(uSunDir)), 0.0);
-          float valleyAO = mix(0.38, 1.12, smoothstep(0.0, 0.55, hC));
-          vec3 pCol    = pAlbedo * (0.18 + 1.18 * pow(ndotl, 1.15 * uShadowDepth)) * valleyAO;
-
+          vec3 gAlbedo = mix(mix(vec3(0.64, 0.50, 0.34), vec3(0.58, 0.44, 0.32), chordWarmth), mix(vec3(0.92, 0.80, 0.58), vec3(0.95, 0.76, 0.54), chordWarmth), smoothstep(0.05, 0.90, hC)) + grain;
+          vec3 gCol = gAlbedo * mix(0.55, 1.15, pow(dot(N, normalize(uSunDir)) * 0.5 + 0.5, 1.3 * uShadowDepth));
+          vec3 pAlbedo = mix(vec3(0.32, 0.25, 0.18), vec3(0.84, 0.74, 0.56), smoothstep(0.04, 0.88, hC)) + grain;
+          vec3 pCol = pAlbedo * (0.18 + 1.18 * pow(max(dot(N, normalize(uSunDir)), 0.0), 1.15 * uShadowDepth)) * mix(0.38, 1.12, smoothstep(0.0, 0.55, hC));
           vec3 col = mix(pCol, gCol, uGhibliOn);
-
-          float waterDist = vWorldPos.y - (-0.02);
-          float wetBand = 1.0 - smoothstep(-0.02, 0.09, waterDist);
-          col *= mix(1.0, mix(0.52, 0.68, uGhibliOn), wetBand);
-
+          col *= mix(1.0, mix(0.52, 0.68, uGhibliOn), 1.0 - smoothstep(-0.02, 0.09, vWorldPos.y - (-0.02)));
           vec2 houseBox = abs(p - vec2(-0.8, -1.2)) - vec2(6.2, 3.3);
-          float houseShadow = 1.0 - smoothstep(-0.8, 1.8, max(houseBox.x, houseBox.y));
-          col *= mix(1.0, mix(0.45, 0.62, uGhibliOn), houseShadow * 0.75);
-
+          col *= mix(1.0, mix(0.45, 0.62, uGhibliOn), (1.0 - smoothstep(-0.8, 1.8, max(houseBox.x, houseBox.y))) * 0.75);
           float shoreFade = smoothstep(-8.5, -3.5, vWorldPos.z);
           gl_FragColor = vec4(col * shoreFade, shoreFade);
         }
       `
     });
     const sandMesh = new THREE.Mesh(sandGeo, sandMat);
-    sandMesh.position.y = -0.025; // 🏝️ 精準托高 +0.025，增加約 5% 露出水面嘅沙量！
+    sandMesh.position.y = -0.025;
     scene.add(sandMesh);
 
-
-
-        // 4. 兩款大海（大海繼續擁有海森堡測不準湧浪）
-    const seaGeo = new THREE.PlaneGeometry(420, 420, 96, 96);
+    const seaGeo = new THREE.PlaneGeometry(880, 880, 96, 96);
     seaGeo.rotateX(-Math.PI / 2);
     const seaMat = new THREE.ShaderMaterial({
       side: THREE.DoubleSide, uniforms: sharedUniforms,
       vertexShader: `
-        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide;
-        varying vec3 vWorldPos;
+        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide; varying vec3 vWorldPos;
         void main() {
-          vec3 pos = position; float t = uBreathT;
-          float shoreLine = -4.2 - uTide * 14.0;
+          vec3 pos = position; float t = uBreathT, shoreLine = -4.2 - uTide * 14.0;
           float shallowDamp = smoothstep(shoreLine + 3.0, shoreLine - 28.0, pos.z);
-          float groupEnv = sin(pos.z * 0.045 + sin(pos.x * 0.025) * 1.2 - t * 0.45) * 0.5 + 0.5;
-          float waveAct = smoothstep(uPause * 0.80, uPause * 0.80 + 0.20, groupEnv) * (0.25 + 0.75 * uPulseGate);
-          float swell = (sin(pos.z * 0.12 + cos(pos.x * 0.03) * 0.9 - t * 0.85) * 0.6 +
-                         cos(pos.z * 0.20 - sin(pos.x * 0.04) * 0.8 - t * 1.10) * 0.4) * uFbm * 0.85;
-          float calmDisp = swell * (0.20 + 0.80 * waveAct);
-          float bigWaveDisp = (sin(pos.x * 0.22 + uTime * 1.8) * 0.18 + cos(pos.z * 0.25 + uTime * 2.0) * 0.16) * uFbm;
-          pos.y += mix(calmDisp, bigWaveDisp, uQuantumSwing * 0.75) * shallowDamp;
-          vec4 wp4 = modelMatrix * vec4(pos, 1.0); vWorldPos = wp4.xyz;
-          gl_Position = projectionMatrix * viewMatrix * wp4;
+          float waveAct = smoothstep(uPause * 0.80, uPause * 0.80 + 0.20, sin(pos.z * 0.045 + sin(pos.x * 0.025) * 1.2 - t * 0.45) * 0.5 + 0.5) * (0.25 + 0.75 * uPulseGate);
+          float swell = (sin(pos.z * 0.12 + cos(pos.x * 0.03) * 0.9 - t * 0.85) * 0.6 + cos(pos.z * 0.20 - sin(pos.x * 0.04) * 0.8 - t * 1.10) * 0.4) * uFbm * 0.85;
+          pos.y += mix(swell * (0.20 + 0.80 * waveAct), (sin(pos.x * 0.22 + uTime * 1.8) * 0.18 + cos(pos.z * 0.25 + uTime * 2.0) * 0.16) * uFbm, uQuantumSwing * 0.75) * shallowDamp;
+          vec4 wp4 = modelMatrix * vec4(pos, 1.0); vWorldPos = wp4.xyz; gl_Position = projectionMatrix * viewMatrix * wp4;
         }
       `,
       fragmentShader: `
-        uniform float uTime, uBreathT, uQuantumSwing, uTide;
-        uniform vec3 uSunDir;
-        varying vec3 vWorldPos;
-        float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 437.5854); }
-        float noise(vec2 p) {
-          vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
-          return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
-        }
-        float fbm(vec2 p) {
-          float v = 0.0, a = 0.5; mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
-          for (int i = 0; i < 4; i++) { v += a * noise(p); p = rot * p * 2.05; a *= 0.5; }
-          return v;
-        }
+        uniform float uTime, uBreathT, uQuantumSwing, uTide; uniform vec3 uSunDir; varying vec3 vWorldPos;
+        float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5454); }
+        float noise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
+        float fbm(vec2 p) { float v = 0.0, a = 0.5; mat2 rot = mat2(0.8, 0.6, -0.6, 0.8); for (int i = 0; i < 4; i++) { v += a * noise(p); p = rot * p * 2.05; a *= 0.5; } return v; }
         void main() {
           vec2 p = vWorldPos.xz; float t = uBreathT;
-          float tideLine = -4.2 - uTide * 14.0 + sin(p.x * 0.032) * 2.2;
-          float foamEdge = exp(-pow((p.y - tideLine) * 0.68, 2.0)) * smoothstep(0.05, 0.5, uTide);
+          float foamEdge = exp(-pow((p.y - (-4.2 - uTide * 14.0 + sin(p.x * 0.032) * 2.2)) * 0.68, 2.0)) * smoothstep(0.05, 0.5, uTide);
           float w1 = fbm(p * 0.25 + vec2(t * 0.15, -t * 0.22));
-          vec3 normal = normalize(vec3((w1 - 0.5) * 0.35, 1.0, (w1 - 0.5) * 0.35));
-          vec3 viewDir = normalize(cameraPosition - vWorldPos);
+          vec3 normal = normalize(vec3((w1 - 0.5) * 0.35, 1.0, (w1 - 0.5) * 0.35)), viewDir = normalize(cameraPosition - vWorldPos);
           float fresnel = pow(clamp(1.0 - max(dot(viewDir, normal), 0.0), 0.01, 1.0), 3.4);
-          float depthGrad = smoothstep(5.0, 145.0, length(vWorldPos.xz - cameraPosition.xz));
-          vec3 seaMode1 = mix(vec3(0.07, 0.38, 0.36), vec3(0.02, 0.15, 0.27), depthGrad);
-          vec3 seaMode2 = mix(vec3(0.02, 0.76, 0.70), vec3(0.01, 0.22, 0.45), depthGrad);
-          vec3 baseWater = mix(seaMode1, seaMode2, uQuantumSwing);
+          float depthGrad = smoothstep(5.0, 220.0, length(vWorldPos.xz - cameraPosition.xz));
+          vec3 baseWater = mix(mix(vec3(0.07, 0.38, 0.36), vec3(0.02, 0.15, 0.27), depthGrad), mix(vec3(0.02, 0.76, 0.70), vec3(0.01, 0.22, 0.45), depthGrad), uQuantumSwing);
           vec3 col = mix(baseWater, vec3(0.45, 0.76, 0.96), clamp(fresnel * 0.85 + 0.10, 0.0, 0.92));
-          float foamNoise = smoothstep(0.32, 0.75, fbm(p * 0.9 + vec2(0.0, uTime * 0.4)));
-          col += vec3(0.98, 0.98, 0.96) * foamEdge * (0.42 + 0.48 * foamNoise);
-          vec3 halfVec = normalize(normalize(uSunDir) + viewDir);
-          col += vec3(1.0, 0.90, 0.62) * pow(clamp(dot(normal, halfVec), 0.001, 1.0), 120.0) * 2.0;
+          col += vec3(0.98, 0.98, 0.96) * foamEdge * (0.42 + 0.48 * smoothstep(0.32, 0.75, fbm(p * 0.9 + vec2(0.0, uTime * 0.4))));
+          col += vec3(1.0, 0.90, 0.62) * pow(clamp(dot(normal, normalize(normalize(uSunDir) + viewDir)), 0.001, 1.0), 120.0) * 2.0;
           gl_FragColor = vec4(col, 1.0);
         }
       `
@@ -498,100 +497,48 @@
     seaMesh.position.y = -0.02;
     scene.add(seaMesh);
 
-    let state = { chaosOn: true, heisOn: true, breathOn: true };
-    const triBtn = document.getElementById('tri-btn'), panel = document.getElementById('panel');
-    triBtn.onclick = () => { panel.classList.toggle('hidden'); triBtn.textContent = panel.classList.contains('hidden') ? '▲' : '▼'; };
-
-    document.querySelectorAll('#sky-grid .c-btn').forEach(btn => {
+    // 五大透明膠囊開合控制
+    let activeCap = null;
+    document.querySelectorAll('.tri-cap').forEach(btn => {
       btn.onclick = () => {
-        document.querySelectorAll('#sky-grid .c-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const item = TRIADS[btn.dataset.key];
-        sharedUniforms.uSkySemi.value.set(...item.semi);
-        document.getElementById('sky-readout').textContent = item.label;
-      };
-    });
-    document.querySelectorAll('#sand-grid .c-btn').forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll('#sand-grid .c-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const item = TRIADS[btn.dataset.key];
-        sharedUniforms.uSandSemi.value.set(...item.semi);
-        sharedUniforms.uSandRatios.value.set(...toRatios(item.semi));
-        document.getElementById('sand-readout').textContent = item.label;
+        const id = btn.dataset.cap;
+        activeCap = (activeCap === id) ? null : id;
+        document.querySelectorAll('.tri-cap').forEach(b => { b.classList.toggle('active', b.dataset.cap === activeCap); b.textContent = (b.dataset.cap === activeCap) ? '▲' : '▼'; });
+        document.querySelectorAll('.cap-drawer').forEach(d => d.classList.toggle('open', d.id === activeCap));
       };
     });
 
-    const btnGhibli = document.getElementById('btn-ghibli-mode');
-    btnGhibli.onclick = () => {
-      const next = sharedUniforms.uGhibliOn.value > 0.5 ? 0.0 : 1.0;
-      sharedUniforms.uGhibliOn.value = next;
-      btnGhibli.textContent = next > 0.5
-        ? '🎨 光影：吉卜力暖沙 (撳轉無吉卜力深影)'
-        : '📷 光影：無吉卜力真物理深影 (撳轉吉卜力)';
+    const bindSlider = (id, vid, fn, suf = '') => {
+      document.getElementById(id).oninput = (e) => { const v = parseFloat(e.target.value); fn(v); document.getElementById(vid).textContent = v.toFixed(suf === 'x' || suf === '' ? 2 : 1) + suf; };
     };
+    bindSlider('optDepth', 'optDepth-v', v => sharedUniforms.uOptDepth.value = v);
+    bindSlider('mieGlow', 'mieGlow-v', v => sharedUniforms.uMieGlow.value = v);
+    bindSlider('windSpeed', 'windSpeed-v', v => sharedUniforms.uWindSpeed.value = v, 'x');
+    bindSlider('sineAmp', 'sineAmp-v', v => sharedUniforms.uSineAmp.value = v, 'x');
+    bindSlider('shadowDepth', 'shadowDepth-v', v => sharedUniforms.uShadowDepth.value = v);
+    bindSlider('saltAmt', 'saltAmt-v', v => sharedUniforms.uSaltAmt.value = v);
+    bindSlider('cutLevel', 'cutLevel-v', v => sharedUniforms.uCutLevel.value = v);
+    bindSlider('massLev', 'massLev-v', v => sharedUniforms.uMassLev.value = v, 'x');
+    bindSlider('islHeight', 'islHeight-v', v => islUniforms.uHeight.value = v, ' ');
+    bindSlider('islFold', 'islFold-v', v => islUniforms.uFold.value = v);
+    bindSlider('islPeak', 'islPeak-v', v => islUniforms.uPeak.value = v);
+    bindSlider('islHaze', 'islHaze-v', v => islUniforms.uHaze.value = v);
+    bindSlider('mtnHeight', 'mtnHeight-v', v => mtnUniforms.uHeight.value = v, ' ');
+    bindSlider('mtnFold', 'mtnFold-v', v => mtnUniforms.uFold.value = v);
+    bindSlider('mtnPeak', 'mtnPeak-v', v => mtnUniforms.uPeak.value = v);
+    bindSlider('ring360H', 'ring360H-v', v => sharedUniforms.uRing360H.value = v, 'x');
 
-    const btnCutMode = document.getElementById('btn-cut-mode');
-    btnCutMode.onclick = () => {
-      const next = sharedUniforms.uCutMode.value < 0.5 ? 1.0 : 0.0;
-      sharedUniforms.uCutMode.value = next;
-      btnCutMode.textContent = next < 0.5 ? '🔪 切刀：底部縮切 (保尖峰)' : '🔪 切刀：頂部削平 (平頂台地)';
-    };
-    const btnSeaMode = document.getElementById('btn-sea-mode');
-    btnSeaMode.onclick = () => {
-      const next = sharedUniforms.uQuantumSwing.value < 0.5 ? 1.0 : 0.0;
-      sharedUniforms.uQuantumSwing.value = next;
-      btnSeaMode.textContent = next > 0.5 ? '🌊 海款：2號大浪海 (撳轉1號)' : '🌊 海款：1號平靜海 (撳轉2號)';
-    };
+    let state = { chaosOn: true, heisOn: false, breathOn: true };
+    document.querySelectorAll('#sky-grid .c-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('#sky-grid .c-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const item = TRIADS[btn.dataset.key]; sharedUniforms.uSkySemi.value.set(...item.semi); document.getElementById('sky-readout').textContent = item.label; }; });
+    document.querySelectorAll('#sand-grid .c-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('#sand-grid .c-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const item = TRIADS[btn.dataset.key]; sharedUniforms.uSandSemi.value.set(...item.semi); sharedUniforms.uSandRatios.value.set(...toRatios(item.semi)); document.getElementById('sand-readout').textContent = item.label; }; });
+    document.getElementById('btn-ghibli-mode').onclick = (e) => { const n = sharedUniforms.uGhibliOn.value > 0.5 ? 0.0 : 1.0; sharedUniforms.uGhibliOn.value = n; e.target.textContent = n > 0.5 ? '🎨 光影：吉卜力暖沙 (撳轉無吉卜力深影)' : '📷 光影：無吉卜力真物理深影 (撳轉吉卜力)'; };
+    document.getElementById('btn-cut-mode').onclick = (e) => { const n = sharedUniforms.uCutMode.value < 0.5 ? 1.0 : 0.0; sharedUniforms.uCutMode.value = n; e.target.textContent = n < 0.5 ? '🔪 切刀：底部縮切 (保尖峰)' : '🔪 切刀：頂部削平 (平頂台地)'; };
+    document.getElementById('btn-sea-mode').onclick = (e) => { const n = sharedUniforms.uQuantumSwing.value < 0.5 ? 1.0 : 0.0; sharedUniforms.uQuantumSwing.value = n; e.target.textContent = n > 0.5 ? '🌊 海款：2號大浪海 (撳轉1號)' : '🌊 海款：1號平靜海 (撳轉2號)'; };
+    document.getElementById('btn-chaos').onclick = (e) => { state.chaosOn = !state.chaosOn; sharedUniforms.uChaosOn.value = state.chaosOn ? 1.0 : 0.0; e.target.classList.toggle('on-chaos', state.chaosOn); e.target.textContent = state.chaosOn ? '🌀 混沌海鹽: 開' : '🌀 混沌海鹽: 停'; };
+    document.getElementById('btn-heis').onclick = (e) => { state.heisOn = !state.heisOn; e.target.classList.toggle('on-heis', state.heisOn); e.target.textContent = state.heisOn ? '⚛️ 海浪測不準: 開' : '⚛️ 海浪測不準: 關'; };
+    document.getElementById('btn-breath').onclick = (e) => { state.breathOn = !state.breathOn; e.target.classList.toggle('on-breath', state.breathOn); e.target.textContent = state.breathOn ? '🫁 海浪呼吸: 開' : '🫁 海浪呼吸: 關'; };
 
-    document.getElementById('btn-chaos').onclick = (e) => {
-      state.chaosOn = !state.chaosOn;
-      sharedUniforms.uChaosOn.value = state.chaosOn ? 1.0 : 0.0;
-      e.target.classList.toggle('on-chaos', state.chaosOn);
-      e.target.textContent = state.chaosOn ? '🌀 混沌海鹽: 開' : '🌀 混沌海鹽: 停';
-    };
-    document.getElementById('btn-heis').onclick = (e) => {
-      state.heisOn = !state.heisOn;
-      e.target.classList.toggle('on-heis', state.heisOn);
-      e.target.textContent = state.heisOn ? '⚛️ 海浪測不準: 開' : '⚛️ 海浪測不準: 關';
-    };
-    document.getElementById('btn-breath').onclick = (e) => {
-      state.breathOn = !state.breathOn;
-      e.target.classList.toggle('on-breath', state.breathOn);
-      e.target.textContent = state.breathOn ? '🫁 海浪呼吸: 開' : '🫁 海浪呼吸: 關';
-    };
-
-    document.getElementById('windSpeed').oninput = (e) => {
-      const v = parseFloat(e.target.value); sharedUniforms.uWindSpeed.value = v;
-      document.getElementById('windSpeed-v').textContent = v.toFixed(2) + 'x';
-    };
-    document.getElementById('sineAmp').oninput = (e) => {
-      const v = parseFloat(e.target.value); sharedUniforms.uSineAmp.value = v;
-      document.getElementById('sineAmp-v').textContent = v.toFixed(2) + 'x';
-    };
-    document.getElementById('shadowDepth').oninput = (e) => {
-      const v = parseFloat(e.target.value); sharedUniforms.uShadowDepth.value = v;
-      document.getElementById('shadowDepth-v').textContent = v.toFixed(2);
-    };
-    document.getElementById('saltAmt').oninput = (e) => {
-      const v = parseFloat(e.target.value); sharedUniforms.uSaltAmt.value = v;
-      document.getElementById('saltAmt-v').textContent = v.toFixed(2);
-    };
-    document.getElementById('cutLevel').oninput = (e) => {
-      const v = parseFloat(e.target.value); sharedUniforms.uCutLevel.value = v;
-      document.getElementById('cutLevel-v').textContent = v.toFixed(2);
-    };
-    document.getElementById('massLev').oninput = (e) => {
-      const v = parseFloat(e.target.value); sharedUniforms.uMassLev.value = v;
-      document.getElementById('massLev-v').textContent = v.toFixed(2) + 'x';
-    };
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
+    window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
     const clock = new THREE.Clock();
     function animate() {
       requestAnimationFrame(animate);
@@ -600,10 +547,8 @@
       const wavePulse = state.breathOn ? Math.pow(Math.sin(t * 0.9) * 0.5 + 0.5, 3.0) : 0.4;
       sharedUniforms.uPulseGate.value = wavePulse;
       if (state.heisOn) sharedUniforms.uBreathT.value += dt * (0.08 + wavePulse * 1.25);
-
-      // 🌬️ 沙有重量，無風唔會自己郁，淨係海風 uWindSpeed 先吹得郁！
       sharedUniforms.uWindPhase.value += dt * (sharedUniforms.uWindSpeed.value * 0.55);
-
+      foamRing.material.opacity = 0.35 + 0.25 * Math.sin(t * 1.4);
       controls.update();
       renderer.render(scene, camera);
     }
