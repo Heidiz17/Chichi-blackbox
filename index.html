@@ -554,6 +554,252 @@
     }
     animate();
   })();
+
+          })();
+  // === ✈️ 補丁：第 6 透明膠囊（萊特兄弟雙翼機 × 滑行起降物理 × 跟機高空巡視） ===
+  (function () {
+    const waitReady = setInterval(() => {
+      const topCaps = document.getElementById('top-caps');
+      const cv = document.querySelector('#canvas-3d canvas');
+      if (!topCaps || !cv) return;
+      clearInterval(waitReady);
+
+      // 1. 注入第 6 粒深藍色三角膠囊掣與透明面板
+      const btn6 = document.createElement('button');
+      btn6.className = 'tri-cap';
+      btn6.dataset.cap = 'cap-fly';
+      btn6.textContent = '▼';
+      topCaps.appendChild(btn6);
+
+      const drawer6 = document.createElement('div');
+      drawer6.className = 'cap-drawer';
+      drawer6.id = 'cap-fly';
+      drawer6.innerHTML = `
+        <div class="cap-head"><span>✈️ 櫃桶 6：萊特兄弟雙翼機（滑行起降＋空中巡視）</span><span id="fly-stat">停機坪待命</span></div>
+        <div class="tri-grid" style="grid-template-columns:repeat(4,1fr);">
+          <button class="p-toggle on-breath" id="pax-ming">🧑 明仔</button>
+          <button class="p-toggle on-chaos" id="pax-p">🤖 P仔</button>
+          <button class="p-toggle" id="pax-wife">👩 芝女</button>
+          <button class="p-toggle" id="pax-cats">🐱 三隻貓</button>
+        </div>
+        <div class="dual-bar">
+          <button class="mode-btn art" id="btn-plane-type">🛩️ 機型：萊特兄弟雙翼機 (撳轉折紙飛機)</button>
+          <button class="mode-btn" id="btn-takeoff">🚀 跑道滑行起飛</button>
+          <button class="mode-btn sea" id="btn-hover">⏸️ 空中定格睇山: 關</button>
+          <button class="p-toggle on-breath" id="btn-cam-follow">🎥 跟機視角: 開</button>
+          <button class="p-toggle" id="btn-land">🛬 進場滑行降落</button>
+        </div>
+      `;
+      document.body.appendChild(drawer6);
+
+      // 重新綁定全部 6 粒膠囊開合
+      let activeCap = null;
+      document.querySelectorAll('.tri-cap').forEach(b => {
+        b.onclick = () => {
+          const id = b.dataset.cap;
+          activeCap = (activeCap === id) ? null : id;
+          document.querySelectorAll('.tri-cap').forEach(x => {
+            x.classList.toggle('active', x.dataset.cap === activeCap);
+            x.textContent = (x.dataset.cap === activeCap) ? '▲' : '▼';
+          });
+          document.querySelectorAll('.cap-drawer').forEach(d => d.classList.toggle('open', d.id === activeCap));
+        };
+      });
+
+      // 2. 借用現有 Scene 構建零貼圖萊特兄弟雙翼機 ＋ 折紙飛機 ＋ 3D Emoji 乘客銘牌
+      const flyScene = new THREE.Scene();
+      const flyCam = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.2, 1200);
+      const planeGroup = new THREE.Group();
+
+      // 萊特兄弟雙翼機結構
+      const wrightGroup = new THREE.Group();
+      const wingMat = new THREE.MeshStandardMaterial({ color: 0xe6d3a7, roughness: 0.65, side: THREE.DoubleSide });
+      const strutMat = new THREE.MeshStandardMaterial({ color: 0x5c3818, roughness: 0.5 });
+      const topWing = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.08, 1.65), wingMat);
+      topWing.position.y = 1.45;
+      const botWing = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.08, 1.65), wingMat);
+      botWing.position.y = 0.25;
+      wrightGroup.add(topWing, botWing);
+      [-3.8, -1.6, 1.6, 3.8].forEach(sx => {
+        [-0.55, 0.55].forEach(sz => {
+          const st = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.2, 6), strutMat);
+          st.position.set(sx, 0.85, sz);
+          wrightGroup.add(st);
+        });
+      });
+      // 前置升降舵與後置方向舵 + 滑橇起落架
+      const frontElev = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.06, 0.65), wingMat);
+      frontElev.position.set(0, 0.55, -2.3);
+      const tailRud = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.1, 0.95), wingMat);
+      tailRud.position.set(0, 0.85, 2.4);
+      const skidL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 3.6), strutMat);
+      skidL.position.set(-1.1, -0.35, -0.3);
+      const skidR = skidL.clone(); skidR.position.x = 1.1;
+      wrightGroup.add(frontElev, tailRud, skidL, skidR);
+
+      // 雙螺旋槳
+      const propL = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.12, 0.04), strutMat);
+      propL.position.set(-1.5, 0.85, 0.9);
+      const propR = propL.clone(); propR.position.x = 1.5;
+      wrightGroup.add(propL, propR);
+      planeGroup.add(wrightGroup);
+
+      // 折紙飛機模型（預設隱藏，一撳切換）
+      const paperGroup = new THREE.Group();
+      const pGeo = new THREE.BufferGeometry();
+      pGeo.setAttribute('position', new THREE.Float32BufferAttribute([
+        0, 0.3, -3.2,  -2.6, 0.4, 2.2,  0, 0.3, 1.8,
+        0, 0.3, -3.2,   0, 0.3, 1.8,    2.6, 0.4, 2.2,
+        0, 0.3, -3.2,   0, -0.45, 1.8,  0, 0.3, 1.8
+      ], 3));
+      pGeo.computeVertexNormals();
+      paperGroup.add(new THREE.Mesh(pGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: 0.4 })));
+      paperGroup.visible = false;
+      planeGroup.add(paperGroup);
+
+      // Emoji 乘員徽章生成器
+      function makeEmojiSprite(emoji, offset) {
+        const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+        const ctx = c.getContext('2d');
+        ctx.font = '88px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(emoji, 64, 68);
+        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true }));
+        sp.scale.set(1.15, 1.15, 1);
+        sp.position.copy(offset);
+        planeGroup.add(sp);
+        return sp;
+      }
+      const paxSprites = {
+        ming: makeEmojiSprite('🧑', new THREE.Vector3(-0.45, 0.95, -0.35)),
+        p:    makeEmojiSprite('🤖', new THREE.Vector3( 0.45, 0.95, -0.35)),
+        wife: makeEmojiSprite('👩', new THREE.Vector3(-0.45, 0.95,  0.35)),
+        cats: makeEmojiSprite('🐱', new THREE.Vector3( 0.45, 0.95,  0.35))
+      };
+      paxSprites.wife.visible = false;
+      paxSprites.cats.visible = false;
+
+      // 疊加透明飛行層渲染器（零入侵原本畫面）
+      const overlayRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      overlayRenderer.setSize(window.innerWidth, window.innerHeight);
+      overlayRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+      overlayRenderer.domElement.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:12;';
+      document.body.appendChild(overlayRenderer.domElement);
+      flyScene.add(new THREE.HemisphereLight(0xffffff, 0x554433, 1.2));
+      const dLight = new THREE.DirectionalLight(0xffe8a3, 1.4); dLight.position.set(30, 40, -50); flyScene.add(dLight);
+      planeGroup.position.set(-22, 0.42, 11.5);
+      planeGroup.rotation.y = -Math.PI / 2;
+      flyScene.add(planeGroup);
+
+      // 3. 狀態機：停機坪 -> 跑道加速滑行 -> 升空巡視海島/後山 -> 進場觸地 -> 強制長距離滑行減速
+      let mode = 'PARKED', speed = 0, orbitAngle = 0, hoverHold = false, followCam = true, isPaper = false;
+      const statEl = document.getElementById('fly-stat');
+
+      ['ming', 'p', 'wife', 'cats'].forEach(k => {
+        document.getElementById('pax-' + k).onclick = (e) => {
+          paxSprites[k].visible = !paxSprites[k].visible;
+          e.target.classList.toggle('on-breath', paxSprites[k].visible);
+        };
+      });
+      document.getElementById('btn-plane-type').onclick = (e) => {
+        isPaper = !isPaper;
+        wrightGroup.visible = !isPaper; paperGroup.visible = isPaper;
+        e.target.textContent = isPaper ? '📄 機型：型格折紙飛機 (撳轉萊特雙翼機)' : '🛩️ 機型：萊特兄弟雙翼機 (撳轉折紙飛機)';
+      };
+      document.getElementById('btn-takeoff').onclick = () => {
+        if (mode === 'PARKED' || mode === 'ROLLOUT') { mode = 'TAKEOFF_RUN'; speed = 2.0; statEl.textContent = '跑道加速滑跑中...'; }
+      };
+      document.getElementById('btn-hover').onclick = (e) => {
+        hoverHold = !hoverHold;
+        e.target.textContent = hoverHold ? '⏸️ 空中定格睇山: 開' : '⏸️ 空中定格睇山: 關';
+      };
+      document.getElementById('btn-cam-follow').onclick = (e) => {
+        followCam = !followCam;
+        e.target.classList.toggle('on-breath', followCam);
+        e.target.textContent = followCam ? '🎥 跟機視角: 開' : '🎥 跟機視角: 關';
+      };
+      document.getElementById('btn-land').onclick = () => {
+        if (mode === 'CRUISE' || mode === 'CLIMB') { mode = 'APPROACH'; hoverHold = false; statEl.textContent = '進場對準沙灘跑道...'; }
+      };
+
+      window.addEventListener('resize', () => {
+        flyCam.aspect = window.innerWidth / window.innerHeight;
+        flyCam.updateProjectionMatrix();
+        overlayRenderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      const clk = new THREE.Clock();
+      function flyLoop() {
+        requestAnimationFrame(flyLoop);
+        const dt = Math.min(clk.getDelta(), 0.05);
+        if (mode !== 'PARKED') { propL.rotation.z += dt * (8 + speed * 2.2); propR.rotation.z -= dt * (8 + speed * 2.2); }
+
+        if (mode === 'TAKEOFF_RUN') {
+          speed = Math.min(26, speed + dt * 11);
+          planeGroup.position.x += speed * dt;
+          planeGroup.rotation.x = speed > 14 ? (speed - 14) * 0.015 : 0;
+          if (planeGroup.position.x > 16) { mode = 'CLIMB'; statEl.textContent = '離地爬升飛向海島！'; }
+        } else if (mode === 'CLIMB') {
+          planeGroup.position.y += dt * 7.5;
+          planeGroup.position.z -= dt * 18.0;
+          planeGroup.rotation.y += dt * 0.55;
+          if (planeGroup.position.y >= 16.5) { mode = 'CRUISE'; statEl.textContent = '空中巡視：海島 ↔ 後山'; }
+        } else if (mode === 'CRUISE') {
+          if (!hoverHold) orbitAngle += dt * 0.24;
+          // 橢圓航線同時掠過左後方海島(-52,-128)與右後方後山(62,-215)上空
+          const tx = Math.cos(orbitAngle) * 72;
+          const tz = -115 + Math.sin(orbitAngle) * 75;
+          const ty = 17.5 + Math.sin(orbitAngle * 2) * 2.5;
+          const dx = tx - planeGroup.position.x, dz = tz - planeGroup.position.z;
+          if (!hoverHold) {
+            planeGroup.position.lerp(new THREE.Vector3(tx, ty, tz), dt * 1.4);
+            planeGroup.rotation.y = Math.atan2(-dx, -dz);
+            planeGroup.rotation.z = 0.16;
+            planeGroup.rotation.x = 0.03;
+          } else {
+            planeGroup.rotation.z *= 0.92;
+            planeGroup.position.y += Math.sin(clk.elapsedTime * 2) * 0.005;
+          }
+        } else if (mode === 'APPROACH') {
+          // 斜向進場降落到沙灘跑道左側 (-36, 0.42, 11.5)
+          const targetRunway = new THREE.Vector3(-36, 0.42, 11.5);
+          planeGroup.position.lerp(targetRunway, dt * 1.1);
+          planeGroup.rotation.y = -Math.PI / 2;
+          planeGroup.rotation.z *= 0.9;
+          planeGroup.rotation.x = -0.06;
+          if (planeGroup.position.distanceTo(targetRunway) < 1.2) {
+            planeGroup.position.y = 0.42;
+            planeGroup.rotation.x = 0;
+            mode = 'ROLLOUT';
+            speed = 24.0;
+            statEl.textContent = '觸地！強制跑道滑行減速中...';
+          }
+        } else if (mode === 'ROLLOUT') {
+          // 強制長距離滑行減速，絕不似直升機垂直急停！
+          planeGroup.position.x += speed * dt;
+          speed = Math.max(0, speed - dt * 4.2);
+          if (speed <= 0.1) {
+            mode = 'PARKED'; speed = 0;
+            statEl.textContent = '已平穩滑行煞停於沙灘跑道';
+          }
+        }
+
+        // 跟機鏡頭同步：起飛巡視時自動帶你近距離睇海島同後山
+        if (followCam && (mode === 'CLIMB' || mode === 'CRUISE' || mode === 'APPROACH')) {
+          const backVec = new THREE.Vector3(0, 3.2, 11.5).applyAxisAngle(new THREE.Vector3(0, 1, 0), planeGroup.rotation.y);
+          flyCam.position.lerp(planeGroup.position.clone().add(backVec), 0.08);
+          flyCam.lookAt(planeGroup.position.clone().add(new THREE.Vector3(0, -1.2, -12).applyAxisAngle(new THREE.Vector3(0, 1, 0), planeGroup.rotation.y)));
+        } else {
+          flyCam.position.set(-10.5, 4.5, 16.5);
+          flyCam.lookAt(0, 1.8, -4.0);
+        }
+
+        overlayRenderer.render(flyScene, flyCam);
+      }
+      flyLoop();
+    }, 300);
+  })();
+
+        
   </script>
 </body>
 </html>
