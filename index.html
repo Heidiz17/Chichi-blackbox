@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>黑盒抄錶室：白光大氣三和弦天空 × 底部縮切保峰圖騰 × 雙款大海</title>
+  <title>黑盒抄錶室：真物理光學大氣散射 × 逐像素刀鋒圖騰 × 純三和弦</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
@@ -19,7 +19,7 @@
     }
     #drawer-head {
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 11.5px; font-weight: bold; color: #ffd700; margin-bottom: 6px;
+      font-size: 11px; font-weight: bold; color: #ffd700; margin-bottom: 6px;
     }
     #tri-btn {
       background: none; border: none; color: #1e90ff; font-size: 16px; padding: 2px 8px; cursor: pointer;
@@ -44,10 +44,9 @@
 
     .dual-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
     .mode-btn {
-      background: #182232; color: #ffd700; border: 1px solid #3b82f6;
+      background: #143326; color: #4ade80; border: 1px solid #22c55e;
       border-radius: 6px; padding: 6px 4px; font-size: 10.5px; font-weight: bold; text-align: center;
     }
-    .mode-btn.bottom-cut { background: #143326; color: #4ade80; border-color: #22c55e; }
     .mode-btn.sea { background: #0c2438; color: #38bdf8; border-color: #0284c7; }
 
     .tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
@@ -60,7 +59,7 @@
     .p-toggle.on-breath { background: #10253f; color: #38bdf8; border-color: #0ea5e9; }
 
     .row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; }
-    .row label { min-width: 122px; color: #ccc; }
+    .row label { min-width: 126px; color: #ccc; }
     .row input[type=range] { flex: 1; accent-color: #ffd700; }
     .row span { min-width: 44px; text-align: right; color: #ffd700; font-family: monospace; }
   </style>
@@ -70,14 +69,14 @@
 
   <div id="drawer">
     <div id="drawer-head">
-      <span>🔬 抄錶室：白光大氣三和弦天空 × 底部縮切保峰圖騰</span>
+      <span>🔭 真物理光學大氣散射 × 逐像素刀鋒圖騰 × 純三和弦</span>
       <button id="tri-btn">▼</button>
     </div>
     <div class="panel" id="panel">
-      <!-- 軌道 A：天空光譜（3音三和弦 ＋ 白色大氣散射混合，無螢光綠） -->
+      <!-- 軌道 A：真物理大氣散射（遠厚白散射、近薄深邃、向陽金暈） -->
       <div class="track-box">
         <div class="track-title">
-          <span>🌌 軌道 A：天空（3音三和弦＋白光大氣散射）</span>
+          <span>🌌 軌道 A：大氣光學散射（三和弦調頻）</span>
           <b id="sky-readout">1級 I大三 [0,4,7]</b>
         </div>
         <div class="chord-grid" id="sky-grid">
@@ -93,10 +92,10 @@
         </div>
       </div>
 
-      <!-- 軌道 B：沙場圖騰（純三和弦波形＋算色） -->
+      <!-- 軌道 B：逐像素刀鋒圖騰沙場 -->
       <div class="track-box">
         <div class="track-title">
-          <span>🏜️ 軌道 B：沙場圖騰（3音波形＋自然沙色）</span>
+          <span>🏜️ 軌道 B：逐像素刀鋒圖騰（三和弦干涉）</span>
           <b id="sand-readout">Dim 減三和弦 [0,3,6]</b>
         </div>
         <div class="chord-grid" id="sand-grid">
@@ -112,9 +111,8 @@
         </div>
       </div>
 
-      <!-- 🔪 切刀模式對比（底部縮切 vs 頂部削平） ＋ 🌊 兩款海即時切換 -->
       <div class="dual-bar">
-        <button class="mode-btn bottom-cut" id="btn-cut-mode">🔪 切刀：底部縮切 (保尖峰)</button>
+        <button class="mode-btn" id="btn-cut-mode">🔪 切刀：底部縮切 (保尖峰)</button>
         <button class="mode-btn sea" id="btn-sea-mode">🌊 海款：1號平靜海 (撳轉2號)</button>
       </div>
 
@@ -125,27 +123,28 @@
       </div>
 
       <div class="row">
-        <label>☁️ 七色合體白光混合</label>
-        <input type="range" id="atmoWhite" min="0" max="1.0" step="0.02" value="0.58" />
-        <span id="atmoWhite-v">58%</span>
+        <label>🔭 大氣光學厚度 (遠白近深)</label>
+        <input type="range" id="optDepth" min="0.1" max="2.5" step="0.05" value="1.15" />
+        <span id="optDepth-v">1.15</span>
       </div>
       <div class="row">
-        <label>🔪 切刀深度 (Cut Level)</label>
-        <input type="range" id="cutLevel" min="0.0" max="0.85" step="0.02" value="0.38" />
-        <span id="cutLevel-v">0.38</span>
+        <label>☀️ 太陽米氏前向散射光暈</label>
+        <input type="range" id="mieGlow" min="0.0" max="2.0" step="0.05" value="0.95" />
+        <span id="mieGlow-v">0.95</span>
       </div>
       <div class="row">
-        <label>⚡ 能量手痕 (尖峰拉高)</label>
-        <input type="range" id="energyLev" min="0.1" max="2.5" step="0.05" value="1.25" />
-        <span id="energyLev-v">1.25x</span>
+        <label>🔪 底部縮切深度 (露尖峰)</label>
+        <input type="range" id="cutLevel" min="0.0" max="0.85" step="0.02" value="0.32" />
+        <span id="cutLevel-v">0.32</span>
       </div>
       <div class="row">
-        <label>☢️ 質能手痕 (mc²圖騰銳化)</label>
-        <input type="range" id="massLev" min="0.2" max="3.0" step="0.05" value="1.55" />
-        <span id="massLev-v">1.55x</span>
+        <label>☢️ 質能手痕 (刀鋒圖騰銳度)</label>
+        <input type="range" id="massLev" min="0.5" max="4.0" step="0.1" value="2.40" />
+        <span id="massLev-v">2.40x</span>
       </div>
     </div>
   </div>
+
 
 
 
@@ -155,18 +154,19 @@
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(64, window.innerWidth / window.innerHeight, 0.2, 900);
-    camera.position.set(-14, 5.2, 22);
+    // 相機擺喺沙灘高處斜望向木屋與海平線，同時睇盡腳下沙場圖騰同遠方大海天空！
+    camera.position.set(-11, 4.8, 16);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.12;
     document.getElementById('canvas-3d').appendChild(renderer.domElement);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.target.set(0, 1.8, -5);
+    controls.target.set(0, 1.2, 1.0);
 
     const TRIADS = {
       '1':   { label: '1級 I大三 [0,4,7]',     semi: [0, 4, 7] },
@@ -186,80 +186,91 @@
       uBreathT: { value: 0 },
       uPulseGate: { value: 1.0 },
       uQuantumSwing: { value: 0.0 },
-      uSolarPower: { value: 3.2 },
       uFbm: { value: 0.78 },
       uPause: { value: 0.65 },
       uTide: { value: 0.62 },
-      uHeis: { value: 0.22 },
-      uSunDir: { value: new THREE.Vector3(0.18, 0.24, -0.95).normalize() },
+      uSunDir: { value: new THREE.Vector3(0.22, 0.22, -0.95).normalize() },
       uSkySemi: { value: new THREE.Vector3(0, 4, 7) },
-      uAtmoWhite: { value: 0.58 }, // 七色合體白光大氣散射混合度
+      uOptDepth: { value: 1.15 }, // 大氣光學厚度：控制遠處(地平線)白光折射勁、近處(天頂)薄而深邃
+      uMieGlow: { value: 0.95 },  // 太陽米氏前向散射光暈
       uSandSemi: { value: new THREE.Vector3(0, 3, 6) },
       uSandRatios: { value: new THREE.Vector3(...toRatios([0, 3, 6])) },
-      uCutMode: { value: 0.0 },    // 0.0 = 底部縮切(保尖峰), 1.0 = 頂部削平(平頂台地)
-      uCutLevel: { value: 0.38 },
+      uCutMode: { value: 0.0 },
+      uCutLevel: { value: 0.32 },
       uChaosOn: { value: 1.0 },
       uChaosAmt: { value: 0.65 },
       uHeisPhase: { value: 0.0 },
-      uEnergyLev: { value: 1.25 },
-      uMassLev: { value: 1.55 },
-      uWindDir: { value: new THREE.Vector2(0.85, 0.52).normalize() }
+      uMassLev: { value: 2.40 }
     };
 
-    // 1. 軌道 A：白光大氣散射 × 3音三和弦天空（消除假綠，還原真實大氣通透感！）
+    // 1. 軌道 A：真物理光學大氣散射天空（Rayleigh 光學厚度 + Mie 前向散射，鎖死和弦色相唔亂漂！）
     const skyMat = new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false, uniforms: sharedUniforms,
       vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: `
         uniform vec3 uSkySemi, uSunDir;
-        uniform float uAtmoWhite, uChaosOn, uChaosAmt, uHeisPhase;
+        uniform float uOptDepth, uMieGlow;
         varying vec3 vDir;
 
-        // 物理瑞利大氣光譜：過濾純毒綠，並與七色合體白光/晴空藍散射混合
-        vec3 atmosphericChordColor(float semi, float shift, float heightFactor) {
+        // 將三和弦音程轉換為大氣層吸收/散射係數（消除反物理毒綠）
+        vec3 chordToScatterTint(float semi) {
           float f = pow(2.0, semi / 12.0);
-          vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42 + shift));
-
-          // 壓抑過度突兀嘅純綠通道（真實大氣散射綠光會轉化成青藍或暖金）
-          float excessGreen = max(0.0, raw.g - max(raw.r, raw.b));
-          raw.g -= excessGreen * 0.58;
-          raw.b += excessGreen * 0.42;
-          raw.r += excessGreen * 0.22;
-
-          // 七色合體變白光：地平線偏暖白霧氣，高空偏晴空蔚藍白光
-          vec3 rayleighSky = mix(vec3(0.96, 0.94, 0.90), vec3(0.58, 0.78, 0.98), heightFactor);
-          return mix(raw, rayleighSky, uAtmoWhite);
+          vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42));
+          float excessG = max(0.0, raw.g - max(raw.r, raw.b));
+          raw.g -= excessG * 0.62;
+          raw.b += excessG * 0.45;
+          raw.r += excessG * 0.20;
+          return raw;
         }
 
         void main() {
           vec3 d = normalize(vDir);
-          float h = clamp(d.y, 0.0, 1.0);
-          float cw = uChaosOn * sin(d.x * 4.0 + d.z * 3.5 + uHeisPhase * 0.35) * 0.05 * uChaosAmt;
-          float qs = uHeisPhase * 0.02;
+          vec3 sun = normalize(uSunDir);
+          float h = clamp(d.y, 0.001, 1.0);
 
-          // 根音(地平線)、三音(中層)、五音(天頂)
-          vec3 c1 = atmosphericChordColor(uSkySemi.x, qs + cw, 0.1);
-          vec3 c3 = atmosphericChordColor(uSkySemi.y, qs - cw, 0.5);
-          vec3 c5 = atmosphericChordColor(uSkySemi.z, qs, 0.95);
+          // 🔭 真物理光學厚度 (Optical Depth / Air Mass)：
+          // 望向地平線(遠處, h->0)視線穿過極厚大氣層，光線多次折射合體變白霧；望向天頂(近處, h->1)空氣薄，色彩深邃！
+          float airMass = pow(1.0 - h, 2.4) * uOptDepth;
+          float horizonWhiteMix = clamp(1.0 - exp(-airMass * 1.45), 0.0, 0.92);
 
-          vec3 col = mix(c1, c3, smoothstep(0.0, 0.30, h));
-          col = mix(col, c5, smoothstep(0.25, 0.85, h));
+          // ☀️ 太陽角度散射（向陽面 vs 背陽面）
+          float cosTheta = max(dot(d, sun), 0.0);
+          float sunSide = pow(cosTheta, 2.0);
 
-          // 太陽白金核心與散射光暈
-          float sunAmt = max(dot(d, normalize(uSunDir)), 0.0);
-          col += vec3(1.0, 0.96, 0.86) * (pow(sunAmt, 85.0) * 0.42 + smoothstep(0.9993, 0.99985, sunAmt) * 1.6);
-          gl_FragColor = vec4(col, 1.0);
+          // 三和弦三音代表高空(五音)、中層(三音)、低空(根音)大氣折射色彩
+          vec3 cLow  = chordToScatterTint(uSkySemi.x);
+          vec3 cMid  = chordToScatterTint(uSkySemi.y);
+          vec3 cHigh = chordToScatterTint(uSkySemi.z);
+
+          // 結合晴空瑞利蔚藍基底，隨高度漸變
+          vec3 zenithBlue = mix(vec3(0.16, 0.44, 0.86), cHigh, 0.55);
+          vec3 midSky     = mix(vec3(0.42, 0.68, 0.94), cMid, 0.50);
+          vec3 lowSky     = mix(vec3(0.88, 0.78, 0.68), cLow, 0.48);
+
+          vec3 skyCol = mix(lowSky, midSky, smoothstep(0.0, 0.28, h));
+          skyCol = mix(skyCol, zenithBlue, smoothstep(0.22, 0.85, h));
+
+          // 遠處地平線厚大氣白光折射（向陽處帶暖金白，背陽處帶冷霧白）
+          vec3 horizonScattering = mix(vec3(0.86, 0.90, 0.95), vec3(1.0, 0.93, 0.82), sunSide);
+          skyCol = mix(skyCol, horizonScattering, horizonWhiteMix);
+
+          // ☀️ 米氏前向散射光暈 (Mie Scattering) + 太陽白金本體
+          float mieHalo = (pow(cosTheta, 8.0) * 0.22 + pow(cosTheta, 64.0) * 0.55) * uMieGlow;
+          float sunDisc = smoothstep(0.9993, 0.99985, cosTheta) * 1.8;
+          skyCol += vec3(1.0, 0.92, 0.76) * mieHalo + vec3(1.0, 0.98, 0.92) * sunDisc;
+
+          gl_FragColor = vec4(skyCol, 1.0);
         }
       `
     });
-    scene.add(new THREE.Mesh(new THREE.SphereGeometry(520, 28, 18), skyMat));
+    scene.add(new THREE.Mesh(new THREE.SphereGeometry(520, 32, 20), skyMat));
 
     scene.add(new THREE.HemisphereLight(0xfff5e4, 0x4a3b2c, 0.85));
     const sunLight = new THREE.DirectionalLight(0xffe8a3, 1.35);
-    sunLight.position.set(22, 24, -90);
+    sunLight.position.set(22, 22, -95);
     scene.add(sunLight);
 
-    // 2. 高腳咖啡木屋參照（0.25m 石屎底台）
+    // 2. 高腳咖啡木屋參照（坐落喺岸邊 z = -2）
     const cafeGroup = new THREE.Group();
     cafeGroup.position.set(0, 0, -2.0);
     const woodMat = new THREE.MeshStandardMaterial({ color: 0x8c5832, roughness: 0.55 });
@@ -281,96 +292,85 @@
     cafeGroup.add(roof);
     scene.add(cafeGroup);
 
-    // 3. 軌道 B：沙場圖騰（支援「底部縮切保尖峰」vs「頂部削平」即時對比！）
-    const sandGeo = new THREE.PlaneGeometry(80, 48, 190, 120);
+    // 3. 軌道 B：逐像素刀鋒圖騰沙場（Pixel-Level Ridge Normal，重現你上次做山嗰種銳利立體幾何！）
+    const sandGeo = new THREE.PlaneGeometry(84, 52, 160, 100);
     sandGeo.rotateX(-Math.PI / 2);
     const sandMat = new THREE.ShaderMaterial({
       uniforms: sharedUniforms,
-      extensions: { derivatives: true },
       transparent: true,
       vertexShader: `
-        uniform vec3 uSandRatios;
-        uniform float uCutMode, uCutLevel, uChaosOn, uChaosAmt, uHeisPhase, uEnergyLev, uMassLev;
         varying vec3 vWorldPos;
-        varying float vTotemVal;
-        varying float vExposed;
-
-        vec2 chaosFold(vec2 p, float amt, float heis) {
-          vec2 z = p * 0.12;
-          for (int i = 0; i < 2; i++) {
-            z = abs(z) / max(dot(z, z), 0.25) - (1.1 + 0.15 * sin(heis * 0.6));
-            z = mat2(0.8, -0.6, 0.6, 0.8) * z;
-          }
-          return z * amt * 1.05;
-        }
-
         void main() {
           vec3 pos = position;
-          pos.z += 14.0;
-
-          vec2 cOff = uChaosOn * chaosFold(pos.xz, uChaosAmt, uHeisPhase);
-          vec2 sp = pos.xz + cOff;
-
-          float freq = 0.95;
-          float tm = uHeisPhase * 0.75;
-          float w1 = sin(dot(sp, vec2(1.0, 0.0)) * freq * uSandRatios.x - tm);
-          float w2 = sin(dot(sp, vec2(-0.5, 0.866)) * freq * uSandRatios.y - tm * 1.15);
-          float w3 = sin(dot(sp, vec2(-0.5, -0.866)) * freq * uSandRatios.z - tm * 1.3);
-
-          float rawWave = abs(w1 + w2 + w3) / 3.0;
-          // 質能手痕 (mc²聚變銳化)
-          float sharpWave = pow(rawWave, uMassLev);
-
-          float finalNormH = 0.0;
-          if (uCutMode < 0.5) {
-            // 🔪 模式 0：底部縮切（Bottom Cut）— 抬高沙床基準線，吞沒底部雜波，100%保留頂部銳利圖騰尖峰！
-            float cutBase = uCutLevel * 0.65;
-            finalNormH = max(0.0, sharpWave - cutBase) / max(1.0 - cutBase, 0.1);
-            vExposed = smoothstep(0.0, 0.08, sharpWave - cutBase);
-          } else {
-            // 🔪 模式 1：頂部削平（Top Clamp）— 超過上限就被削成平頂台地
-            float topCap = max(0.15, 1.0 - uCutLevel * 0.75);
-            finalNormH = min(topCap, sharpWave);
-            vExposed = 1.0;
-          }
-
-          // 安全高度上限 0.24m（絕不穿入 0.25m 木屋底台）
-          pos.y = min(0.24, finalNormH * 0.22 * uEnergyLev);
-          vTotemVal = finalNormH;
-
+          pos.z += 12.0;
           vec4 wp = modelMatrix * vec4(pos, 1.0);
           vWorldPos = wp.xyz;
           gl_Position = projectionMatrix * viewMatrix * wp;
         }
       `,
       fragmentShader: `
-        uniform vec3 uSandSemi, uSunDir;
-        uniform float uHeisPhase;
+        uniform vec3 uSandSemi, uSandRatios, uSunDir;
+        uniform float uCutMode, uCutLevel, uChaosOn, uChaosAmt, uHeisPhase, uMassLev;
         varying vec3 vWorldPos;
-        varying float vTotemVal;
-        varying float vExposed;
 
-        vec3 naturalSandChordColor(float semi, float shift) {
+        vec2 chaosFold(vec2 p, float amt, float heis) {
+          vec2 z = p * 0.14;
+          for (int i = 0; i < 2; i++) {
+            z = abs(z) / max(dot(z, z), 0.22) - (1.12 + 0.12 * sin(heis * 0.5));
+            z = mat2(0.8, -0.6, 0.6, 0.8) * z;
+          }
+          return z * amt * 1.15;
+        }
+
+        // 🔪 核心刀鋒圖騰函數（逐像素計算，解像度無限高清！）
+        float totemHeight(vec2 xz) {
+          vec2 sp = xz + uChaosOn * chaosFold(xz, uChaosAmt, uHeisPhase);
+          float freq = 1.15;
+          float tm = uHeisPhase * 0.65;
+
+          // 三道 120度對稱三和弦波，用 1.0 - abs(sin) 造出像刀鋒一樣銳利嘅幾何脊線！
+          float r1 = 1.0 - abs(sin(dot(sp, vec2(1.0, 0.0)) * freq * uSandRatios.x - tm));
+          float r2 = 1.0 - abs(sin(dot(sp, vec2(-0.5, 0.866)) * freq * uSandRatios.y - tm * 1.12));
+          float r3 = 1.0 - abs(sin(dot(sp, vec2(-0.5, -0.866)) * freq * uSandRatios.z - tm * 1.24));
+
+          float raw = (r1 + r2 + r3) / 3.0;
+          // ☢️ 質能手痕 (mc²聚變銳化)：推高指數令脊線收縮成刀切圖騰！
+          float sharp = pow(clamp(raw, 0.0, 1.0), uMassLev);
+
+          if (uCutMode < 0.5) {
+            float cutBase = uCutLevel * 0.65;
+            return max(0.0, sharp - cutBase) / max(1.0 - cutBase, 0.1);
+          } else {
+            float topCap = max(0.15, 1.0 - uCutLevel * 0.75);
+            return min(topCap, sharp);
+          }
+        }
+
+        vec3 naturalSandTint(float semi) {
           float f = pow(2.0, semi / 12.0);
-          vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42 + shift));
-          // 與天然暖沙白光混合，令沙色高級有質感
-          return mix(raw, vec3(0.88, 0.78, 0.60), 0.55);
+          vec3 raw = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.333, 0.667) + f * 0.42));
+          return mix(raw, vec3(0.86, 0.75, 0.56), 0.62);
         }
 
         void main() {
-          vec3 N = normalize(cross(dFdy(vWorldPos), dFdx(vWorldPos)));
-          if (N.y < 0.0) N = -N;
+          vec2 p = vWorldPos.xz;
+          // 逐像素計出極高精細度法線（每一條圖騰脊線都有向陽亮面同背陽暗影！）
+          float eps = 0.04;
+          float hC = totemHeight(p);
+          float hX = totemHeight(p + vec2(eps, 0.0));
+          float hZ = totemHeight(p + vec2(0.0, eps));
+          vec3 N = normalize(vec3((hC - hX) * 4.5, 1.0, (hC - hZ) * 4.5));
 
-          float qs = uHeisPhase * 0.02;
-          // 底部平沙基準面用溫暖沙底色，破沙而出嘅圖騰尖峰用和弦亮色！
-          vec3 flatBaseSand = vec3(0.56, 0.46, 0.34);
-          vec3 ridgeCol = mix(naturalSandChordColor(uSandSemi.x, qs), naturalSandChordColor(uSandSemi.z, qs), 0.5);
-          vec3 col = mix(flatBaseSand, ridgeCol, vExposed * smoothstep(0.05, 0.85, vTotemVal));
+          vec3 baseSand = vec3(0.58, 0.48, 0.35);
+          vec3 ridgeCol = mix(naturalSandTint(uSandSemi.x), naturalSandTint(uSandSemi.z), 0.5);
+          vec3 albedo   = mix(baseSand, ridgeCol, smoothstep(0.02, 0.85, hC));
 
-          float diff = max(dot(N, normalize(uSunDir)), 0.28);
-          col *= (0.48 + 0.78 * diff);
+          // 強對比平行光陰影 + 山谷暗角壓暗 (AO)
+          float diff = max(dot(N, normalize(uSunDir)), 0.18);
+          float valleyAO = mix(0.62, 1.12, smoothstep(0.0, 0.65, hC));
+          vec3 col = albedo * (0.35 + 0.95 * diff) * valleyAO;
 
-          float shoreFade = smoothstep(-9.0, -3.5, vWorldPos.z);
+          float shoreFade = smoothstep(-8.5, -3.5, vWorldPos.z);
           gl_FragColor = vec4(col * shoreFade, shoreFade);
         }
       `
@@ -379,14 +379,14 @@
     sandMesh.position.y = 0.02;
     scene.add(sandMesh);
 
-    // 4. 兩款大海即時切換 (cartridge-sea_2 核心)
+    // 4. 兩款大海即時切換
     const seaGeo = new THREE.PlaneGeometry(420, 420, 96, 96);
     seaGeo.rotateX(-Math.PI / 2);
     const seaMat = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
       uniforms: sharedUniforms,
       vertexShader: `
-        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide, uHeis;
+        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide;
         varying vec3 vWorldPos;
         void main() {
           vec3 pos = position;
@@ -406,7 +406,7 @@
         }
       `,
       fragmentShader: `
-        uniform float uTime, uBreathT, uPulseGate, uQuantumSwing, uFbm, uPause, uTide;
+        uniform float uTime, uBreathT, uQuantumSwing, uTide;
         uniform vec3 uSunDir;
         varying vec3 vWorldPos;
         float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 437.5854); }
@@ -480,12 +480,10 @@
       };
     });
 
-    // 🔪 切刀模式切換：底部縮切 (保尖峰) vs 頂部削平 (平頂台地)
     const btnCutMode = document.getElementById('btn-cut-mode');
     btnCutMode.onclick = () => {
       const next = sharedUniforms.uCutMode.value < 0.5 ? 1.0 : 0.0;
       sharedUniforms.uCutMode.value = next;
-      btnCutMode.classList.toggle('bottom-cut', next < 0.5);
       btnCutMode.textContent = next < 0.5
         ? '🔪 切刀：底部縮切 (保尖峰)'
         : '🔪 切刀：頂部削平 (平頂台地)';
@@ -517,20 +515,20 @@
       e.target.textContent = state.breathOn ? '🫁 呼吸閘門: 開' : '🫁 呼吸閘門: 關';
     };
 
-    document.getElementById('atmoWhite').oninput = (e) => {
+    document.getElementById('optDepth').oninput = (e) => {
       const v = parseFloat(e.target.value);
-      sharedUniforms.uAtmoWhite.value = v;
-      document.getElementById('atmoWhite-v').textContent = Math.round(v * 100) + '%';
+      sharedUniforms.uOptDepth.value = v;
+      document.getElementById('optDepth-v').textContent = v.toFixed(2);
+    };
+    document.getElementById('mieGlow').oninput = (e) => {
+      const v = parseFloat(e.target.value);
+      sharedUniforms.uMieGlow.value = v;
+      document.getElementById('mieGlow-v').textContent = v.toFixed(2);
     };
     document.getElementById('cutLevel').oninput = (e) => {
       const v = parseFloat(e.target.value);
       sharedUniforms.uCutLevel.value = v;
       document.getElementById('cutLevel-v').textContent = v.toFixed(2);
-    };
-    document.getElementById('energyLev').oninput = (e) => {
-      const v = parseFloat(e.target.value);
-      sharedUniforms.uEnergyLev.value = v;
-      document.getElementById('energyLev-v').textContent = v.toFixed(2) + 'x';
     };
     document.getElementById('massLev').oninput = (e) => {
       const v = parseFloat(e.target.value);
@@ -570,6 +568,3 @@
   </script>
 </body>
 </html>
-
-
-
